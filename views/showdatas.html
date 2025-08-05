@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mem0 - Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a0a;
+            color: #ffffff;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            background: #111111;
+            border-right: 1px solid #2a2a2a;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s ease;
+        }
+
+        .logo {
+            padding: 20px;
+            border-bottom: 1px solid #2a2a2a;
+            font-size: 24px;
+            font-weight: bold;
+            color: #ffffff;
+        }
+
+        .nav-menu {
+            flex: 1;
+            padding: 20px 0;
+        }
+
+        .nav-item {
+            padding: 12px 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: background 0.2s;
+            border-left: 3px solid transparent;
+        }
+
+        .nav-item:hover {
+            background: #1a1a1a;
+        }
+
+        .nav-item.active {
+            background: #1a1a1a;
+            border-left-color: #6366f1;
+        }
+
+        .nav-icon {
+            width: 20px;
+            height: 20px;
+            opacity: 0.7;
+        }
+
+        .user-section {
+            padding: 20px;
+            border-top: 1px solid #2a2a2a;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #6366f1, #8b5cf6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .header {
+            padding: 20px 30px;
+            border-bottom: 1px solid #2a2a2a;
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .header-left {
+            flex: 1;
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .page-subtitle {
+            color: #888;
+            font-size: 14px;
+        }
+
+        .header-right {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .search-box {
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            border-radius: 8px;
+            padding: 8px 12px;
+            color: #ffffff;
+            width: 300px;
+            font-size: 14px;
+        }
+
+        .search-box:focus {
+            outline: none;
+            border-color: #6366f1;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: #6366f1;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5855eb;
+        }
+
+        .btn-secondary {
+            background: #1a1a1a;
+            color: #ffffff;
+            border: 1px solid #2a2a2a;
+        }
+
+        .btn-secondary:hover {
+            background: #2a2a2a;
+        }
+
+        /* Content Area */
+        .content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 30px;
+        }
+
+        .filters {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .filter-tag {
+            padding: 6px 12px;
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            border-radius: 20px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .filter-tag:hover {
+            border-color: #6366f1;
+        }
+
+        .filter-tag.active {
+            background: #6366f1;
+            border-color: #6366f1;
+        }
+
+        .memories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+        }
+
+        .memory-card {
+            background: #111111;
+            border: 1px solid #2a2a2a;
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .memory-card:hover {
+            border-color: #6366f1;
+            transform: translateY(-2px);
+        }
+
+        .memory-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .memory-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #ffffff;
+            line-height: 1.4;
+        }
+
+        .memory-date {
+            font-size: 12px;
+            color: #888;
+            white-space: nowrap;
+        }
+
+        .memory-content {
+            color: #ccc;
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 16px;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .memory-tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .memory-tag {
+            background: #1a1a1a;
+            color: #888;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #888;
+        }
+
+        .empty-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 20px;
+            opacity: 0.3;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #111111;
+            border: 1px solid #2a2a2a;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid #2a2a2a;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: #888;
+            cursor: pointer;
+            font-size: 24px;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .form-input {
+            width: 100%;
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            border-radius: 8px;
+            padding: 12px;
+            color: #ffffff;
+            font-size: 14px;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #6366f1;
+        }
+
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .modal-footer {
+            padding: 20px;
+            border-top: 1px solid #2a2a2a;
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                left: -250px;
+                z-index: 999;
+                height: 100vh;
+            }
+
+            .sidebar.open {
+                transform: translateX(250px);
+            }
+
+            .main-content {
+                width: 100%;
+            }
+
+            .header {
+                padding: 15px 20px;
+            }
+
+            .content {
+                padding: 15px 20px;
+            }
+
+            .memories-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .search-box {
+                width: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="logo">
+                AIN Mem
+            </div>
+            
+            <nav class="nav-menu">
+                <div class="nav-item active" data-page="memories">
+                    <svg class="nav-icon" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                    </svg>
+                    Memories
+                </div>
+                <div class="nav-item" data-page="analytics">
+                    <svg class="nav-icon" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
+                    </svg>
+                    Analytics
+                </div>
+                <div class="nav-item" data-page="settings">
+                    <svg class="nav-icon" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.82,11.69,4.82,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/>
+                    </svg>
+                    Settings
+                </div>
+            </nav>
+
+            <div class="user-section">
+                <div class="user-avatar">U</div>
+                <div>
+                    <div style="font-size: 14px; font-weight: 500;">User</div>
+                    <div style="font-size: 12px; color: #888;">Free Plan</div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="header">
+                <div class="header-left">
+                    <h1 class="page-title">Memories</h1>
+                    <p class="page-subtitle">Manage your AI memories and knowledge base</p>
+                </div>
+                <div class="header-right">
+                    <input type="text" class="search-box" placeholder="Search memories..." id="searchInput">
+                    <button class="btn btn-secondary" id="filterBtn">
+                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z"/>
+                        </svg>
+                        Filter
+                    </button>
+                    <button class="btn btn-primary" id="addMemoryBtn">
+                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                        </svg>
+                        Add Memory
+                    </button>
+                </div>
+            </header>
+
+            <div class="content">
+                <div class="filters">
+                    <div class="filter-tag active" data-filter="all">All</div>
+                    <div class="filter-tag" data-filter="personal">Personal</div>
+                    <div class="filter-tag" data-filter="work">Work</div>
+                    <div class="filter-tag" data-filter="ideas">Ideas</div>
+                    <div class="filter-tag" data-filter="notes">Notes</div>
+                </div>
+
+                <div class="memories-grid" id="memoriesGrid">
+                    <!-- 메모리 카드들이 여기에 동적으로 추가됩니다 -->
+                </div>
+
+                <div class="empty-state" id="emptyState" style="display: none;">
+                    <svg class="empty-icon" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                    </svg>
+                    <h3>No memories found</h3>
+                    <p>Start by adding your first memory to build your knowledge base.</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add/Edit Memory Modal -->
+    <div class="modal" id="memoryModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">Add Memory</h2>
+                <button class="close-btn" id="closeModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="memoryForm">
+                    <div class="form-group">
+                        <label class="form-label">Title</label>
+                        <input type="text" class="form-input" id="memoryTitle" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Content</label>
+                        <textarea class="form-input form-textarea" id="memoryContent" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Tags (comma separated)</label>
+                        <input type="text" class="form-input" id="memoryTags" placeholder="personal, work, ideas">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Category</label>
+                        <select class="form-input" id="memoryCategory">
+                            <option value="personal">Personal</option>
+                            <option value="work">Work</option>
+                            <option value="ideas">Ideas</option>
+                            <option value="notes">Notes</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelBtn">Cancel</button>
+                <button class="btn btn-primary" id="saveBtn">Save Memory</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 데이터 관리
+        let memories = [
+            {
+                id: 1,
+                title: "React Best Practices",
+                content: "Always use functional components with hooks. Avoid using class components unless absolutely necessary. Use memo for optimization...",
+                tags: ["react", "development", "best-practices"],
+                category: "work",
+                date: "2024-01-15",
+                createdAt: new Date("2024-01-15")
+            },
+            {
+                id: 2,
+                title: "Favorite Coffee Recipe",
+                content: "Pour over method: 20g coffee, 300ml water at 92°C. Bloom for 30 seconds, then pour in circular motions...",
+                tags: ["coffee", "recipe", "personal"],
+                category: "personal",
+                date: "2024-01-14",
+                createdAt: new Date("2024-01-14")
+            },
+            {
+                id: 3,
+                title: "Project Ideas for 2024",
+                content: "1. AI-powered note-taking app 2. Minimalist habit tracker 3. Community platform for developers...",
+                tags: ["projects", "planning", "2024"],
+                category: "ideas",
+                date: "2024-01-10",
+                createdAt: new Date("2024-01-10")
+            }
+        ];
+
+        let currentFilter = 'all';
+        let editingMemoryId = null;
+
+        // DOM 요소들
+        const memoriesGrid = document.getElementById('memoriesGrid');
+        const emptyState = document.getElementById('emptyState');
+        const addMemoryBtn = document.getElementById('addMemoryBtn');
+        const memoryModal = document.getElementById('memoryModal');
+        const closeModal = document.getElementById('closeModal');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const saveBtn = document.getElementById('saveBtn');
+        const memoryForm = document.getElementById('memoryForm');
+        const searchInput = document.getElementById('searchInput');
+        const filterTags = document.querySelectorAll('.filter-tag');
+
+        // 메모리 렌더링
+        function renderMemories(memoriesToRender = null) {
+            const memoriesToShow = memoriesToRender || getFilteredMemories();
+            
+            if (memoriesToShow.length === 0) {
+                memoriesGrid.style.display = 'none';
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            memoriesGrid.style.display = 'grid';
+            emptyState.style.display = 'none';
+
+            memoriesGrid.innerHTML = memoriesToShow.map(memory => `
+                <div class="memory-card" data-id="${memory.id}">
+                    <div class="memory-header">
+                        <h3 class="memory-title">${memory.title}</h3>
+                        <span class="memory-date">${formatDate(memory.createdAt)}</span>
+                    </div>
+                    <p class="memory-content">${memory.content}</p>
+                    <div class="memory-tags">
+                        ${memory.tags.map(tag => `<span class="memory-tag">${tag}</span>`).join('')}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 필터링된 메모리 가져오기
+        function getFilteredMemories() {
+            let filtered = memories;
+
+            // 카테고리 필터
+            if (currentFilter !== 'all') {
+                filtered = filtered.filter(memory => memory.category === currentFilter);
+            }
+
+            // 검색 필터
+            const searchTerm = searchInput.value.toLowerCase();
+            if (searchTerm) {
+                filtered = filtered.filter(memory => 
+                    memory.title.toLowerCase().includes(searchTerm) ||
+                    memory.content.toLowerCase().includes(searchTerm) ||
+                    memory.tags.some(tag => tag.toLowerCase().includes(searchTerm))
+                );
+            }
+
+            // 날짜순 정렬 (최신순)
+            return filtered.sort((a, b) => b.createdAt - a.createdAt);
+        }
+
+        // 날짜 포맷팅
+        function formatDate(date) {
+            const now = new Date();
+            const diff = now - date;
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+
+            if (days === 0) return 'Today';
+            if (days === 1) return 'Yesterday';
+            if (days < 7) return `${days} days ago`;
+            
+            return date.toLocaleDateString();
+        }
+
+        // 모달 열기
+        function openModal(memory = null) {
+            editingMemoryId = memory ? memory.id : null;
+            
+            document.getElementById('modalTitle').textContent = memory ? 'Edit Memory' : 'Add Memory';
+            document.getElementById('memoryTitle').value = memory ? memory.title : '';
+            document.getElementById('memoryContent').value = memory ? memory.content : '';
+            document.getElementById('memoryTags').value = memory ? memory.tags.join(', ') : '';
+            document.getElementById('memoryCategory').value = memory ? memory.category : 'personal';
+            
+            memoryModal.classList.add('show');
+        }
+
+        // 모달 닫기
+        function closeMemoryModal() {
+            memoryModal.classList.remove('show');
+            memoryForm.reset();
+            editingMemoryId = null;
+        }
+
+        // 메모리 저장
+        function saveMemory() {
+            const title = document.getElementById('memoryTitle').value.trim();
+            const content = document.getElementById('memoryContent').value.trim();
+            const tags = document.getElementById('memoryTags').value
+                .split(',')
+                .map(tag => tag.trim())
+                .filter(tag => tag);
+            const category = document.getElementById('memoryCategory').value;
+
+            if (!title || !content) {
+                alert('제목과 내용을 입력해주세요.');
+                return;
+            }
+
+            if (editingMemoryId) {
+                // 수정
+                const index = memories.findIndex(m => m.id === editingMemoryId);
+                if (index !== -1) {
+                    memories[index] = {
+                        ...memories[index],
+                        title,
+                        content,
+                        tags,
+                        category
+                    };
+                }
+            } else {
+                // 새로 추가
+                const newMemory = {
+                    id: Date.now(),
+                    title,
+                    content,
+                    tags,
+                    category,
+                    date: new Date().toISOString().split('T')[0],
+                    createdAt: new Date()
+                };
+                memories.unshift(newMemory);
+            }
+
+            closeMemoryModal();
+            renderMemories();
+        }
+
+        // 메모리 삭제
+        function deleteMemory(id) {
+            if (confirm('정말로 이 메모리를 삭제하시겠습니까?')) {
+                memories = memories.filter(m => m.id !== id);
+                renderMemories();
+            }
+        }
+
+        // 이벤트 리스너들
+        addMemoryBtn.addEventListener('click', () => openModal());
+        closeModal.addEventListener('click', closeMemoryModal);
+        cancelBtn.addEventListener('click', closeMemoryModal);
+        saveBtn.addEventListener('click', saveMemory);
+
+        // 모달 배경 클릭시 닫기
+        memoryModal.addEventListener('click', (e) => {
+            if (e.target === memoryModal) {
+                closeMemoryModal();
+            }
+        });
+
+        // 검색 기능
+        searchInput.addEventListener('input', () => {
+            renderMemories();
+        });
+
+        // 필터 기능
+        filterTags.forEach(tag => {
+            tag.addEventListener('click', () => {
+                filterTags.forEach(t => t.classList.remove('active'));
+                tag.classList.add('active');
+                currentFilter = tag.dataset.filter;
+                renderMemories();
+            });
+        });
+
+        // 메모리 카드 클릭 (편집)
+        memoriesGrid.addEventListener('click', (e) => {
+            const card = e.target.closest('.memory-card');
+            if (card) {
+                const id = parseInt(card.dataset.id);
+                const memory = memories.find(m => m.id === id);
+                if (memory) {
+                    openModal(memory);
+                }
+            }
+        });
+
+        // 메모리 카드 우클릭 (삭제)
+        memoriesGrid.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+            const card = e.target.closest('.memory-card');
+            if (card) {
+                const id = parseInt(card.dataset.id);
+                deleteMemory(id);
+            }
+        });
+
+        // 네비게이션 메뉴
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', () => {
+                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+            });
+        });
+
+        // 키보드 단축키
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey || e.metaKey) {
+                if (e.key === 'k') {
+                    e.preventDefault();
+                    searchInput.focus();
+                }
+                if (e.key === 'n') {
+                    e.preventDefault();
+                    openModal();
+                }
+            }
+            if (e.key === 'Escape') {
+                closeMemoryModal();
+            }
+        });
+
+        // 초기 렌더링
+        renderMemories();
+
+        // 모바일 메뉴 토글
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('open');
+        }
+
+        // 모바일에서 사이드바 외부 클릭시 닫기
+        document.addEventListener('click', (e) => {
+            const sidebar = document.getElementById('sidebar');
+            const isClickInsideSidebar = sidebar.contains(e.target);
+            const isMobile = window.innerWidth <= 768;
+            
+            if (isMobile && !isClickInsideSidebar && sidebar.classList.contains('open')) {
+                sidebar.classList.remove('open');
+            }
+        });
+
+        // 윈도우 리사이즈 핸들러
+        window.addEventListener('resize', () => {
+            const sidebar = document.getElementById('sidebar');
+            if (window.innerWidth > 768) {
+                sidebar.classList.remove('open');
+            }
+        });
+
+        // 데이터 로컬 저장 (브라우저 새로고침시 데이터 유지)
+        function saveToStorage() {
+            localStorage.setItem('mem0_memories', JSON.stringify(memories.map(memory => ({
+                ...memory,
+                createdAt: memory.createdAt.toISOString()
+            }))));
+        }
+
+        function loadFromStorage() {
+            const stored = localStorage.getItem('mem0_memories');
+            if (stored) {
+                const parsed = JSON.parse(stored);
+                memories = parsed.map(memory => ({
+                    ...memory,
+                    createdAt: new Date(memory.createdAt)
+                }));
+            }
+        }
+
+        // 페이지 로드시 저장된 데이터 불러오기
+        loadFromStorage();
+
+        // 메모리 변경시마다 저장
+        const originalSaveMemory = saveMemory;
+        saveMemory = function() {
+            originalSaveMemory();
+            saveToStorage();
+        };
+
+        const originalDeleteMemory = deleteMemory;
+        deleteMemory = function(id) {
+            originalDeleteMemory(id);
+            saveToStorage();
+        };
+
+        // 익스포트/임포트 기능
+        function exportMemories() {
+            const dataStr = JSON.stringify(memories, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'mem0-memories-backup.json';
+            link.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function importMemories(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    if (Array.isArray(importedData)) {
+                        memories = importedData.map(memory => ({
+                            ...memory,
+                            createdAt: new Date(memory.createdAt || memory.date)
+                        }));
+                        saveToStorage();
+                        renderMemories();
+                        alert('메모리를 성공적으로 가져왔습니다!');
+                    }
+                } catch (error) {
+                    alert('잘못된 파일 형식입니다.');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // 통계 정보 표시
+        function updateStats() {
+            const totalMemories = memories.length;
+            const categoryCounts = memories.reduce((acc, memory) => {
+                acc[memory.category] = (acc[memory.category] || 0) + 1;
+                return acc;
+            }, {});
+
+            console.log('Memory Statistics:', {
+                total: totalMemories,
+                byCategory: categoryCounts
+            });
+        }
+
+        // 페이지 제목 업데이트
+        function updatePageTitle() {
+            const filteredCount = getFilteredMemories().length;
+            const totalCount = memories.length;
+            
+            if (currentFilter === 'all') {
+                document.querySelector('.page-subtitle').textContent = 
+                    `${totalCount} memories in your knowledge base`;
+            } else {
+                document.querySelector('.page-subtitle').textContent = 
+                    `${filteredCount} of ${totalCount} memories • ${currentFilter}`;
+            }
+        }
+
+        // 렌더링시 통계 업데이트
+        const originalRenderMemories = renderMemories;
+        renderMemories = function(memoriesToRender = null) {
+            originalRenderMemories(memoriesToRender);
+            updateStats();
+            updatePageTitle();
+        };
+
+        // 초기 렌더링 다시 실행 (데이터 로드 후)
+        renderMemories();

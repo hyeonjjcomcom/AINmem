@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title><%= dbName %> / <%= collectionName %> 데이터</title>
+  <style>
+    table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+    }
+    th {
+      background-color: #f4f4f4;
+    }
+    tbody tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+  </style>
+</head>
+<body>
+  <h1><%= dbName %> / <%= collectionName %> 데이터</h1>
+  <% const visibleColumns = columns.filter(col => col !== '_id' && col !== '__v'); %>
+  <table>
+    <thead>
+      <tr>
+        <% visibleColumns.forEach(col => { %>
+          <th><%= col %></th>
+        <% }) %>
+      </tr>
+    </thead>
+    <tbody>
+      <% data.forEach(row => { %>
+        <tr>
+          <% visibleColumns.forEach(col => { %>
+            <td>
+              <%= typeof row[col] === 'object' ? JSON.stringify(row[col]) : row[col] %>
+            </td>
+          <% }) %>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</body>
+</html>
