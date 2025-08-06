@@ -10,7 +10,7 @@ const width = Math.max(svg.node().getBoundingClientRect().width, 800);
 const height = 600;
 
 const color = d3.scaleOrdinal()
-    .domain([1, 2])
+    .domain(['predicate', 'entity'])
     .range(['#ff6b6b', '#4ecdc4']);
 
 function navigateToPage(url) {
@@ -29,75 +29,84 @@ document.querySelectorAll('.nav-item').forEach(item => {
 });
 
 function filterData(data) {
-    if (currentFilter === 'all') return data;
-    return data.filter(item => item.category === currentFilter);
+    // category 필드가 없으므로 일단 모든 데이터 반환
+    return data;
 }
 
 async function buildGraph() {
     const data = await fetch('/facts')
-        .then(res => res.json());
+        .then(async (res) => {
+            return await res.json();
+        });
     const filteredData = filterData(data);
+
+    console.log('📊 Building graph with data:', filteredData);
     nodes.clear();
     links.length = 0;
 
-    // constant의 등장 횟수와 카테고리 추적
+    // constant의 등장 횟수 추적
     const constantCount = new Map();
-    const constantCategories = new Map();
 
     // 먼저 모든 constants를 수집하고 등장 횟수 계산
     filteredData.forEach(item => {
         item.constants.forEach(constant => {
             if (constant !== 'x' && constant !== 'y' && constant !== 'u' && constant !== 'm' && constant !== 's') {
                 constantCount.set(constant, (constantCount.get(constant) || 0) + 1);
-                // 카테고리 정보도 저장 (처음 등장하는 카테고리 사용)
-                if (!constantCategories.has(constant)) {
-                    constantCategories.set(constant, item.category);
-                }
             }
         });
     });
 
-    // constant 노드 생성
+    // constant 노드 생성 - 중요: 객체로 생성해야 함
     constantCount.forEach((count, constant) => {
         nodes.set(constant, {
             id: constant,
             name: constant,
             type: 'constant',
             count: count,
-            category: constantCategories.get(constant),
             group: 1
         });
     });
 
-    // 링크 생성 (constants 간의 연결)
+    // 링크 생성 (constants 간의 연결) - 중복 간선 처리
+    const linkMap = new Map();
+    
     filteredData.forEach(item => {
         const validConstants = item.constants.filter(c => 
             c !== 'x' && c !== 'y' && c !== 'u' && c !== 'm' && c !== 's'
         );
         
-        // 단일 술어의 경우 (예: has_GoodVideoGenerationAbility(wan_ai_2.2))
-        if (item.predicates.length === 1 && validConstants.length === 1) {
-            // 자기 자신으로의 링크는 생성하지 않음
-            return;
-        }
-        
-        // 이항 술어의 경우 (예: DevelopedBy(Alibaba, wan_ai_2.2))
-        if (validConstants.length === 2) {
-            links.push({
-                source: validConstants[0],
-                target: validConstants[1],
-                predicate: item.predicates[0],
-                description: item.description,
-                category: item.category
-            });
-        }
-        
-        // 다중 술어의 경우 첫 번째 상수를 중심으로 연결
-        if (item.predicates.length > 1 && validConstants.length === 1) {
-            // 이 경우는 is_VideoAI(wan_ai_2.2) ∧ is_OpenSource(wan_ai_2.2) 같은 경우
-            // 특별한 처리가 필요하다면 여기서 구현
+        // 이항 관계의 경우 (예: IsCultivarOf(aori_cultivar, apple))
+        if (validConstants.length >= 2) {
+            // 첫 번째 상수를 중심으로 다른 모든 상수와 연결
+            const sourceConstant = validConstants[0];
+            for (let i = 1; i < validConstants.length; i++) {
+                const targetConstant = validConstants[i];
+                
+                // 링크 키 생성 (양방향 고려하여 정렬)
+                const linkKey = [sourceConstant, targetConstant].sort().join('-');
+                
+                if (!linkMap.has(linkKey)) {
+                    linkMap.set(linkKey, {
+                        source: sourceConstant,
+                        target: targetConstant,
+                        predicates: [],
+                        descriptions: [],
+                        values: [],
+                        count: 0
+                    });
+                }
+                
+                const link = linkMap.get(linkKey);
+                link.predicates.push(item.predicates[0] || 'unknown');
+                link.descriptions.push(item.description || '');
+                link.values.push(item.value || '');
+                link.count++;
+            }
         }
     });
+    
+    // Map에서 배열로 변환
+    links = Array.from(linkMap.values());
 
     // 통계 업데이트
     document.getElementById('node-count').textContent = nodes.size;
@@ -105,91 +114,127 @@ async function buildGraph() {
 }
 
 function createGraph() {
-    buildGraph();
-    svg.selectAll("*").remove();
+    buildGraph().then(() => {
+        svg.selectAll("*").remove();
 
-    // 노드 크기 스케일 (등장 횟수에 따라)
-    const maxCount = Math.max(...Array.from(nodes.values()).map(n => n.count));
-    const radiusScale = d3.scaleLinear()
-        .domain([1, maxCount])
-        .range([15, 30]);
+        // 노드 배열 생성 - 중요: Map의 values를 배열로 변환
+        const nodeArray = Array.from(nodes.values());
+        
+        console.log('노드 배열:', nodeArray);
+        console.log('링크 배열:', links);
 
-    simulation = d3.forceSimulation(Array.from(nodes.values()))
-        .force("link", d3.forceLink(links).id(d => d.id).distance(150))
-        .force("charge", d3.forceManyBody().strength(-200))
-        .force("center", d3.forceCenter(width / 2, height / 2))
-        .force("collision", d3.forceCollide().radius(d => radiusScale(d.count) + 10));
+        // 노드 크기 스케일 (등장 횟수에 따라)
+        const maxCount = Math.max(...nodeArray.map(n => n.count));
+        const radiusScale = d3.scaleLinear()
+            .domain([1, maxCount])
+            .range([15, 30]);
 
-    // 링크 그리기
-    const link = svg.append("g")
-        .selectAll("line")
-        .data(links)
-        .enter().append("line")
-        .attr("class", "link");
+        // force simulation 생성
+        simulation = d3.forceSimulation(nodeArray)
+            .force("link", d3.forceLink(links).id(d => d.id).distance(150))
+            .force("charge", d3.forceManyBody().strength(-200))
+            .force("center", d3.forceCenter(width / 2, height / 2))
+            .force("collision", d3.forceCollide().radius(d => radiusScale(d.count) + 10));
 
-    // 링크 라벨 (predicate 이름)
-    const linkLabel = svg.append("g")
-        .selectAll("text")
-        .data(links)
-        .enter().append("text")
-        .attr("class", "link-label")
-        .text(d => d.predicate)
-        .style("opacity", showLabels ? 1 : 0);
+        // 링크 두께 스케일 (관계 개수에 따라)
+        const maxLinkCount = Math.max(...links.map(l => l.count));
+        const strokeWidthScale = d3.scaleLinear()
+            .domain([1, maxLinkCount])
+            .range([1.5, 8]);
 
-    // 노드 그리기
-    const node = svg.append("g")
-        .selectAll("g")
-        .data(Array.from(nodes.values()))
-        .enter().append("g")
-        .attr("class", "node")
-        .call(d3.drag()
-            .on("start", dragstarted)
-            .on("drag", dragged)
-            .on("end", dragended));
+        // 링크 그리기
+        const link = svg.append("g")
+            .selectAll("line")
+            .data(links)
+            .enter().append("line")
+            .attr("class", "link")
+            .attr("stroke", "#999")
+            .attr("stroke-opacity", 0.6)
+            .attr("stroke-width", d => strokeWidthScale(d.count))
+            .style("cursor", "pointer")
+            .on("click", function(event, d) {
+                showLinkDetails(d);
+            });
 
-    node.append("circle")
-        .attr("r", d => radiusScale(d.count))
-        .attr("fill", d => color(d.category))
-        .attr("title", d => `${d.name} (등장 횟수: ${d.count})`);
+        // 링크 라벨 (관계 개수 표시)
+        const linkLabel = svg.append("g")
+            .selectAll("text")
+            .data(links)
+            .enter().append("text")
+            .attr("class", "link-label")
+            .attr("text-anchor", "middle")
+            .attr("font-size", "10px")
+            .attr("fill", "#666")
+            .text(d => d.count > 1 ? `${d.count} relations` : d.predicates[0])
+            .style("opacity", showLabels ? 1 : 0)
+            .style("cursor", "pointer")
+            .on("click", function(event, d) {
+                showLinkDetails(d);
+            });
 
-    const nodeText = node.append("text")
-        .text(d => d.name)
-        .style("opacity", showLabels ? 1 : 0);
+        // 노드 그리기
+        const node = svg.append("g")
+            .selectAll("g")
+            .data(nodeArray)
+            .enter().append("g")
+            .attr("class", "node")
+            .call(d3.drag()
+                .on("start", dragstarted)
+                .on("drag", dragged)
+                .on("end", dragended));
 
-    simulation.on("tick", () => {
-        link
-            .attr("x1", d => d.source.x)
-            .attr("y1", d => d.source.y)
-            .attr("x2", d => d.target.x)
-            .attr("y2", d => d.target.y);
+        node.append("circle")
+            .attr("r", d => radiusScale(d.count))
+            .attr("fill", d => color(d.type))
+            .attr("stroke", "#fff")
+            .attr("stroke-width", 1.5);
 
-        linkLabel
-            .attr("x", d => (d.source.x + d.target.x) / 2)
-            .attr("y", d => (d.source.y + d.target.y) / 2);
+        // 노드 라벨
+        const nodeText = node.append("text")
+            .attr("text-anchor", "middle")
+            .attr("dy", ".35em")
+            .attr("font-size", "12px")
+            .attr("fill", "#333")
+            .text(d => d.name)
+            .style("opacity", showLabels ? 1 : 0);
 
-        node
-            .attr("transform", d => `translate(${d.x},${d.y})`);
+        // 시뮬레이션 tick 이벤트
+        simulation.on("tick", () => {
+            link
+                .attr("x1", d => d.source.x)
+                .attr("y1", d => d.source.y)
+                .attr("x2", d => d.target.x)
+                .attr("y2", d => d.target.y);
+
+            linkLabel
+                .attr("x", d => (d.source.x + d.target.x) / 2)
+                .attr("y", d => (d.source.y + d.target.y) / 2);
+
+            node
+                .attr("transform", d => `translate(${d.x},${d.y})`);
+        });
+
+        function dragstarted(event, d) {
+            if (!event.active) simulation.alphaTarget(0.3).restart();
+            d.fx = d.x;
+            d.fy = d.y;
+        }
+
+        function dragged(event, d) {
+            d.fx = event.x;
+            d.fy = event.y;
+        }
+
+        function dragended(event, d) {
+            if (!event.active) simulation.alphaTarget(0);
+            d.fx = null;
+            d.fy = null;
+        }
+
+        // 전역 변수에 저장
+        window.currentNodeText = nodeText;
+        window.currentLinkLabel = linkLabel;
     });
-
-    function dragstarted(event, d) {
-        if (!event.active) simulation.alphaTarget(0.3).restart();
-        d.fx = d.x;
-        d.fy = d.y;
-    }
-
-    function dragged(event, d) {
-        d.fx = event.x;
-        d.fy = event.y;
-    }
-
-    function dragended(event, d) {
-        if (!event.active) simulation.alphaTarget(0);
-        d.fx = null;
-        d.fy = null;
-    }
-
-    window.currentNodeText = nodeText;
-    window.currentLinkLabel = linkLabel;
 }
 
 function restart() {
@@ -212,7 +257,42 @@ function centerGraph() {
     }
 }
 
-// 필터 이벤트 리스너
+// 링크 상세 정보 표시 함수
+function showLinkDetails(linkData) {
+    const modal = document.getElementById('link-modal');
+    const modalContent = document.getElementById('modal-relations');
+    
+    // 관계 목록 생성
+    let relationsHTML = '';
+    linkData.predicates.forEach((predicate, index) => {
+        relationsHTML += `
+            <div class="relation-item">
+                <h4>${predicate}</h4>
+                <p><strong>Description:</strong> ${linkData.descriptions[index]}</p>
+                <p><strong>Formula:</strong> ${linkData.values[index]}</p>
+            </div>
+        `;
+    });
+    
+    modalContent.innerHTML = `
+        <h3>Relations between ${linkData.source.name || linkData.source} and ${linkData.target.name || linkData.target}</h3>
+        <p><strong>Total Relations:</strong> ${linkData.count}</p>
+        <div class="relations-list">
+            ${relationsHTML}
+        </div>
+    `;
+    
+    modal.style.display = 'block';
+}
+
+// 모달 닫기 함수
+function closeLinkModal() {
+    const modal = document.getElementById('link-modal');
+    modal.style.display = 'none';
+}
+
+// 필터 이벤트 리스너 - category 필드가 없으므로 일단 비활성화
+/*
 document.querySelectorAll('.filter-tag').forEach(tag => {
     tag.addEventListener('click', function() {
         document.querySelectorAll('.filter-tag').forEach(t => t.classList.remove('active'));
@@ -221,6 +301,7 @@ document.querySelectorAll('.filter-tag').forEach(tag => {
         createGraph();
     });
 });
+*/
 
 // 초기 그래프 생성
 createGraph();

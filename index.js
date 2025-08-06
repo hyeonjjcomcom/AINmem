@@ -21,6 +21,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.set('view engine', 'ejs');
 
+console.log('🔧 Setting up FOL-SDK components...', process.env.MONGODB_URI);
+
 //몽고디비 연결
 mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
@@ -213,12 +215,11 @@ app.get('/facts', async (req, res) => {
   try {
     console.log('✅ Connected to MongoDB successfully');
     const data = (await store.getAllFols()).facts;
-    res.json({ facts: data });
+    res.json(data);
+    console.log('📊 Fetched facts data:', data);
   } catch (err) {
     console.error('❌ Error fetching facts:', err);
     res.status(500).json({ status: 'error', error: err.message });
-  } finally {
-    await store.disconnect();
   }
 });
 
