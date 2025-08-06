@@ -1,3 +1,7 @@
+require('dotenv').config();
+const { MongoDbFolStore } = require('fol-sdk');
+
+
 const express = require('express');
 const { MongoClient } = require('mongodb'); //데이터 디스플레이 용도
 const mongoose = require('mongoose');
@@ -18,7 +22,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.set('view engine', 'ejs');
 
 //몽고디비 연결
-mongoose.connect('mongodb://127.0.0.1:27017/chatDB', {
+mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true
 }).then(() => console.log("MongoDB 연결됨"))
@@ -190,6 +194,7 @@ app.get('/memories', async (req, res) => {
 });
 
 app.get('/graph', async (req, res) => {
+  
     try {
 
         res.render('graph', {});
@@ -200,6 +205,23 @@ app.get('/graph', async (req, res) => {
         res.status(500).send('그래프를 렌더링하는 중 오류가 발생했습니다.');
     }
 });
+
+app.get('/facts', async (req, res) => {
+  const mongoUrl = process.env.MONGODB_URI || 'mongodb://localhost:27017/fol-sdk';
+  console.log('🔧 Setting up FOL-SDK components...');
+  const store = new MongoDbFolStore(mongoUrl);
+  try {
+    console.log('✅ Connected to MongoDB successfully');
+    const data = (await store.getAllFols()).facts;
+    res.json({ facts: data });
+  } catch (err) {
+    console.error('❌ Error fetching facts:', err);
+    res.status(500).json({ status: 'error', error: err.message });
+  } finally {
+    await store.disconnect();
+  }
+});
+
 
 app.listen(port, () => {
   console.log(`서버 실행 중: http://localhost:${port}`);
