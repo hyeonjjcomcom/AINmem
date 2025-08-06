@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Knowledge Graph</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+    <link rel="stylesheet" href="/css/graph.css" />
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-left">
+                <div class="page-title">AIN MEM GRAPH</div>
+                <div class="page-subtitle">Visualizing relationships between logical propositions</div>
+            </div>
+            <div class="header-right">
+                <button class="btn btn-secondary" onclick="restart()">
+                    <span>⟲</span> Restart
+                </button>
+                <button class="btn btn-secondary" onclick="toggleLabels()">
+                    <span>🏷️</span> Labels
+                </button>
+                <button class="btn btn-primary" onclick="centerGraph()">
+                    <span>⊙</span> Center
+                </button>
+            </div>
+        </div>
+
+        <div class="filters">
+            <span class="filter-label">Filters:</span>
+            <div class="filter-tag active" data-filter="all">All</div>
+            <div class="filter-tag" data-filter="wan_ai">Wan AI</div>
+            <div class="filter-tag" data-filter="artany">Artany AI</div>
+            <div class="filter-tag" data-filter="business">Business</div>
+        </div>
+
+        <div class="content">
+            <div class="graph-container">
+                <svg id="graph" width="100%" height="600"></svg>
+            </div>
+        </div>
+
+        <div class="stats">
+            <div class="stat-item">
+                <span>Nodes:</span> <span class="stat-value" id="node-count">0</span>
+            </div>
+            <div class="stat-item">
+                <span>Links:</span> <span class="stat-value" id="link-count">0</span>
+            </div>
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-circle constant"></div>
+                    <span>Constants</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-circle predicate"></div>
+                    <span>Predicates</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="/js/graph.js"></script>
+</body>
+</html>
