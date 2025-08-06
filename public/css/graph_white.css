@@ -6,13 +6,13 @@
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: #0a0a0a;
-    color: #ffffff;
+    background: #f8fafc;
+    color: #1e293b;
     height: 100vh;
     overflow: hidden;
 }
 
-/* 네비게이션 관련 스타일 추가 */
+/* 네비게이션 관련 스타일 */
 .container {
     display: flex;
     height: 100vh;
@@ -21,19 +21,20 @@ body {
 /* Sidebar (네비게이션) */
 .sidebar {
     width: 250px;
-    background: #111111;
-    border-right: 1px solid #2a2a2a;
+    background: #ffffff;
+    border-right: 1px solid #e2e8f0;
     display: flex;
     flex-direction: column;
     transition: transform 0.3s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .logo {
     padding: 20px;
-    border-bottom: 1px solid #2a2a2a;
+    border-bottom: 1px solid #e2e8f0;
     font-size: 24px;
     font-weight: bold;
-    color: #ffffff;
+    color: #1e293b;
 }
 
 .nav-menu {
@@ -49,15 +50,18 @@ body {
     gap: 12px;
     transition: background 0.2s;
     border-left: 3px solid transparent;
+    color: #64748b;
 }
 
 .nav-item:hover {
-    background: #1a1a1a;
+    background: #f1f5f9;
+    color: #1e293b;
 }
 
 .nav-item.active {
-    background: #1a1a1a;
+    background: #f1f5f9;
     border-left-color: #6366f1;
+    color: #6366f1;
 }
 
 .nav-icon {
@@ -66,9 +70,13 @@ body {
     opacity: 0.7;
 }
 
+.nav-item.active .nav-icon {
+    opacity: 1;
+}
+
 .user-section {
     padding: 20px;
-    border-top: 1px solid #2a2a2a;
+    border-top: 1px solid #e2e8f0;
     display: flex;
     align-items: center;
     gap: 12px;
@@ -84,6 +92,7 @@ body {
     justify-content: center;
     font-weight: bold;
     font-size: 14px;
+    color: #ffffff;
 }
 
 /* Main Content */
@@ -95,11 +104,11 @@ body {
 }
 
 .graph-wrapper {
-    background: #111111;
-    border: 1px solid #2a2a2a;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
     border-radius: 12px;
     margin: 20px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 10px 15px rgba(0, 0, 0, 0.1);
     overflow: hidden;
     flex: 1;
     display: flex;
@@ -108,11 +117,12 @@ body {
 
 .header {
     padding: 20px 30px;
-    border-bottom: 1px solid #2a2a2a;
+    border-bottom: 1px solid #e2e8f0;
     display: flex;
     justify-content: space-between;
     align-items: center;
     gap: 20px;
+    background: #ffffff;
 }
 
 .header-left {
@@ -123,11 +133,11 @@ body {
     font-size: 28px;
     font-weight: 600;
     margin-bottom: 8px;
-    color: #ffffff;
+    color: #1e293b;
 }
 
 .page-subtitle {
-    color: #888;
+    color: #64748b;
     font-size: 14px;
 }
 
@@ -153,22 +163,27 @@ body {
 .btn-primary {
     background: #6366f1;
     color: white;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .btn-primary:hover {
     background: #5855eb;
-    /*transform: translateY(-1px);*/
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
 }
 
 .btn-secondary {
-    background: #1a1a1a;
-    color: #ffffff;
-    border: 1px solid #2a2a2a;
+    background: #ffffff;
+    color: #64748b;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .btn-secondary:hover {
-    background: #2a2a2a;
+    background: #f8fafc;
     border-color: #6366f1;
+    color: #6366f1;
+    transform: translateY(-1px);
 }
 
 .content {
@@ -184,9 +199,10 @@ body {
     width: 100%;
     height: 500px;
     overflow: auto;
-    border-top: 1px solid #2a2a2a;
+    border-top: 1px solid #e2e8f0;
     position: relative;
     flex: 1;
+    background: #fafbfc;
 }
 
 .graph-container::-webkit-scrollbar {
@@ -195,11 +211,11 @@ body {
 }
 
 .graph-container::-webkit-scrollbar-track {
-    background: #1a1a1a;
+    background: #f1f5f9;
 }
 
 .graph-container::-webkit-scrollbar-thumb {
-    background: #2a2a2a;
+    background: #cbd5e1;
     border-radius: 4px;
 }
 
@@ -216,7 +232,7 @@ body {
 }
 
 .filter-label {
-    color: #888;
+    color: #64748b;
     font-size: 14px;
     font-weight: 500;
     margin-right: 8px;
@@ -224,43 +240,48 @@ body {
 
 .filter-tag {
     padding: 6px 12px;
-    background: #1a1a1a;
-    border: 1px solid #2a2a2a;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
     border-radius: 20px;
     font-size: 12px;
     cursor: pointer;
     transition: all 0.2s;
-    color: #ccc;
+    color: #64748b;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .filter-tag:hover {
     border-color: #6366f1;
-    color: #ffffff;
+    color: #6366f1;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
 }
 
 .filter-tag.active {
     background: #6366f1;
     border-color: #6366f1;
     color: #ffffff;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
 }
 
 #graph {
-    background: #0a0a0a;
+    background: #fafbfc;
     display: block;
     min-width: 800px;
     min-height: 600px;
 }
 
 .node circle {
-    stroke: #2a2a2a;
+    stroke: #e2e8f0;
     stroke-width: 2px;
-    filter: drop-shadow(0 2px 8px rgba(0,0,0,0.5));
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
     transition: all 0.3s ease;
 }
 
 .node:hover circle {
     stroke: #6366f1;
     stroke-width: 3px;
+    filter: drop-shadow(0 4px 12px rgba(99, 102, 241, 0.3));
 }
 
 .node text {
@@ -268,13 +289,13 @@ body {
     font-weight: 500;
     text-anchor: middle;
     dominant-baseline: middle;
-    fill: #ffffff;
-    text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+    fill: #1e293b;
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
     pointer-events: none;
 }
 
 .link {
-    stroke: #555555;
+    stroke: #94a3b8;
     stroke-opacity: 0.8;
     stroke-width: 2;
     transition: all 0.3s ease;
@@ -295,14 +316,14 @@ body {
 .tooltip {
     position: absolute;
     padding: 12px 16px;
-    background: #1a1a1a;
-    border: 1px solid #2a2a2a;
-    color: #ffffff;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    color: #1e293b;
     border-radius: 8px;
     pointer-events: none;
     font-size: 12px;
     z-index: 1000;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05);
     max-width: 250px;
     line-height: 1.4;
 }
@@ -314,7 +335,7 @@ body {
 }
 
 .tooltip-type {
-    color: #888;
+    color: #64748b;
     font-size: 11px;
     text-transform: uppercase;
 }
@@ -323,8 +344,8 @@ body {
     display: flex;
     gap: 30px;
     padding: 15px 30px;
-    background: #0a0a0a;
-    border-top: 1px solid #2a2a2a;
+    background: #f8fafc;
+    border-top: 1px solid #e2e8f0;
     font-size: 12px;
 }
 
@@ -332,7 +353,7 @@ body {
     display: flex;
     align-items: center;
     gap: 8px;
-    color: #888;
+    color: #64748b;
 }
 
 .stat-value {
@@ -351,22 +372,23 @@ body {
     align-items: center;
     gap: 8px;
     font-size: 12px;
-    color: #888;
+    color: #64748b;
 }
 
 .legend-circle {
     width: 12px;
     height: 12px;
     border-radius: 50%;
-    border: 2px solid #2a2a2a;
+    border: 2px solid #e2e8f0;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .legend-circle.constant {
-    background: #ff6b6b;
+    background: #ef4444;
 }
 
 .legend-circle.predicate {
-    background: #4ecdc4;
+    background: #06b6d4;
 }
 
 /* Mobile Responsive */
@@ -422,4 +444,27 @@ body {
         flex-wrap: wrap;
         justify-content: center;
     }
+}
+
+/* 다크모드 토글 버튼을 위한 추가 스타일 */
+.theme-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1001;
+    padding: 8px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    background: #ffffff;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.theme-toggle:hover {
+    border-color: #6366f1;
+    color: #6366f1;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
 }

@@ -192,7 +192,7 @@ app.get('/memories', async (req, res) => {
 app.get('/graph', async (req, res) => {
     try {
 
-        res.render('graph', {});
+        res.render('graph_updated', {});
 
     } catch (error) {
         // 오류가 발생하면 콘솔에 로그를 남기고 500 상태 코드를 응답합니다.

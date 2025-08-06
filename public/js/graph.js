@@ -1,4 +1,4 @@
-/*const data = [
+const data = [
     {
         "value": "DevelopedBy(Alibaba, wan_ai_2.2)",
         "description": "Wan AI 2.2는 알리바바가 개발했다.",
@@ -62,38 +62,7 @@
         "constants": ["OurCompany"],
         "category": "business"
     }
-];*/
-
-const data = [
-    {
-        "value": "달의 모양은 매일 달라진다",
-        "description": "우리가 밤하늘에서 보는 달의 모양은 매일 조금씩 다르게 보인다.",
-        "predicates": ["달라진다"],
-        "constants": ["달","모양"],
-        "category": "달의_변화"
-    },
-    {
-        "value": "달은 지구 주위를 돈다",
-        "description": "달은 약 한 달에 한 번 지구를 한 바퀴 돈다.",
-        "predicates": ["돈다"],
-        "constants": ["달", "지구"],
-        "category": "달의_변화"
-    },
-    {
-        "value": "달의 모양 변화는 태양빛과 관련이 있다",
-        "description": "달이 지구를 돌면서 태양빛을 받는 부분이 달라지기 때문에 모양도 달라진다.",
-        "predicates": ["관련이_있다"],
-        "constants": ["달", "태양"],
-        "category": "달의_변화"
-    },
-    {
-        "value": "달의 모양은 초승달, 반달, 보름달, 그믐달처럼 변한다",
-        "description": "달의 모양은 정해진 순서에 따라 여러 형태로 변화한다.",
-        "predicates": ["변한다"],
-        "constants": ["달","초승달", "반달", "보름달", "그믐달"],
-        "category": "달의_변화"
-    }
-]
+];
 
 
 let currentFilter = 'all';
@@ -110,6 +79,21 @@ const height = 600;
 const color = d3.scaleOrdinal()
     .domain([1, 2])
     .range(['#ff6b6b', '#4ecdc4']);
+
+function navigateToPage(url) {
+    window.location.href = url;
+}
+
+// 네비게이션 메뉴 활성화 처리
+document.querySelectorAll('.nav-item').forEach(item => {
+    item.addEventListener('click', (e) => {
+        // 현재 페이지(Graph)가 아닌 경우에만 네비게이션
+        if (!item.classList.contains('active')) {
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            item.classList.add('active');
+        }
+    });
+});
 
 function filterData() {
     if (currentFilter === 'all') return data;
