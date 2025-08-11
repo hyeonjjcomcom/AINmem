@@ -208,27 +208,205 @@ app.get('/graph', async (req, res) => {
     }
 });
 
-app.get('/facts', async (req, res) => {
+app.get('/graph/demo', async (req, res) => {
+  
+    try {
+
+        res.render('graph_demo', {});
+
+    } catch (error) {
+        // 오류가 발생하면 콘솔에 로그를 남기고 500 상태 코드를 응답합니다.
+        console.error('Error rendering graph:', error);
+        res.status(500).send('그래프를 렌더링하는 중 오류가 발생했습니다.');
+    }
+});
+
+app.get('/constants', async (req, res) => {
   const mongoUrl = process.env.MONGODB_URI || 'mongodb://localhost:27017/fol-sdk';
-  console.log('🔧 Setting up FOL-SDK components...');
+
   const store = new MongoDbFolStore(mongoUrl);
   try {
-    console.log('✅ Connected to MongoDB successfully');
-    const data = (await store.getAllFols()).facts;
+    const data = (await store.getAllFols()).constants;
     res.json(data);
-    console.log('📊 Fetched facts data:', data);
+    console.log('📊 Fetched constants data:', data);
   } catch (err) {
-    console.error('❌ Error fetching facts:', err);
+    console.error('❌ Error fetching constants:', err);
     res.status(500).json({ status: 'error', error: err.message });
   }
 });
 
+
+
+app.delete('/facts', async (req, res) => {
+  const mongoUrl = process.env.MONGODB_URI || 'mongodb://localhost:27017/fol-sdk';
+  console.log('🗑️ Deleting all facts...');
+  
+  const store = new MongoDbFolStore(mongoUrl);
+  
+  try {
+    console.log('✅ Connected to MongoDB for facts deletion');
+    
+    // 모든 facts 가져오기
+    const allFols = await store.getAllFols();
+    const facts = allFols.facts || [];
+    
+    console.log(`📊 Found ${facts.length} facts to delete`);
+    
+    // 각 fact 삭제
+    let deletedCount = 0;
+    for (const fact of facts) {
+      try {
+        await store.removeFact(fact);
+        deletedCount++;
+      } catch (err) {
+        console.error('❌ Error deleting fact:', fact, err);
+      }
+    }
+    
+    console.log(`✅ Successfully deleted ${deletedCount} facts`);
+    
+    res.status(200).json({ 
+      status: 'success', 
+      message: `${deletedCount} facts deleted successfully`,
+      deletedCount: deletedCount
+    });
+    
+  } catch (err) {
+    console.error('❌ Error deleting facts:', err);
+    res.status(500).json({ 
+      status: 'error', 
+      error: err.message 
+    });
+  }
+});
+
+// 2. Constants 삭제 API
+app.delete('/constants', async (req, res) => {
+  const mongoUrl = process.env.MONGODB_URI || 'mongodb://localhost:27017/fol-sdk';
+  console.log('🗑️ Deleting all constants...');
+  
+  const store = new MongoDbFolStore(mongoUrl);
+  
+  try {
+    console.log('✅ Connected to MongoDB for constants deletion');
+    
+    // 모든 constants 가져오기
+    const allFols = await store.getAllFols();
+    const constants = allFols.constants || [];
+    
+    console.log(`📊 Found ${constants.length} constants to delete`);
+    
+    // 각 constant 삭제
+    let deletedCount = 0;
+    for (const constant of constants) {
+      try {
+        await store.removeConstant(constant);
+        deletedCount++;
+      } catch (err) {
+        console.error('❌ Error deleting constant:', constant, err);
+      }
+    }
+    
+    console.log(`✅ Successfully deleted ${deletedCount} constants`);
+    
+    res.status(200).json({ 
+      status: 'success', 
+      message: `${deletedCount} constants deleted successfully`,
+      deletedCount: deletedCount
+    });
+    
+  } catch (err) {
+    console.error('❌ Error deleting constants:', err);
+    res.status(500).json({ 
+      status: 'error', 
+      error: err.message 
+    });
+  }
+});
+
+// 3. Predicates 삭제 API
+app.delete('/predicates', async (req, res) => {
+  const mongoUrl = process.env.MONGODB_URI || 'mongodb://localhost:27017/fol-sdk';
+  console.log('🗑️ Deleting all predicates...');
+  
+  const store = new MongoDbFolStore(mongoUrl);
+  
+  try {
+    console.log('✅ Connected to MongoDB for predicates deletion');
+    
+    // 모든 predicates 가져오기
+    const allFols = await store.getAllFols();
+    const predicates = allFols.predicates || [];
+    
+    console.log(`📊 Found ${predicates.length} predicates to delete`);
+    
+    // 각 predicate 삭제
+    let deletedCount = 0;
+    for (const predicate of predicates) {
+      try {
+        await store.removePredicate(predicate);
+        deletedCount++;
+      } catch (err) {
+        console.error('❌ Error deleting predicate:', predicate, err);
+      }
+    }
+    
+    console.log(`✅ Successfully deleted ${deletedCount} predicates`);
+    
+    res.status(200).json({ 
+      status: 'success', 
+      message: `${deletedCount} predicates deleted successfully`,
+      deletedCount: deletedCount
+    });
+    
+  } catch (err) {
+    console.error('❌ Error deleting predicates:', err);
+    res.status(500).json({ 
+      status: 'error', 
+      error: err.message 
+    });
+  }
+});
+
+// ChatLog의 모든 input_text 값을 합쳐서 반환하는 API
+app.get('/chatlogs/input-text', async (req, res) => {
+  try {
+    // 모든 ChatLog 문서에서 input_text 필드만 조회 (성능 최적화)
+    const chatlogs = await ChatLog.find({}, 'input_text').sort({ timestamp: 1 });
+    
+    // input_text 값들을 배열로 추출
+    const inputTexts = chatlogs
+      .map(log => log.input_text)
+      .filter(text => text && text.trim()) // null, undefined, 빈 문자열 제외
+      .map(text => text.trim()); // 앞뒤 공백 제거
+    
+    // 모든 input_text를 하나의 문자열로 합치기 (줄바꿈으로 구분)
+    const combinedText = inputTexts.join('\n');
+    
+    console.log(`📊 Found ${inputTexts.length} input_text entries, combined length: ${combinedText.length} characters`);
+    
+    res.status(200).json({
+      status: 'success',
+      count: inputTexts.length,
+      combined_text: combinedText,
+      individual_texts: inputTexts // 개별 텍스트도 배열로 제공
+    });
+    
+  } catch (err) {
+    console.error('❌ Error fetching input_text from chatlogs:', err);
+    res.status(500).json({ 
+      status: 'error', 
+      error: err.message 
+    });
+  }
+});
 
 app.listen(port, () => {
   console.log(`서버 실행 중: http://localhost:${port}`);
   console.log(`데이터 확인하기: http://localhost:${port}/showdatas/origin/chatDB/chatlogs`);
   console.log(`다른 디자인: http://localhost:${port}/memories`);
   console.log(`그래프: http://localhost:${port}/graph`);
+  console.log(`그래프 데모: http://localhost:${port}/graph/demo`);
   console.log(`Fol: http://localhost:${port}/showdatas/new/none/none`);
 });
 

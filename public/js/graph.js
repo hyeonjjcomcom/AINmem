@@ -11,7 +11,7 @@ const height = 600;
 
 const color = d3.scaleOrdinal()
     .domain(['predicate', 'entity'])
-    .range(['#ff6b6b', '#4ecdc4']);
+    .range(['#4F46E5', '#5B21B6']);
 
 function navigateToPage(url) {
     window.location.href = url;
@@ -38,6 +38,13 @@ async function buildGraph() {
         .then(async (res) => {
             return await res.json();
         });
+
+    //constant data 가져오기
+    const constantData = await fetch('/constants')
+        .then(async (res) => {
+            return await res.json();
+        });
+
     const filteredData = filterData(data);
 
     console.log('📊 Building graph with data:', filteredData);
@@ -142,7 +149,6 @@ function createGraph() {
             .domain([1, maxLinkCount])
             .range([1.5, 8]);
 
-        // 링크 그리기
         const link = svg.append("g")
             .selectAll("line")
             .data(links)
@@ -150,8 +156,12 @@ function createGraph() {
             .attr("class", "link")
             .attr("stroke", "#999")
             .attr("stroke-opacity", 0.6)
-            .attr("stroke-width", d => strokeWidthScale(d.count))
             .style("cursor", "pointer")
+            .each(function(d) {
+                // CSS 변수 설정하고 클래스 추가
+                this.style.setProperty('--dynamic-stroke-width', strokeWidthScale(d.count) + 'px');
+                d3.select(this).classed('dynamic-width', true);
+            })
             .on("click", function(event, d) {
                 showLinkDetails(d);
             });
@@ -250,6 +260,19 @@ function toggleLabels() {
         window.currentLinkLabel.style("opacity", showLabels ? 1 : 0);
     }
 }
+/*
+function buildGraph() {
+    //기존 db 다 비우기
+    console.log('🗑️ Clearing existing FOL data...');
+    const deleteResponse = await fetch('/fol/all', {
+        method: 'DELETE'
+    });
+    //memory 에서 input text 데이터 부분만 가져와서 하나의 문단으로 통합
+
+    //Fol building
+
+}
+*/
 
 function centerGraph() {
     if (simulation) {

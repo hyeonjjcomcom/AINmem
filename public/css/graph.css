@@ -281,6 +281,10 @@ body {
     cursor: pointer;
 }
 
+.link.dynamic-width {
+    stroke-width: var(--dynamic-stroke-width) !important;
+}
+
 .link:hover {
     stroke: #6366f1;
     stroke-opacity: 1;
