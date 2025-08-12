@@ -28,77 +28,6 @@ mongoose.connect(process.env.MONGODB_URI, {
 }).then(() => console.log("MongoDB 연결됨"))
   .catch(err => console.error("MongoDB 연결 실패", err));
 
-// 스키마 정의
-const chatLogSchema = new mongoose.Schema({
-  id: { type: String, required: true }, // UUID
-  user_id: String,
-  session_id: String,
-  turn_number: Number,
-  timestamp: { type: Date, default: Date.now },
-  input_text: String,
-  input_metadata: mongoose.Schema.Types.Mixed,
-  input_type: String,
-  model_response: String,
-  response_type: String,
-  model_version: String,
-  latency: Number,
-  is_successful: Boolean,
-  error_message: String,
-  feedback: String,
-  tags: [String],
-  tokens_input: Number,
-  tokens_output: Number
-});
-
-const ChatLog = mongoose.model('ChatLog', chatLogSchema);
-
-app.post('/log', async (req, res) => {
-  try {
-    const data = req.body;
-
-    const { user_id, timestamp, session_id, input_text } = data;
-    if (!user_id || !timestamp || !input_text) {
-      return res.status(400).json({ status: 'error', error: '필수 필드 누락' });
-    }
-
-    // UUID 없으면 생성
-    if (!data.id) {
-      data.id = uuidv4();
-    }
-
-    // input_text 문자열화 + 토큰 수 계산
-    const safeInputText = typeof input_text === 'string' ? input_text : String(input_text || '');
-    const inputTokens = enc.encode(safeInputText);
-    data.tokens_input = inputTokens.length;
-
-        // 🔥 turn_number 설정
-    const count = await ChatLog.countDocuments({ session_id: data.session_id });
-    data.turn_number = count + 1;
-
-    // 멱등성 판단 기준 (초 단위 timestamp 사용)
-    const filter = {
-      user_id,
-      session_id,
-      timestamp,
-      input_text
-    };
-
-    const update = {
-      ...data
-    };
-
-    const options = { upsert: true, new: true, setDefaultsOnInsert: true };
-
-    const log = await ChatLog.findOneAndUpdate(filter, update, options);
-
-    res.status(200).json({ status: 'ok', id: log.id });
-
-  } catch (err) {
-    console.error("❌ DB 저장 오류:", err);
-    res.status(500).json({ status: 'error', error: err.message });
-  }
-});
-
 // log-count 라우트 추가
 app.get('/log-count/:session_id', async (req, res) => {
   const { session_id } = req.params;
@@ -112,6 +41,7 @@ app.get('/log-count/:session_id', async (req, res) => {
   }
 });
 
+// 데이터 디스플레이 라우트
 app.get('/showdatas/:dbVer/:dbName/:collectionName', async (req, res) => {
 
   const { dbVer, dbName, collectionName } = req.params;
@@ -160,6 +90,7 @@ app.get('/showdatas/:dbVer/:dbName/:collectionName', async (req, res) => {
   }
 });
 
+// Memories 라우트
 app.get('/memories', async (req, res) => {
   try {
     const data = await ChatLog.find({}).sort({ createdAt: 1 }); // 오래된 순으로 변경
@@ -188,6 +119,7 @@ app.get('/memories', async (req, res) => {
   }
 });
 
+// Graph 라우트
 app.get('/graph', async (req, res) => {
   
     try {

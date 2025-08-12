@@ -280,8 +280,8 @@ async function buildNewGraph() {
     await fetch('/facts', { method: 'DELETE' });
     await fetch('/constants', { method: 'DELETE' });
     await fetch('/predicates', { method: 'DELETE' });
-
     //memory 에서 input text 데이터 부분만 가져와서 하나의 문단으로 통합
+    
 
     //Fol building
 
