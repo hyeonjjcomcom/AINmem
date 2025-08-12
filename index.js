@@ -52,10 +52,6 @@ const chatLogSchema = new mongoose.Schema({
 
 const ChatLog = mongoose.model('ChatLog', chatLogSchema);
 
-const testSchema = new mongoose.Schema({
-  input_text: String
-});
-
 app.post('/log', async (req, res) => {
   try {
     const data = req.body;
@@ -205,6 +201,7 @@ app.get('/graph', async (req, res) => {
     }
 });
 
+// Constants Get API with MongoDbFolStore
 app.get('/constants', async (req, res) => {
   const mongoUrl = process.env.MONGODB_URI || 'mongodb://localhost:27017/fol-sdk';
 
@@ -219,6 +216,7 @@ app.get('/constants', async (req, res) => {
   }
 });
 
+// Facts Get API with MongoDbFolStore
 app.get('/facts', async (req, res) => {
   const mongoUrl = process.env.MONGODB_URI || 'mongodb://localhost:27017/fol-sdk';
   const store = new MongoDbFolStore(mongoUrl);
@@ -231,6 +229,21 @@ app.get('/facts', async (req, res) => {
   }
 });
 
+// Predicates Get API with MongoDbFolStore
+app.get('/predicates', async (req, res) => {
+  const mongoUrl = process.env.MONGODB_URI || 'mongodb://localhost:27017/fol-sdk';
+  const store = new MongoDbFolStore(mongoUrl);
+  try {
+    const data = (await store.getAllFols()).predicates;
+    res.json(data);
+    console.log('📊 Fetched predicates data:', data)
+  } catch (err) {
+    console.error('❌ Error fetching predicates:', err);
+    res.status(500).json({ status: 'error', error: err.message });
+  }
+});
+
+// 1. Facts 삭제 API
 app.delete('/facts', async (req, res) => {
   console.log('🗑️ Deleting all facts...');
     try {
@@ -278,7 +291,7 @@ app.delete('/predicates', async (req, res) => {
   }
 });
 
-// ChatLog의 모든 input_text 값을 합쳐서 반환하는 API
+// ChatLog의 모든 input_text 값을 합쳐서 document로 반환하는 API
 app.get('/chatlogs/input-text', async (req, res) => {
   try {
     // 모든 ChatLog 문서에서 input_text 필드만 조회 (성능 최적화)
