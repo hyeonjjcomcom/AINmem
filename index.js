@@ -1,7 +1,5 @@
 require('dotenv').config();
 const { MongoDbFolStore } = require('fol-sdk');
-
-
 const express = require('express');
 const { MongoClient } = require('mongodb'); //데이터 디스플레이 용도
 const mongoose = require('mongoose');
@@ -118,7 +116,6 @@ app.get('/log-count/:session_id', async (req, res) => {
   }
 });
 
-
 app.get('/showdatas/:dbVer/:dbName/:collectionName', async (req, res) => {
 
   const { dbVer, dbName, collectionName } = req.params;
@@ -208,19 +205,6 @@ app.get('/graph', async (req, res) => {
     }
 });
 
-app.get('/graph/demo', async (req, res) => {
-  
-    try {
-
-        res.render('graph_demo', {});
-
-    } catch (error) {
-        // 오류가 발생하면 콘솔에 로그를 남기고 500 상태 코드를 응답합니다.
-        console.error('Error rendering graph:', error);
-        res.status(500).send('그래프를 렌더링하는 중 오류가 발생했습니다.');
-    }
-});
-
 app.get('/constants', async (req, res) => {
   const mongoUrl = process.env.MONGODB_URI || 'mongodb://localhost:27017/fol-sdk';
 
@@ -235,7 +219,17 @@ app.get('/constants', async (req, res) => {
   }
 });
 
-
+app.get('/facts', async (req, res) => {
+  const mongoUrl = process.env.MONGODB_URI || 'mongodb://localhost:27017/fol-sdk';
+  const store = new MongoDbFolStore(mongoUrl);
+  try {
+    const data = (await store.getAllFols()).facts;
+    res.json(data);
+  } catch (err) {
+    console.error('❌ Error fetching facts:', err);
+    res.status(500).json({ status: 'error', error: err.message });
+  }
+});
 
 app.delete('/facts', async (req, res) => {
   const mongoUrl = process.env.MONGODB_URI || 'mongodb://localhost:27017/fol-sdk';
@@ -406,7 +400,6 @@ app.listen(port, () => {
   console.log(`데이터 확인하기: http://localhost:${port}/showdatas/origin/chatDB/chatlogs`);
   console.log(`다른 디자인: http://localhost:${port}/memories`);
   console.log(`그래프: http://localhost:${port}/graph`);
-  console.log(`그래프 데모: http://localhost:${port}/graph/demo`);
   console.log(`Fol: http://localhost:${port}/showdatas/new/none/none`);
 });
 

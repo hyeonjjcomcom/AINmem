@@ -1,3 +1,4 @@
+let constantsData = [];
 let currentFilter = 'all';
 let nodes = new Map();
 let links = [];
@@ -35,15 +36,22 @@ function filterData(data) {
 
 async function buildGraph() {
     const data = await fetch('/facts')
+    .then(async (res) => {
+        if (!res.ok) {
+            throw new Error(`HTTP 오류 발생! 상태 코드: ${res.status}`);
+        }
+        return await res.json();
+    })
+    .catch((err) => {
+        console.error('데이터 가져오기 실패:', err);
+        return null; // 또는 빈 배열 [], {} 등 상황에 맞게
+    });
+
+    constantsData = await fetch('/constants')
         .then(async (res) => {
             return await res.json();
         });
 
-    //constant data 가져오기
-    const constantData = await fetch('/constants')
-        .then(async (res) => {
-            return await res.json();
-        });
 
     const filteredData = filterData(data);
 
@@ -189,9 +197,12 @@ function createGraph() {
             .enter().append("g")
             .attr("class", "node")
             .call(d3.drag()
-                .on("start", dragstarted)
-                .on("drag", dragged)
-                .on("end", dragended));
+            .on("start", dragstarted)
+            .on("drag", dragged)
+            .on("end", dragended))
+            .on("click", function(event, d) {
+                showNodeDetails(d);
+            });
 
         node.append("circle")
             .attr("r", d => radiusScale(d.count))
@@ -206,7 +217,10 @@ function createGraph() {
             .attr("font-size", "12px")
             .attr("fill", "#333")
             .text(d => d.name)
-            .style("opacity", showLabels ? 1 : 0);
+            .style("opacity", showLabels ? 1 : 0)
+            .on("click", function(event, d) {
+                showNodeDetails(d);
+            });
 
         // 시뮬레이션 tick 이벤트
         simulation.on("tick", () => {
@@ -314,20 +328,61 @@ function closeLinkModal() {
     modal.style.display = 'none';
 }
 
-// 필터 이벤트 리스너 - category 필드가 없으므로 일단 비활성화
-/*
-document.querySelectorAll('.filter-tag').forEach(tag => {
-    tag.addEventListener('click', function() {
-        document.querySelectorAll('.filter-tag').forEach(t => t.classList.remove('active'));
-        this.classList.add('active');
-        currentFilter = this.dataset.filter;
-        createGraph();
-    });
-});
-*/
+// 상수 상세 정보 표시 함수
+function showNodeDetails(nodeData) {
+    const modal = document.getElementById('constant-modal');
+    const valueElement = document.getElementById('constant-value');
+    const descriptionElement = document.getElementById('constant-description');
+    
+    // nodeData에서 라벨(노드 이름) 추출
+    const nodeLabel = nodeData.label || nodeData.id || nodeData.name;
+    
+    // constantsData에서 해당 상수 정보 찾기
+    // 노드의 라벨과 상수 데이터의 value(또는 name, constant) 필드가 일치하는지 확인
+    const constantInfo = constantsData.find(constant => 
+        constant.value === nodeLabel || 
+        constant.name === nodeLabel ||
+        constant.constant === nodeLabel
+    );
+    
+    if (constantInfo) {
+        // 노드 이름(라벨)과 해당 상수의 설명을 표시
+        valueElement.textContent = nodeLabel;
+        descriptionElement.textContent = constantInfo.description || '설명이 없습니다.';
+    } else {
+        // 디버깅을 위한 정보 추가
+        console.log('디버깅 정보:');
+        console.log('nodeData:', nodeData);
+        console.log('nodeLabel:', nodeLabel);
+        console.log('constantsData:', constantsData);
+        console.log('constantsData 배열의 모든 value 값들:', constantsData.map(c => c.value || c.name || c.constant));
+        
+        // 매칭되는 상수 정보가 없는 경우
+        valueElement.textContent = nodeLabel;
+        descriptionElement.textContent = `이 상수에 대한 상세 정보가 없습니다.\n\n디버깅 정보:\n- 노드 라벨: "${nodeLabel}"\n- constantsData 개수: ${constantsData.length}\n- 사용 가능한 상수들: ${constantsData.map(c => c.value || c.name || c.constant).join(', ')}`;
+    }
+    
+    modal.style.display = 'block';
+}
+
+// 상수 모달 닫기 함수
+function closeConstantModal() {
+    const modal = document.getElementById('constant-modal');
+    modal.style.display = 'none';
+}
+
 
 // 초기 그래프 생성
 createGraph();
+
+// 상수 모달 외부 클릭 시 닫기
+window.addEventListener('click', function(event) {
+    const constantModal = document.getElementById('constant-modal');
+    
+    if (event.target === constantModal) {
+        closeConstantModal();
+    }
+});
 
 // 윈도우 리사이즈 시 그래프 업데이트
 window.addEventListener('resize', () => {
