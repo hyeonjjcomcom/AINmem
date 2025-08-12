@@ -1,3 +1,12 @@
+//connect fol builder 
+require('dotenv/config');
+const {
+  FolBuilder,
+  GeminiAdapter,
+  MongoDbFolStore,
+  createFolClient
+} = require('fol-sdk');
+
 let constantsData = [];
 let currentFilter = 'all';
 let nodes = new Map();
@@ -286,8 +295,15 @@ async function buildNewGraph() {
     const document = await response.json();
 
     //Fol building
-    
+    const geminiApiKey = process.env.GEMINI_API_KEY;
+    const mongoUrl = process.env.MONGODB_URI || 'mongodb://localhost:27017/fol-sdk';
+    const llmAdapter = new GeminiAdapter(geminiApiKey);
+    const store = new MongoDbFolStore(mongoUrl);
+    const builder = new FolBuilder({ llm: llmAdapter });
+    const client = createFolClient(builder, store);
 
+    const result = await client.buildAndSave(document);
+    console.log('✅ Fol built and saved successfully.');
 }
 
 
