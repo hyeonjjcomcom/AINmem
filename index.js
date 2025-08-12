@@ -133,6 +133,18 @@ app.get('/graph', async (req, res) => {
     }
 });
 
+
+app.get('/memoriesData', async (req, res) => {
+  try {
+    const data = await mongoose.connection.collection('chatlogs').find({}).toArray();
+    res.json(data);
+    console.log('📊 Fetched memories data:', data);
+  } catch (error) {
+    console.error('❌ Error fetching memories data:', error);
+    res.status(500).json({ status: 'error', error: error.message });
+  }
+}); 
+
 // Constants Get API with MongoDbFolStore
 app.get('/constants', async (req, res) => {
   const mongoUrl = process.env.MONGODB_URI || 'mongodb://localhost:27017/fol-sdk';
