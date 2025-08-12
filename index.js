@@ -145,6 +145,22 @@ app.get('/memoriesData', async (req, res) => {
   }
 }); 
 
+app.get('/memoriesDocument', async (req, res) => {
+  //완결된 문장인지, 확인하는 로직 필요. 이용자는 실수로 완결되지 않은 문장이나, fol을 구성하기 어려운 문장을 입력할 수 있음.
+  try {
+    let document = "";
+    const data = await mongoose.connection.collection('chatlogs').find({}).toArray();
+    for (const item of data){
+      document += item.input_text + " ";
+    }
+    res.json(document);
+    console.log('Complete generation document:', document);
+  } catch (error) {
+    console.error('❌ Error fetching memories document data:', error);
+    res.status(500).json({ status: 'error', error: error.message });
+  }
+});        
+
 // Constants Get API with MongoDbFolStore
 app.get('/constants', async (req, res) => {
   const mongoUrl = process.env.MONGODB_URI || 'mongodb://localhost:27017/fol-sdk';
