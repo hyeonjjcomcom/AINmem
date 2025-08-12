@@ -41,59 +41,15 @@ app.get('/log-count/:session_id', async (req, res) => {
   }
 });
 
-// 데이터 디스플레이 라우트
-app.get('/showdatas/:dbVer/:dbName/:collectionName', async (req, res) => {
-
-  const { dbVer, dbName, collectionName } = req.params;
-
-  const mongoUrl =
-    dbVer === 'origin'
-      ? 'mongodb://localhost:27017'  // 기존 URL
-      : dbVer === 'new'
-        ? process.env.MONGODB_URI // 새 URL
-        : null;
-
-  const client = new MongoClient(mongoUrl);
-  
-  try {
-    await client.connect();
-
-
-    let db;
-    let collection;
-
-    if (dbVer === 'origin') {
-      db = client.db(dbName);
-      collection = db.collection(collectionName);
-    } else if (dbVer === 'new') {
-      db = client.db(); // URL 내 기본 DB 사용
-      collection = db.collection('fol-visualizer-test'); // 고정 컬렉션명
-    }
-
-    // 컬렉션에서 최대 100개 문서 조회 (필요 시 조절)
-    const data = await collection.find({}).limit(100).toArray();
-
-    if (data.length === 0) {
-      return res.send(`<h2>데이터가 없습니다: ${dbName} / ${collectionName}</h2>`);
-    }
-
-    // 데이터의 키(컬럼명) 추출 (첫 번째 문서 기준)
-    const columns = Object.keys(data[0]);
-
-    res.render('showdatas', { columns, data, dbName, collectionName });
-
-  } catch (err) {
-    console.error(err);
-    res.status(500).send('서버 오류가 발생했습니다.');
-  } finally {
-    await client.close();
-  }
-});
-
 // Memories 라우트
 app.get('/memories', async (req, res) => {
   try {
-    const data = await ChatLog.find({}).sort({ createdAt: 1 }); // 오래된 순으로 변경
+
+    const data = await mongoose.connection
+      .collection('chatlogs')
+      .find({})
+      .sort({ createdAt: 1 })
+      .toArray();
     
     const memories = data.map((item, index) => {
       const doc = item.toObject ? item.toObject() : item;
@@ -286,9 +242,7 @@ app.get('/chatlogs/input-text', async (req, res) => {
 
 app.listen(port, () => {
   console.log(`서버 실행 중: http://localhost:${port}`);
-  console.log(`데이터 확인하기: http://localhost:${port}/showdatas/origin/chatDB/chatlogs`);
   console.log(`다른 디자인: http://localhost:${port}/memories`);
   console.log(`그래프: http://localhost:${port}/graph`);
-  console.log(`Fol: http://localhost:${port}/showdatas/new/none/none`);
 });
 
