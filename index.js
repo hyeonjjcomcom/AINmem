@@ -1,5 +1,10 @@
 require('dotenv').config();
-const { MongoDbFolStore } = require('fol-sdk');
+const {
+  FolBuilder,
+  GeminiAdapter,
+  MongoDbFolStore,
+  createFolClient
+} = require('fol-sdk');
 const express = require('express');
 const { MongoClient } = require('mongodb'); //데이터 디스플레이 용도
 const mongoose = require('mongoose');
@@ -14,6 +19,7 @@ const port = 3000;
 
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 
@@ -89,7 +95,30 @@ app.get('/graph', async (req, res) => {
     }
 });
 
+app.post('/buildFols', async (req, res) => {
+  try { 
+    const geminiApiKey = process.env.GEMINI_API_KEY;
+    const mongoUrl = process.env.MONGODB_URI || 'mongodb://localhost:27017/fol-sdk';
 
+    console.log('🔧 Setting up FOL-SDK components...');
+
+    const llmAdapter = new GeminiAdapter(geminiApiKey);
+    const store = new MongoDbFolStore(mongoUrl);
+    const builder = new FolBuilder({ llm: llmAdapter });
+    const client = createFolClient(builder, store);
+
+    console.log('📥 Received request body:', req.body.document);
+
+    const result = await client.buildAndSave(req.body.document);
+    console.log('✅ Document built and saved successfully.');
+    res.status(200).json({ success: true, message: 'Document built and saved successfully' });
+  } catch (error) {
+    console.error('❌ Error building and saving document:', error);
+    res.status(500).json({ success: false, error: error.message });
+  } 
+});
+
+// memories 데이터를 가져오는 API
 app.get('/memoriesData', async (req, res) => {
   try {
     const data = await mongoose.connection.collection('chatlogs').find({}).toArray();

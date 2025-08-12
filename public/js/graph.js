@@ -1,12 +1,3 @@
-//connect fol builder 
-require('dotenv/config');
-const {
-  FolBuilder,
-  GeminiAdapter,
-  MongoDbFolStore,
-  createFolClient
-} = require('fol-sdk');
-
 let constantsData = [];
 let currentFilter = 'all';
 let nodes = new Map();
@@ -292,18 +283,15 @@ async function buildNewGraph() {
 
     //memory 에서 input text 데이터 부분만 가져와서 하나의 문단으로 통합
     const response = await fetch('/memoriesDocument', { method: 'GET' });
-    const document = await response.json();
+    const document = await response.text();
 
-    //Fol building
-    const geminiApiKey = process.env.GEMINI_API_KEY;
-    const mongoUrl = process.env.MONGODB_URI || 'mongodb://localhost:27017/fol-sdk';
-    const llmAdapter = new GeminiAdapter(geminiApiKey);
-    const store = new MongoDbFolStore(mongoUrl);
-    const builder = new FolBuilder({ llm: llmAdapter });
-    const client = createFolClient(builder, store);
+    console.log('📄 Document to build:', document);
 
-    const result = await client.buildAndSave(document);
-    console.log('✅ Fol built and saved successfully.');
+    await fetch('/buildFols', { method: 'post', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ document }) });
+
+    createGraph();
+    
+    console.log('📊 New graph built successfully!');
 }
 
 
