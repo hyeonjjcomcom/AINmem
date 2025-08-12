@@ -232,133 +232,49 @@ app.get('/facts', async (req, res) => {
 });
 
 app.delete('/facts', async (req, res) => {
-  const mongoUrl = process.env.MONGODB_URI || 'mongodb://localhost:27017/fol-sdk';
   console.log('🗑️ Deleting all facts...');
-  
-  const store = new MongoDbFolStore(mongoUrl);
-  
-  try {
-    console.log('✅ Connected to MongoDB for facts deletion');
-    
-    // 모든 facts 가져오기
-    const allFols = await store.getAllFols();
-    const facts = allFols.facts || [];
-    
-    console.log(`📊 Found ${facts.length} facts to delete`);
-    
-    // 각 fact 삭제
-    let deletedCount = 0;
-    for (const fact of facts) {
-      try {
-        await store.removeFact(fact);
-        deletedCount++;
-      } catch (err) {
-        console.error('❌ Error deleting fact:', fact, err);
-      }
-    }
-    
-    console.log(`✅ Successfully deleted ${deletedCount} facts`);
-    
-    res.status(200).json({ 
-      status: 'success', 
-      message: `${deletedCount} facts deleted successfully`,
-      deletedCount: deletedCount
+    try {
+    const result = await mongoose.connection.collection('facts').deleteMany({});
+    res.status(200).json({
+      message: 'All facts deleted successfully',
+      deletedCount: result.deletedCount
     });
-    
-  } catch (err) {
-    console.error('❌ Error deleting facts:', err);
-    res.status(500).json({ 
-      status: 'error', 
-      error: err.message 
-    });
+    console.log(`✅ Successfully deleted ${result.deletedCount} facts`);
+  } catch (error) {
+    console.error('❌ Error deleting facts:', error);
+    res.status(500).json({ error: 'Failed to delete facts' });
   }
 });
 
 // 2. Constants 삭제 API
 app.delete('/constants', async (req, res) => {
-  const mongoUrl = process.env.MONGODB_URI || 'mongodb://localhost:27017/fol-sdk';
   console.log('🗑️ Deleting all constants...');
-  
-  const store = new MongoDbFolStore(mongoUrl);
-  
-  try {
-    console.log('✅ Connected to MongoDB for constants deletion');
-    
-    // 모든 constants 가져오기
-    const allFols = await store.getAllFols();
-    const constants = allFols.constants || [];
-    
-    console.log(`📊 Found ${constants.length} constants to delete`);
-    
-    // 각 constant 삭제
-    let deletedCount = 0;
-    for (const constant of constants) {
-      try {
-        await store.removeConstant(constant);
-        deletedCount++;
-      } catch (err) {
-        console.error('❌ Error deleting constant:', constant, err);
-      }
-    }
-    
-    console.log(`✅ Successfully deleted ${deletedCount} constants`);
-    
-    res.status(200).json({ 
-      status: 'success', 
-      message: `${deletedCount} constants deleted successfully`,
-      deletedCount: deletedCount
+    try {
+    const result = await mongoose.connection.collection('constants').deleteMany({});
+    res.status(200).json({
+      message: 'All constants deleted successfully',
+      deletedCount: result.deletedCount
     });
-    
-  } catch (err) {
-    console.error('❌ Error deleting constants:', err);
-    res.status(500).json({ 
-      status: 'error', 
-      error: err.message 
-    });
+    console.log(`✅ Successfully deleted ${result.deletedCount} constants`);
+  } catch (error) {
+    console.error('❌ Error deleting constants:', error);
+    res.status(500).json({ error: 'Failed to delete constants' });
   }
 });
 
 // 3. Predicates 삭제 API
 app.delete('/predicates', async (req, res) => {
-  const mongoUrl = process.env.MONGODB_URI || 'mongodb://localhost:27017/fol-sdk';
   console.log('🗑️ Deleting all predicates...');
-  
-  const store = new MongoDbFolStore(mongoUrl);
-  
-  try {
-    console.log('✅ Connected to MongoDB for predicates deletion');
-    
-    // 모든 predicates 가져오기
-    const allFols = await store.getAllFols();
-    const predicates = allFols.predicates || [];
-    
-    console.log(`📊 Found ${predicates.length} predicates to delete`);
-    
-    // 각 predicate 삭제
-    let deletedCount = 0;
-    for (const predicate of predicates) {
-      try {
-        await store.removePredicate(predicate);
-        deletedCount++;
-      } catch (err) {
-        console.error('❌ Error deleting predicate:', predicate, err);
-      }
-    }
-    
-    console.log(`✅ Successfully deleted ${deletedCount} predicates`);
-    
-    res.status(200).json({ 
-      status: 'success', 
-      message: `${deletedCount} predicates deleted successfully`,
-      deletedCount: deletedCount
+    try {
+    const result = await mongoose.connection.collection('predicates').deleteMany({});
+    res.status(200).json({
+      message: 'All predicates deleted successfully',
+      deletedCount: result.deletedCount
     });
-    
-  } catch (err) {
-    console.error('❌ Error deleting predicates:', err);
-    res.status(500).json({ 
-      status: 'error', 
-      error: err.message 
-    });
+    console.log(`✅ Successfully deleted ${result.deletedCount} predicates`);
+  } catch (error) {
+    console.error('❌ Error deleting predicates:', error);
+    res.status(500).json({ error: 'Failed to delete predicates' });
   }
 });
 

@@ -274,19 +274,19 @@ function toggleLabels() {
         window.currentLinkLabel.style("opacity", showLabels ? 1 : 0);
     }
 }
-/*
-function buildGraph() {
+
+async function buildNewGraph() {
     //기존 db 다 비우기
-    console.log('🗑️ Clearing existing FOL data...');
-    const deleteResponse = await fetch('/fol/all', {
-        method: 'DELETE'
-    });
+    await fetch('/facts', { method: 'DELETE' });
+    await fetch('/constants', { method: 'DELETE' });
+    await fetch('/predicates', { method: 'DELETE' });
+
     //memory 에서 input text 데이터 부분만 가져와서 하나의 문단으로 통합
 
     //Fol building
 
 }
-*/
+
 
 function centerGraph() {
     if (simulation) {
