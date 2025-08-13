@@ -48,6 +48,7 @@ body {
     height: 100vh;
 }
 
+/* Sidebar (네비게이션) */
 /* 3. 사이드바 스타일 */
 .sidebar-container {
     width: var(--sidebar-width);
@@ -67,98 +68,62 @@ body {
     height: 100%;
 }
 
-.dashboard-button-section {
+.logo {
     padding: 20px;
-    border-bottom: 1px solid var(--border-color);
-}
-
-.dashboard-button {
-    width: 100%;
-    background: var(--surface-secondary);
-    border: 1px solid var(--border-color);
-    color: var(--text-primary);
-    padding: 12px 16px;
-    border-radius: var(--border-radius);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    transition: all 0.2s ease;
-    font-family: inherit;
-    font-size: 14px;
-    font-weight: 500;
-}
-
-.dashboard-button:hover {
-    background: var(--hover-color);
-    border-color: var(--primary-color);
-    transform: translateY(-1px);
-}
-
-.dashboard-icon {
-    width: 20px;
-    height: 20px;
-    opacity: 0.7;
-}
-
-.dashboard-text {
-    flex: 1;
-}
-
-/* 4. 네비게이션 메뉴 */
-.nav-menu-section {
-    flex: 1;
-    overflow-y: auto;
+    border-bottom: 1px solid #2a2a2a;
+    font-size: 24px;
+    font-weight: bold;
+    color: #ffffff;
 }
 
 .nav-menu {
+    flex: 1;
     padding: 20px 0;
 }
 
 .nav-item {
-    margin: 2px 16px;
-    border-radius: var(--border-radius);
-    transition: all 0.2s ease;
-    border-left: 3px solid transparent;
-}
-
-.nav-item a {
+    padding: 12px 20px;
+    cursor: pointer;
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 12px 16px;
-    color: var(--text-secondary);
-    text-decoration: none;
-    transition: all 0.2s ease;
+    transition: background 0.2s;
+    border-left: 3px solid transparent;
 }
 
 .nav-item:hover {
-    background: var(--hover-color);
-}
-
-.nav-item:hover a {
-    color: var(--text-primary);
+    background: #1a1a1a;
 }
 
 .nav-item.active {
-    background: var(--hover-color);
-    border-left-color: var(--primary-color);
-}
-
-.nav-item.active a {
-    color: var(--text-primary);
-    font-weight: 500;
+    background: #1a1a1a;
+    border-left-color: #6366f1;
 }
 
 .nav-icon {
     width: 20px;
     height: 20px;
     opacity: 0.7;
-    flex-shrink: 0;
 }
 
-.nav-item.active .nav-icon {
-    opacity: 1;
+.user-section {
+    padding: 20px;
+    border-top: 1px solid #2a2a2a;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.user-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(45deg, #6366f1, #8b5cf6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 14px;
 }
 
 /* 5. 사이드바 하단 */
