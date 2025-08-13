@@ -50,16 +50,13 @@ app.get('/log-count/:session_id', async (req, res) => {
 // Memories 라우트
 app.get('/memories', async (req, res) => {
   try {
-
     const data = await mongoose.connection
       .collection('chatlogs')
       .find({})
       .sort({ createdAt: 1 })
       .toArray();
-    
     const memories = data.map((item, index) => {
       const doc = item.toObject ? item.toObject() : item;
-      
       return {
         id: doc._id || index,
         title: doc.title || `Memory ${index + 1}`, // 이제 순서대로 붙음
@@ -70,7 +67,6 @@ app.get('/memories', async (req, res) => {
         createdAt: doc.createdAt || new Date()
       };
     });
-
     res.render('memories', {
       memories: JSON.stringify(memories.reverse()), // 프론트에서는 최신순으로 표시
       dbName: 'chatDB',
@@ -83,15 +79,23 @@ app.get('/memories', async (req, res) => {
 
 // Graph 라우트
 app.get('/graph', async (req, res) => {
-  
     try {
-
         res.render('graph', {});
-
     } catch (error) {
         // 오류가 발생하면 콘솔에 로그를 남기고 500 상태 코드를 응답합니다.
         console.error('Error rendering graph:', error);
         res.status(500).send('그래프를 렌더링하는 중 오류가 발생했습니다.');
+    }
+});
+
+// Request 라우트
+app.get('/request', async (req, res) => {
+    try {
+        res.render('request', {});
+    } catch (error) {
+        // 오류가 발생하면 콘솔에 로그를 남기고 500 상태 코드를 응답합니다.
+        console.error('Error rendering request:', error);
+        res.status(500).send('리퀘스트를 렌더링하는 중 오류가 발생했습니다.');
     }
 });
 

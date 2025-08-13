@@ -16,7 +16,7 @@
             </div>
             
             <nav class="nav-menu">
-                <div class="nav-item" data-page="request" onclick="navigateToPage('/request')">
+                <div class="nav-item active" data-page="request">
                     <svg class="nav-icon" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
                     </svg>
@@ -28,7 +28,7 @@
                     </svg>
                     Memories
                 </div>
-                <div class="nav-item active" data-page="graph">
+                <div class="nav-item" data-page="graph" onclick="navigateToPage('/graph')">
                     <svg class="nav-icon" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
                     </svg>
@@ -56,81 +56,7 @@
                 </div>
             </div>
         </aside>
-
         <!-- Main Content -->
-        <main class="main-content">
-            <div class="graph-wrapper">
-                <header class="header">
-                    <div class="header-left">
-                        <h1 class="page-title">AIN MEM GRAPH</h1>
-                        <p class="page-subtitle">Visualizing relationships between logical propositions</p>
-                    </div>
-                    <div class="header-right">
-                        <button class="btn btn-secondary" onclick="restart()">
-                            <span>⟲</span> Restart
-                        </button>
-                        <button class="btn btn-secondary" onclick="toggleLabels()">
-                            <span>🏷️</span> Labels
-                        </button>
-                        <button class="btn btn-secondary" onclick="buildNewGraph()">
-                            <span>📊</span> Build
-                        </button>
-                        <button class="btn btn-primary" onclick="centerGraph()">
-                            <span>⊙</span> Center
-                        </button>
-                    </div>
-                </header>
-
-                <div class="filters">
-                    <span class="filter-label">Filters:</span>
-                    <div class="filter-tag active" data-filter="all">All</div>
-                    <div class="filter-tag" data-filter="wan_ai">Wan AI</div>
-                    <div class="filter-tag" data-filter="artany">Artany AI</div>
-                    <div class="filter-tag" data-filter="business">Business</div>
-                </div>
-
-                <div class="content">
-                    <div class="graph-container">
-                        <svg id="graph" width="100%" height="100%"></svg>
-                    </div>
-                </div>
-
-                <div class="stats">
-                    <div class="stat-item">
-                        <span>Nodes:</span> <span class="stat-value" id="node-count">0</span>
-                    </div>
-                    <div class="stat-item">
-                        <span>Links:</span> <span class="stat-value" id="link-count">0</span>
-                    </div>
-                    <div class="legend">
-                        <div class="legend-item">
-                            <div class="legend-circle constant"></div>
-                            <span>Constants</span>
-                        </div>
-                        <div class="legend-item">
-                            <div class="legend-circle predicate"></div>
-                            <span>Predicates</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </main>
-    </div>
-        <!-- 링크 상세 정보 모달 -->
-    <div id="link-modal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeLinkModal()">&times;</span>
-            <div id="modal-relations"></div>
-        </div>
-    </div>
-    <!-- 상수(Constants) 상세 정보 모달 -->
-    <div id="constant-modal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeConstantModal()">&times;</span>
-            <h3 id="constant-value">상수명</h3>
-            <p id="constant-description">상수 설명이 여기에 표시됩니다.</p>
-        </div>
-    </div>
-    <script src="/js/graph.js"></script>
+    <script src="/js/request.js"></script>
 </body>
 </html>
