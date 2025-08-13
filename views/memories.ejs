@@ -415,6 +415,12 @@
                     </svg>
                     Memories
                 </div>
+                <div class="nav-item" data-page="graph" onclick="navigateToPage('/graph')">
+                    <svg class="nav-icon" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                    </svg>
+                    Graph
+                </div>
                 <div class="nav-item" data-page="analytics">
                     <svg class="nav-icon" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
@@ -500,6 +506,22 @@
     </div>
 
     <script>
+
+        // 네비게이션 기능 추가
+        function navigateToPage(url) {
+            window.location.href = url;
+        }
+         // 네비게이션 메뉴 활성화 처리
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+                // 현재 페이지(Graph)가 아닌 경우에만 네비게이션
+                if (!item.classList.contains('active')) {
+                    document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                    item.classList.add('active');
+                }
+            });
+        });
+
         // 서버에서 전달받은 메모리 데이터
         let memories = <%- memories %>;
         let currentFilter = 'all';
@@ -512,6 +534,66 @@
         const searchInput = document.getElementById('searchInput');
         const filterTags = document.querySelectorAll('.filter-tag');
         const refreshBtn = document.getElementById('refreshBtn');
+
+        // 텍스트 콘텐츠 추출 함수
+        function getDisplayText(memory) {
+            if (memory.input_text) {
+                try {
+                    // input_text가 JSON 문자열인 경우 파싱해서 실제 텍스트 추출
+                    if (memory.input_text.startsWith('{') || memory.input_text.startsWith('[')) {
+                        const parsed = JSON.parse(memory.input_text);
+                        
+                        // 파싱된 객체에서 input_text 필드 추출
+                        if (parsed.input_text) {
+                            return parsed.input_text;
+                        }
+                        // 또는 content 필드
+                        if (parsed.content) {
+                            return parsed.content;
+                        }
+                        // 또는 text 필드
+                        if (parsed.text) {
+                            return parsed.text;
+                        }
+                        // 배열인 경우 첫 번째 요소의 텍스트
+                        if (Array.isArray(parsed) && parsed.length > 0) {
+                            return getDisplayText(parsed[0]);
+                        }
+                    } else {
+                        // 일반 텍스트면 그대로 반환
+                        return memory.input_text;
+                    }
+                } catch (e) {
+                    // JSON 파싱 실패시 원본 텍스트 반환
+                    return memory.input_text;
+                }
+            }
+            
+            // 없으면 기존 방식 유지
+            if (memory.content) {
+                return memory.content;
+            }
+            
+            // 둘 다 없으면 빈 문자열
+            return '';
+        }
+
+        // 제목 생성 함수
+        function getDisplayTitle(memory) {
+            // 명시적인 title이 있으면 사용
+            if (memory.title) {
+                return memory.title;
+            }
+            
+            // input_text에서 첫 번째 줄을 제목으로 사용
+            const text = getDisplayText(memory);
+            if (text) {
+                const firstLine = text.split('\n')[0];
+                return truncateText(firstLine, 50) || 'Untitled Memory';
+            }
+            
+            return 'Untitled Memory';
+        }
 
         // 메모리 렌더링
         function renderMemories(memoriesToRender = null) {
@@ -526,18 +608,24 @@
             memoriesGrid.style.display = 'grid';
             emptyState.style.display = 'none';
 
-            memoriesGrid.innerHTML = memoriesToShow.map(memory => `
-                <div class="memory-card" data-id="${memory.id}">
-                    <div class="memory-header">
-                        <h3 class="memory-title">${escapeHtml(memory.title)}</h3>
-                        <span class="memory-date">${formatDate(new Date(memory.createdAt))}</span>
+            memoriesGrid.innerHTML = memoriesToShow.map(memory => {
+                const displayText = getDisplayText(memory);
+                const displayTitle = getDisplayTitle(memory);
+                const dateValue = memory.timestamp || memory.createdAt || new Date().toISOString();
+                
+                return `
+                    <div class="memory-card" data-id="${memory._id || memory.id}">
+                        <div class="memory-header">
+                            <h3 class="memory-title">${escapeHtml(displayTitle)}</h3>
+                            <span class="memory-date">${formatDate(new Date(dateValue))}</span>
+                        </div>
+                        <p class="memory-content">${escapeHtml(truncateText(displayText, 150))}</p>
+                        <div class="memory-tags">
+                            ${(memory.tags || []).map(tag => `<span class="memory-tag">${escapeHtml(tag)}</span>`).join('')}
+                        </div>
                     </div>
-                    <p class="memory-content">${escapeHtml(truncateText(memory.content, 150))}</p>
-                    <div class="memory-tags">
-                        ${memory.tags.map(tag => `<span class="memory-tag">${escapeHtml(tag)}</span>`).join('')}
-                    </div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
 
             updatePageTitle();
         }
@@ -554,15 +642,22 @@
             // 검색 필터
             const searchTerm = searchInput.value.toLowerCase();
             if (searchTerm) {
-                filtered = filtered.filter(memory => 
-                    memory.title.toLowerCase().includes(searchTerm) ||
-                    memory.content.toLowerCase().includes(searchTerm) ||
-                    memory.tags.some(tag => tag.toLowerCase().includes(searchTerm))
-                );
+                filtered = filtered.filter(memory => {
+                    const displayText = getDisplayText(memory);
+                    const displayTitle = getDisplayTitle(memory);
+                    
+                    return displayTitle.toLowerCase().includes(searchTerm) ||
+                           displayText.toLowerCase().includes(searchTerm) ||
+                           (memory.tags && memory.tags.some(tag => tag.toLowerCase().includes(searchTerm)));
+                });
             }
 
             // 날짜순 정렬 (최신순)
-            return filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+            return filtered.sort((a, b) => {
+                const dateA = new Date(a.timestamp || a.createdAt || 0);
+                const dateB = new Date(b.timestamp || b.createdAt || 0);
+                return dateB - dateA;
+            });
         }
 
         // 날짜 포맷팅
@@ -580,12 +675,13 @@
 
         // 텍스트 자르기
         function truncateText(text, maxLength) {
-            if (text.length <= maxLength) return text;
+            if (!text || text.length <= maxLength) return text || '';
             return text.substring(0, maxLength) + '...';
         }
 
         // HTML 이스케이프
         function escapeHtml(text) {
+            if (!text) return '';
             const div = document.createElement('div');
             div.textContent = text;
             return div.innerHTML;
@@ -606,26 +702,31 @@
 
         // 메모리 상세 모달 열기
         function openMemoryDetail(memory) {
-            document.getElementById('modalTitle').textContent = memory.title;
+            const displayTitle = getDisplayTitle(memory);
+            const displayText = getDisplayText(memory);
+            
+            document.getElementById('modalTitle').textContent = displayTitle;
             
             const modalBody = document.getElementById('modalBody');
             modalBody.innerHTML = `
                 <div class="detail-section">
                     <div class="detail-label">Content</div>
-                    <div class="detail-content">${escapeHtml(memory.content)}</div>
+                    <div class="detail-content">${escapeHtml(displayText)}</div>
                 </div>
                 <div class="detail-section">
-                    <div class="detail-label">Category</div>
-                    <div class="detail-content">${escapeHtml(memory.category)}</div>
+                    <div class="detail-label">Document ID</div>
+                    <div class="detail-content">${escapeHtml(memory._id || memory.id || 'N/A')}</div>
                 </div>
+                <div class="detail-section">
+                    <div class="detail-label">Timestamp</div>
+                    <div class="detail-content">${new Date(memory.timestamp || memory.createdAt || new Date()).toLocaleString()}</div>
+                </div>
+                ${memory.tags && memory.tags.length > 0 ? `
                 <div class="detail-section">
                     <div class="detail-label">Tags</div>
                     <div class="detail-content">${memory.tags.map(tag => escapeHtml(tag)).join(', ')}</div>
                 </div>
-                <div class="detail-section">
-                    <div class="detail-label">Created</div>
-                    <div class="detail-content">${new Date(memory.createdAt).toLocaleString()}</div>
-                </div>
+                ` : ''}
             `;
             
             memoryModal.classList.add('show');
@@ -666,7 +767,7 @@
             const card = e.target.closest('.memory-card');
             if (card) {
                 const id = card.dataset.id;
-                const memory = memories.find(m => String(m.id) === String(id));
+                const memory = memories.find(m => String(m._id || m.id) === String(id));
                 if (memory) {
                     openMemoryDetail(memory);
                 }

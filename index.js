@@ -71,7 +71,7 @@ app.get('/memories', async (req, res) => {
       };
     });
 
-    res.render('memoriesV1', {
+    res.render('memories', {
       memories: JSON.stringify(memories.reverse()), // 프론트에서는 최신순으로 표시
       dbName: 'chatDB',
       collectionName: 'chatlogs'
