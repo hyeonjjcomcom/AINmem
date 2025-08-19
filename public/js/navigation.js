@@ -1,16 +1,42 @@
+let isLoggedIn = true;
 let currentTheme = 'dark';
 
+
+function renderUserSection() {
+  if (isLoggedIn) {
+    document.getElementById("logged-in-section").style.display = "flex";
+    document.getElementById("login-section").style.display = "none";
+  } else {
+    document.getElementById("logged-in-section").style.display = "none";
+    document.getElementById("login-section").style.display = "flex";
+  }
+}
+
+function handleLogin() {
+  isLoggedIn = true; 
+  renderUserSection();
+}
+
+function handleLogout() {
+  isLoggedIn = false;
+  renderUserSection();
+  closeUserDropdown();
+}
+
+
 function toggleUserDropdown() {
-    const overlay = document.getElementById('userDropdownOverlay');
-    const menu = document.getElementById('userDropdownMenu');
-    
-    if (overlay.classList.contains('show')) {
-        closeUserDropdown();
-    } else {
-        overlay.classList.add('show');
-        setTimeout(() => {
-            menu.classList.add('show');
-        }, 10);
+    if (isLoggedIn) {
+        const overlay = document.getElementById('userDropdownOverlay');
+        const menu = document.getElementById('userDropdownMenu');
+        
+        if (overlay.classList.contains('show')) {
+            closeUserDropdown();
+        } else {
+            overlay.classList.add('show');
+            setTimeout(() => {
+                menu.classList.add('show');
+            }, 10);
+        }
     }
 }
 
