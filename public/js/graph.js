@@ -12,6 +12,7 @@ const height = 600;
 
 const color = d3.scaleOrdinal()
     .domain(['predicate', 'entity'])
+    //.range(['hsla(243, 87%, 85%, 1.00)']); //for white theme
     .range(['#4F46E5', '#5B21B6']);
 
 function navigateToPage(url) {

@@ -13,6 +13,9 @@ const { v4: uuidv4 } = require('uuid');  // UUID 생성
 const { encoding_for_model } = require('@dqbd/tiktoken'); // 백엔드용 tiktoken
 const enc = encoding_for_model('gpt-4'); // 또는 'gpt-3.5-turbo'
 const path = require('path');
+//for login
+const { ethers } = require("ethers");
+const crypto = require("crypto");
 
 const app = express();
 const port = 3000;
@@ -22,6 +25,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
+// 메모리 저장소 (실제로는 Redis나 MongoDB TTL 컬렉션 사용)
+const nonces = {};
 
 app.set('view engine', 'ejs');
 
@@ -171,6 +176,7 @@ app.get('/facts', async (req, res) => {
   const store = new MongoDbFolStore(mongoUrl);
   try {
     const data = (await store.getAllFols()).facts;
+    console.log('📊 Fetched facts data:', data);
     res.json(data);
   } catch (err) {
     console.error('❌ Error fetching facts:', err);
@@ -270,6 +276,34 @@ app.get('/chatlogs/input-text', async (req, res) => {
       status: 'error', 
       error: err.message 
     });
+  }
+});
+
+// 1. 클라이언트가 로그인 시도하면 nonce 발급
+app.get("/api/nonce/:address", (req, res) => {
+  const { address } = req.params;
+  const nonce = crypto.randomBytes(16).toString("hex");
+  nonces[address.toLowerCase()] = nonce;
+  res.json({ nonce });
+});
+
+// 2. 클라이언트가 서명해서 보낸 값 검증
+app.post("/api/login", (req, res) => {
+  const { address, signature } = req.body;
+  const nonce = nonces[address.toLowerCase()];
+  if (!nonce) return res.status(400).json({ error: "No nonce" });
+
+  try {
+    const recovered = ethers.verifyMessage(nonce, signature);
+    if (recovered.toLowerCase() === address.toLowerCase()) {
+      // 로그인 성공
+      delete nonces[address.toLowerCase()]; // 재사용 방지
+      res.json({ success: true, address });
+    } else {
+      res.status(401).json({ success: false, error: "Invalid signature" });
+    }
+  } catch (err) {
+    res.status(400).json({ success: false, error: err.message });
   }
 });
 

@@ -285,7 +285,7 @@ body {
 }
 
 .node text {
-    font-size: 11px;
+    font-size: 15px;
     font-weight: 500;
     text-anchor: middle;
     dominant-baseline: middle;
@@ -299,6 +299,10 @@ body {
     stroke-opacity: 0.8;
     stroke-width: 2;
     transition: all 0.3s ease;
+}
+
+.link.dynamic-width {
+    stroke-width: var(--dynamic-stroke-width) !important;
 }
 
 .link:hover {
@@ -320,6 +324,10 @@ body {
     dominant-baseline: middle;
     pointer-events: none;
     background: white;
+}
+.link-label:hover {
+    fill: #000000;
+    font-weight: bold;
 }
 
 .tooltip {
@@ -390,14 +398,6 @@ body {
     border-radius: 50%;
     border: 2px solid #e2e8f0;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-}
-
-.legend-circle.constant {
-    background: #ef4444;
-}
-
-.legend-circle.predicate {
-    background: #06b6d4;
 }
 
 /* Mobile Responsive */
@@ -476,4 +476,250 @@ body {
     color: #6366f1;
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
+}
+
+/*수정필요*/
+/*navigation login css*/
+.login-section {
+    padding: 20px;
+    border-top: 1px solid #2a2a2a;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #111111;
+    border-radius: 0;
+    max-width: none;
+    box-shadow: none;
+}
+
+.login-icon {
+    width: 32px;
+    height: 32px;
+    background: #6c757d;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.login-btn {
+    background: linear-gradient(45deg, #6366f1, #8b5cf6);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+.login-btn:hover {
+    background: linear-gradient(45deg, #5855eb, #7c3aed);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+/* 모달 스타일 */
+.login-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.35s ease-out;
+    z-index: 1000;
+    pointer-events: none;
+}
+
+.login-modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+.login-modal {
+    bottom: 20px;
+    left: 20px;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    position: absolute;
+    transform-origin: bottom left;
+    transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    
+    /* 초기 상태: 프로필과 같은 크기의 원형 */
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    padding: 0;
+    overflow: hidden;
+    
+    /* 초기에는 프로필처럼 보이게 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(45deg, #6366f1, #8b5cf6);
+    color: white;
+    font-weight: bold;
+    font-size: 14px;
+    
+    /* 스케일 변화로 더 부드럽게 */
+    transform: scale(1);
+}
+
+.login-modal.active {
+    bottom: 20px;
+    left: 20px;
+    /* 완전 확장된 상태 */
+    width: 320px;
+    height: 400px;
+    border-radius: 12px;
+    padding: 24px;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    color: white;
+    display: block;
+    transform: scale(1);
+    
+    /* 그림자도 함께 변화 */
+    box-shadow: 0 25px 50px rgba(0,0,0,0.4);
+    border: 1px solid rgba(147, 51, 234, 0.2);
+}
+
+.modal-initial-avatar {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    transition: opacity 0.3s ease;
+    background: linear-gradient(45deg, #6366f1, #8b5cf6);
+    color: white;
+    border-radius: inherit;
+    font-size: 14px;
+}
+
+.login-modal.active .modal-initial-avatar {
+    opacity: 0;
+}
+
+.login-modal-content {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.4s ease;
+    transition-delay: 0s;
+    height: 100%;
+}
+
+.login-modal.active .login-modal-content {
+    opacity: 1;
+    transform: translateY(0);
+    transition-delay: 0.15s;
+}
+
+.login-modal-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.login-modal-avatar {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(45deg, #6366f1, #8b5cf6);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 24px;
+}
+
+.login-modal-user-info h3 {
+    margin: 0 0 4px 0;
+    font-size: 18px;
+    color: #333;
+}
+
+.login-modal-user-info p {
+    margin: 0;
+    color: #666;
+    font-size: 14px;
+}
+
+.login-modal-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.login-modal-menu li {
+    padding: 12px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 4px;
+}
+
+.login-modal-menu li:hover {
+    background: #f8f9fa;
+}
+
+.login-modal-menu li:last-child {
+    color: #dc3545;
+    margin-top: 8px;
+    border-top: 1px solid #e9ecef;
+    padding-top: 16px;
+}
+
+.login-modal-menu li:last-child:hover {
+    background: #fff5f5;
+}
+
+.login-modal-close-btn {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #999;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+}
+
+.login-modal-close-btn:hover {
+    background: #f8f9fa;
+    color: #333;
+}
+
+/* 애니메이션 효과 */
+@keyframes fadeInScale {
+    from {
+        opacity: 0;
+        transform: scale(0.9) translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
 }
