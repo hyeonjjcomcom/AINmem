@@ -1,3 +1,9 @@
+//ain 정의부
+const Ain = require('@ainblockchain/ain-js').default;
+const { AinWalletSigner } = require('@ainblockchain/ain-js/lib/signer/ain-wallet-signer');
+const ain = new Ain('https://testnet-api.ainetwork.ai', 'wss://testnet-event.ainetwork.ai', 0);
+
+
 require('dotenv').config();
 const {
   FolBuilder,
@@ -279,12 +285,15 @@ app.get('/chatlogs/input-text', async (req, res) => {
   }
 });
 
-// 1. 클라이언트가 로그인 시도하면 nonce 발급
-app.get("/api/nonce/:address", (req, res) => {
-  const { address } = req.params;
+// --
+app.get("/api/getAddress", (req, res) => {
+  const returnMsg = ain.signer.signMessage("d97wfbef8vs0age943sdva3rg4x","0xF15C53fD6B5A997d719eb421b88BcB2921ddEaA2");
+  res.json({ address: returnMsg });
+
+  /*const { address } = req.params;
   const nonce = crypto.randomBytes(16).toString("hex");
   nonces[address.toLowerCase()] = nonce;
-  res.json({ nonce });
+  res.json({ nonce });*/
 });
 
 // 2. 클라이언트가 서명해서 보낸 값 검증

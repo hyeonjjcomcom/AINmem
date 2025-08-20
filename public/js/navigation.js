@@ -1,3 +1,8 @@
+const Ain = require('@ainblockchain/ain-js').default;
+const { AinWalletSigner } = require('@ainblockchain/ain-js/lib/signer/ain-wallet-signer');
+
+const ain = new Ain('https://testnet-api.ainetwork.ai', 'wss://testnet-event.ainetwork.ai', 0);
+
 let isLoggedIn = true;
 let currentTheme = 'dark';
 
@@ -12,10 +17,17 @@ function renderUserSection() {
   }
 }
 
-function handleLogin() {
-  isLoggedIn = true; 
-  renderUserSection();
-}
+async function handleLogin() {
+  try {
+    ain.setSigner(new AinWalletSigner());
+    const address = await ain.signer.getAddress();
+    console.log('✅ User address:', address);
+    isLoggedIn = true;
+    renderUserSection();
+    } catch (error) {
+        console.error('Error fetching nonce:', error);
+    }
+}   
 
 function handleLogout() {
   isLoggedIn = false;
