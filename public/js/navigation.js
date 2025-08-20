@@ -1,7 +1,6 @@
 let isLoggedIn = true;
 let currentTheme = 'dark';
 
-
 function renderUserSection() {
   if (isLoggedIn) {
     document.getElementById("logged-in-section").style.display = "flex";
