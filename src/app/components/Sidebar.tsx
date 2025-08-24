@@ -1,10 +1,10 @@
-// Sidebar.tsx
-
 "use client";
 
 import styles from './Sidebar.module.css';
 import React, { useState } from 'react';
-import { useRouter, usePathname } from 'next/navigation'; // usePathname 추가
+import { useRouter, usePathname } from 'next/navigation';
+
+import UserDropdown from './UserDropdown'; // 같은 레벨의 파일에서 import
 
 interface SvgIconProps {
   path: string;
@@ -51,9 +51,10 @@ const navItems = [
 
 const Sidebar: React.FC = () => {
   const router = useRouter(); 
-  const pathname = usePathname(); // 현재 경로를 가져옵니다.
+  const pathname = usePathname();
   const [isLoggedIn, setIsLoggedIn] = useState(true);
-  
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false); // 드롭다운 상태 추가
+
   const handleNavigation = (path: string) => {
     router.push(path); 
   };
@@ -61,6 +62,16 @@ const Sidebar: React.FC = () => {
   const handleLogin = () => {
     setIsLoggedIn(true);
     console.log('User logged in');
+  };
+
+  // 드롭다운 토글 함수
+  const toggleDropdown = () => {
+    setIsDropdownOpen(prev => !prev);
+  };
+
+  // 드롭다운 닫기 함수
+  const closeDropdown = () => {
+    setIsDropdownOpen(false);
   };
 
   return (
@@ -74,7 +85,7 @@ const Sidebar: React.FC = () => {
           <div
             key={item.id}
             className={`${styles['nav-item']} ${pathname === item.path ? styles.active : ''}`}
-            onClick={() => handleNavigation(item.path)} // path만 전달
+            onClick={() => handleNavigation(item.path)}
           >
             <SvgIcon path={item.iconPath} />
             {item.label}
@@ -84,11 +95,24 @@ const Sidebar: React.FC = () => {
 
       {isLoggedIn ? (
         <div className={styles['user-section']} id="logged-in-section">
-          <div className={styles['user-avatar']} id="profile-avatar">U</div>
-          <div className={styles['user-info']}>
+          <div 
+            className={styles['user-avatar']} 
+            id="profile-avatar"
+            onClick={toggleDropdown} // 아바타 클릭 시 드롭다운 토글
+          >
+            U
+          </div>
+          <div className={styles['user-info']} onClick={toggleDropdown}>
             <div style={{ fontSize: '14px', fontWeight: '500' }}>User</div>
             <div style={{ fontSize: '12px', color: '#888' }}>Free Plan</div>
           </div>
+          
+          <UserDropdown
+            userName="User"
+            userEmail="user@example.com"
+            showDropdown={isDropdownOpen}
+            onClose={closeDropdown}
+          />
         </div>
       ) : (
         <div className={styles['user-section']} id="login-section">
