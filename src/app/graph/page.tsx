@@ -43,7 +43,7 @@ interface FactItem {
 }
 
 export default function HomePage() {
-const svgRef = useRef<SVGSVGElement>(null);
+  const svgRef = useRef<SVGSVGElement>(null);
   const [constantsData, setConstantsData] = useState<ConstantData[]>([]);
   const [currentFilter, setCurrentFilter] = useState('all');
   const [nodes, setNodes] = useState(new Map<string, NodeData>());
@@ -70,14 +70,15 @@ const svgRef = useRef<SVGSVGElement>(null);
 
   const buildGraph = async () => {
     try {
-      const data = await fetch('/facts').then(res => {
+      // ✅ 수정: 새로운 API 형식으로 변경
+      const data = await fetch('/api?endpoint=facts').then(res => {
         if (!res.ok) {
           throw new Error(`HTTP 오류 발생! 상태 코드: ${res.status}`);
         }
         return res.json();
       });
 
-      const constants = await fetch('/constants').then(res => res.json());
+      const constants = await fetch('/api?endpoint=constants').then(res => res.json());
       setConstantsData(constants);
 
       const filteredData = filterData(data);
@@ -229,7 +230,7 @@ const svgRef = useRef<SVGSVGElement>(null);
 
     node.append("circle")
       .attr("r", (d: NodeData) => radiusScale(d.count))
-      .attr("fill", (d: NodeData) => color(d.type))
+      .attr("fill", (d: NodeData) => color(d.type) as string)
       .attr("stroke", "#fff")
       .attr("stroke-width", 1.5);
 
@@ -289,16 +290,17 @@ const svgRef = useRef<SVGSVGElement>(null);
 
   const buildNewGraph = async () => {
     try {
-      await fetch('/facts', { method: 'DELETE' });
-      await fetch('/constants', { method: 'DELETE' });
-      await fetch('/predicates', { method: 'DELETE' });
+      // ✅ 수정: 새로운 API 형식으로 변경
+      await fetch('/api?endpoint=facts', { method: 'DELETE' });
+      await fetch('/api?endpoint=constants', { method: 'DELETE' });
+      await fetch('/api?endpoint=predicates', { method: 'DELETE' });
 
-      const response = await fetch('/memoriesDocument', { method: 'GET' });
+      const response = await fetch('/api?endpoint=memoriesDocument', { method: 'GET' });
       const document = await response.text();
 
       console.log('📄 Document to build:', document);
 
-      await fetch('/buildFols', { 
+      await fetch('/api?endpoint=buildFols', { 
         method: 'POST', 
         headers: { 'Content-Type': 'application/json' }, 
         body: JSON.stringify({ document }) 
@@ -334,61 +336,136 @@ const svgRef = useRef<SVGSVGElement>(null);
       <Sidebar />
       <main className={styles['main-content']}>
         <div className={styles['graph-wrapper']}>
-                <header className={styles.header}>
-                    <div className={styles['header-left']}>
-                        <h1 className={styles['page-title']}>AIN MEM GRAPH</h1>
-                        <p className={styles['page-subtitle']}>Visualizing relationships between logical propositions</p>
-                    </div>
-                    <div className={styles['header-right']}>
-                        <button className={`${styles.btn} ${styles['btn-secondary']}`}>
-                            <span>⟲</span> Restart
-                        </button>
-                        <button className={`${styles.btn} ${styles['btn-secondary']}`}>
-                            <span>🏷️</span> Labels
-                        </button>
-                        <button className={`${styles.btn} ${styles['btn-secondary']}`}>
-                            <span>📊</span> Build
-                        </button>
-                        <button className={`${styles.btn} ${styles['btn-primary']}`}>
-                            <span>⊙</span> Center
-                        </button>
-                    </div>
-                </header>
-
-                <div className={styles.filters}>
-                    <span className={styles['filter-label']}>Filters:</span>
-                    <div className={`${styles['filter-tag']} ${styles.active}`}>All</div>
-                    <div className={styles['filter-tag']}>Wan AI</div>
-                    <div className={styles['filter-tag']}>Artany AI</div>
-                    <div className={styles['filter-tag']}>Business</div>
-                </div>
-
-                <div className={styles.content}>
-                    <div className={styles['graph-container']}>
-                        <svg id="graph" width="100%" height="100%"></svg>
-                    </div>
-                </div>
-
-                <div className={styles.stats}>
-                    <div className={styles['stat-item']}>
-                        <span>Nodes:</span> <span className={styles['stat-value']} id="node-count">0</span>
-                    </div>
-                    <div className={styles['stat-item']}>
-                        <span>Links:</span> <span className={styles['stat-value']} id="link-count">0</span>
-                    </div>
-                    <div className={styles.legend}>
-                        <div className={styles['legend-item']}>
-                            <div className={`${styles['legend-circle']} ${styles.constant}`}></div>
-                            <span>Constants</span>
-                        </div>
-                        <div className={styles['legend-item']}>
-                            <div className={`${styles['legend-circle']} ${styles.predicate}`}></div>
-                            <span>Predicates</span>
-                        </div>
-                    </div>
-                </div>
+          <header className={styles.header}>
+            <div className={styles['header-left']}>
+              <h1 className={styles['page-title']}>AIN MEM GRAPH</h1>
+              <p className={styles['page-subtitle']}>Visualizing relationships between logical propositions</p>
             </div>
-        </main>
+            <div className={styles['header-right']}>
+              <button 
+                className={`${styles.btn} ${styles['btn-secondary']}`}
+                onClick={centerGraph}
+              >
+                <span>⟲</span> Restart
+              </button>
+              <button 
+                className={`${styles.btn} ${styles['btn-secondary']}`}
+                onClick={toggleLabels}
+              >
+                <span>🏷️</span> Labels
+              </button>
+              <button 
+                className={`${styles.btn} ${styles['btn-secondary']}`}
+                onClick={buildNewGraph}
+              >
+                <span>📊</span> Build
+              </button>
+              <button 
+                className={`${styles.btn} ${styles['btn-primary']}`}
+                onClick={centerGraph}
+              >
+                <span>⊙</span> Center
+              </button>
+            </div>
+          </header>
+
+          <div className={styles.filters}>
+            <span className={styles['filter-label']}>Filters:</span>
+            <div className={`${styles['filter-tag']} ${styles.active}`}>All</div>
+            <div className={styles['filter-tag']}>Wan AI</div>
+            <div className={styles['filter-tag']}>Artany AI</div>
+            <div className={styles['filter-tag']}>Business</div>
+          </div>
+
+          <div className={styles.content}>
+            <div className={styles['graph-container']}>
+              <svg 
+                ref={svgRef}
+                id="graph" 
+                width="100%" 
+                height="100%"
+              />
+            </div>
+          </div>
+
+          <div className={styles.stats}>
+            <div className={styles['stat-item']}>
+              <span>Nodes:</span> <span className={styles['stat-value']}>{nodeCount}</span>
+            </div>
+            <div className={styles['stat-item']}>
+              <span>Links:</span> <span className={styles['stat-value']}>{linkCount}</span>
+            </div>
+            <div className={styles.legend}>
+              <div className={styles['legend-item']}>
+                <div className={`${styles['legend-circle']} ${styles.constant}`}></div>
+                <span>Constants</span>
+              </div>
+              <div className={styles['legend-item']}>
+                <div className={`${styles['legend-circle']} ${styles.predicate}`}></div>
+                <span>Predicates</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Link Modal */}
+        {linkModalOpen && selectedLink && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg p-6 max-w-2xl w-full mx-4 max-h-96 overflow-y-auto">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-semibold">
+                  Relations between {typeof selectedLink.source === 'string' ? selectedLink.source : selectedLink.source.name} 
+                  {' and '}
+                  {typeof selectedLink.target === 'string' ? selectedLink.target : selectedLink.target.name}
+                </h3>
+                <button
+                  onClick={() => setLinkModalOpen(false)}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  ✕
+                </button>
+              </div>
+              <p className="mb-4"><strong>Total Relations:</strong> {selectedLink.count}</p>
+              <div className="space-y-4">
+                {selectedLink.predicates.map((predicate, index) => (
+                  <div key={index} className="border-b pb-3">
+                    <h4 className="font-medium">{predicate}</h4>
+                    <p><strong>Description:</strong> {selectedLink.descriptions[index]}</p>
+                    <p><strong>Formula:</strong> {selectedLink.values[index]}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Constant Modal */}
+        {constantModalOpen && selectedConstant && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-semibold">Constant Details</h3>
+                <button
+                  onClick={() => setConstantModalOpen(false)}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  ✕
+                </button>
+              </div>
+              <div className="space-y-2">
+                <p><strong>Value:</strong> {selectedConstant.name}</p>
+                <p><strong>Description:</strong> {
+                  constantsData.find(c => 
+                    c.value === selectedConstant.name || 
+                    c.name === selectedConstant.name ||
+                    c.constant === selectedConstant.name
+                  )?.description || '설명이 없습니다.'
+                }</p>
+              </div>
+            </div>
+          </div>
+        )}
+      </main>
     </>
   );
 }
