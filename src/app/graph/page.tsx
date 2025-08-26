@@ -3,6 +3,8 @@
 
 import Sidebar from '../components/Sidebar';
 import styles from './GraphPage.module.css';
+import LinkModal from '../components/LinkModal';
+import ConstantModal from '../components/ConstantModal';
 
 import { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
@@ -45,7 +47,6 @@ interface FactItem {
 export default function HomePage() {
   const svgRef = useRef<SVGSVGElement>(null);
   const [constantsData, setConstantsData] = useState<ConstantData[]>([]);
-  const [currentFilter, setCurrentFilter] = useState('all');
   const [nodes, setNodes] = useState(new Map<string, NodeData>());
   const [links, setLinks] = useState<LinkData[]>([]);
   const [simulation, setSimulation] = useState<d3.Simulation<NodeData, LinkData> | null>(null);
@@ -53,7 +54,7 @@ export default function HomePage() {
   const [linkModalOpen, setLinkModalOpen] = useState(false);
   const [constantModalOpen, setConstantModalOpen] = useState(false);
   const [selectedLink, setSelectedLink] = useState<LinkData | null>(null);
-  const [selectedConstant, setSelectedConstant] = useState<NodeData | null>(null);
+  const [selectedConstant, setSelectedConstant] = useState<string | null>(null);
   const [nodeCount, setNodeCount] = useState(0);
   const [linkCount, setLinkCount] = useState(0);
 
@@ -224,7 +225,7 @@ export default function HomePage() {
         .on("drag", dragged)
         .on("end", dragended))
       .on("click", function(event, d) {
-        setSelectedConstant(d);
+        setSelectedConstant(d.name);
         setConstantModalOpen(true);
       });
 
@@ -242,7 +243,7 @@ export default function HomePage() {
       .text((d: NodeData) => d.name)
       .style("opacity", showLabels ? 1 : 0)
       .on("click", function(event, d) {
-        setSelectedConstant(d);
+        setSelectedConstant(d.name);
         setConstantModalOpen(true);
       });
 
@@ -317,6 +318,23 @@ export default function HomePage() {
     if (simulation) {
       simulation.alpha(0.3).restart();
     }
+  };
+
+  // 상수 검색 함수
+  const getSelectedConstantData = () => {
+    if (!selectedConstant) return null;
+    
+    // constantsData에서 value 필드가 selectedConstant와 일치하는 항목 찾기
+    const matchedConstant = constantsData.find(c => c.value === selectedConstant);
+    
+    if (matchedConstant) {
+      return {
+        name: matchedConstant.name || matchedConstant.value, // name 필드 (또는 value를 fallback으로)
+        description: matchedConstant.description || '설명이 없습니다.' // description 필드
+      };
+    }
+    
+    return null;
   };
 
   useEffect(() => {
@@ -409,62 +427,17 @@ export default function HomePage() {
         </div>
 
         {/* Link Modal */}
-        {linkModalOpen && selectedLink && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg p-6 max-w-2xl w-full mx-4 max-h-96 overflow-y-auto">
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-semibold">
-                  Relations between {typeof selectedLink.source === 'string' ? selectedLink.source : selectedLink.source.name} 
-                  {' and '}
-                  {typeof selectedLink.target === 'string' ? selectedLink.target : selectedLink.target.name}
-                </h3>
-                <button
-                  onClick={() => setLinkModalOpen(false)}
-                  className="text-gray-400 hover:text-gray-600"
-                >
-                  ✕
-                </button>
-              </div>
-              <p className="mb-4"><strong>Total Relations:</strong> {selectedLink.count}</p>
-              <div className="space-y-4">
-                {selectedLink.predicates.map((predicate, index) => (
-                  <div key={index} className="border-b pb-3">
-                    <h4 className="font-medium">{predicate}</h4>
-                    <p><strong>Description:</strong> {selectedLink.descriptions[index]}</p>
-                    <p><strong>Formula:</strong> {selectedLink.values[index]}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
-
+        <LinkModal 
+          isOpen={linkModalOpen}
+          onClose={() => setLinkModalOpen(false)}
+          linkData={selectedLink}
+        />
         {/* Constant Modal */}
-        {constantModalOpen && selectedConstant && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-semibold">Constant Details</h3>
-                <button
-                  onClick={() => setConstantModalOpen(false)}
-                  className="text-gray-400 hover:text-gray-600"
-                >
-                  ✕
-                </button>
-              </div>
-              <div className="space-y-2">
-                <p><strong>Value:</strong> {selectedConstant.name}</p>
-                <p><strong>Description:</strong> {
-                  constantsData.find(c => 
-                    c.value === selectedConstant.name || 
-                    c.name === selectedConstant.name ||
-                    c.constant === selectedConstant.name
-                  )?.description || '설명이 없습니다.'
-                }</p>
-              </div>
-            </div>
-          </div>
-        )}
+        <ConstantModal 
+          selectedConstantInfo={getSelectedConstantData()}
+          isOpen={constantModalOpen}
+          onClose={() => setConstantModalOpen(false)}
+        />
       </main>
     </>
   );
