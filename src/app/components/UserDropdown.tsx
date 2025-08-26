@@ -7,9 +7,10 @@ interface UserDropdownProps {
   userEmail: string;
   showDropdown: boolean; // 모달을 보이거나 숨기는 상태
   onClose: () => void; // 모달을 닫는 함수
+  onLogout: () => void // 부모에서 전달받을 콜백 함수
 }
 
-const UserDropdown: React.FC<UserDropdownProps> = ({ userName, userEmail, showDropdown, onClose }) => {
+const UserDropdown: React.FC<UserDropdownProps> = ({ userName, userEmail, showDropdown, onClose, onLogout }) => {
   const [theme, setTheme] = useState<'light' | 'dark' | 'system'>('dark');
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -22,6 +23,8 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ userName, userEmail, showDr
   // 로그아웃 핸들러
   const handleLogout = () => {
     console.log('Logout clicked');
+
+    onLogout() // 부모의 handleLogout 함수 실행
     onClose();
   };
 

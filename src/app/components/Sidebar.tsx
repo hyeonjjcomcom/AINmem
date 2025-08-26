@@ -64,6 +64,11 @@ const Sidebar: React.FC = () => {
     console.log('User logged in');
   };
 
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+    console.log('User logged out');
+  };
+
   // 드롭다운 토글 함수
   const toggleDropdown = () => {
     setIsDropdownOpen(prev => !prev);
@@ -112,6 +117,7 @@ const Sidebar: React.FC = () => {
             userEmail="user@example.com"
             showDropdown={isDropdownOpen}
             onClose={closeDropdown}
+            onLogout={handleLogout}
           />
         </div>
       ) : (
