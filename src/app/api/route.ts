@@ -20,6 +20,17 @@ async function connectMongo() {
 // 메모리 저장소 (실제로는 Redis 사용 권장)
 const nonces: { [key: string]: string } = {};
 
+// ✅ FolStore 인스턴스를 전역에서 재사용
+let folStoreInstance: MongoDbFolStore | null = null;
+
+function getFolStore(): MongoDbFolStore {
+  if (!folStoreInstance) {
+    const mongoUrl = process.env.MONGODB_URI || 'mongodb://localhost:27017/fol-sdk';
+    folStoreInstance = new MongoDbFolStore(mongoUrl);
+  }
+  return folStoreInstance;
+}
+
 export async function GET(request: NextRequest) {
   const { searchParams, pathname } = new URL(request.url);
   const endpoint = searchParams.get('endpoint');
@@ -165,8 +176,8 @@ async function getMemoriesDocument() {
 
 async function getConstants() {
   try {
-    const mongoUrl = process.env.MONGODB_URI || 'mongodb://localhost:27017/fol-sdk';
-    const store = new MongoDbFolStore(mongoUrl);
+    // ✅ 재사용 가능한 FolStore 인스턴스 사용
+    const store = getFolStore();
     const data = (await store.getAllFols()).constants;
     
     console.log('📊 Fetched constants data:', data);
@@ -179,8 +190,8 @@ async function getConstants() {
 
 async function getFacts() {
   try {
-    const mongoUrl = process.env.MONGODB_URI || 'mongodb://localhost:27017/fol-sdk';
-    const store = new MongoDbFolStore(mongoUrl);
+    // ✅ 재사용 가능한 FolStore 인스턴스 사용
+    const store = getFolStore();
     const data = (await store.getAllFols()).facts;
     
     console.log('📊 Fetched facts data:', data);
@@ -193,8 +204,8 @@ async function getFacts() {
 
 async function getPredicates() {
   try {
-    const mongoUrl = process.env.MONGODB_URI || 'mongodb://localhost:27017/fol-sdk';
-    const store = new MongoDbFolStore(mongoUrl);
+    // ✅ 재사용 가능한 FolStore 인스턴스 사용
+    const store = getFolStore();
     const data = (await store.getAllFols()).predicates;
     
     console.log('📊 Fetched predicates data:', data);
@@ -208,12 +219,12 @@ async function getPredicates() {
 async function buildFols(body: { document: string }) {
   try {
     const geminiApiKey = process.env.GEMINI_API_KEY;
-    const mongoUrl = process.env.MONGODB_URI || 'mongodb://localhost:27017/fol-sdk';
 
     console.log('🔧 Setting up FOL-SDK components...');
 
     const llmAdapter = new GeminiAdapter(geminiApiKey!);
-    const store = new MongoDbFolStore(mongoUrl);
+    // ✅ 재사용 가능한 FolStore 인스턴스 사용
+    const store = getFolStore();
     const builder = new FolBuilder({ llm: llmAdapter });
     const client = createFolClient(builder, store);
 
