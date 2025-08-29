@@ -58,9 +58,6 @@ export default function HomePage() {
   const [nodeCount, setNodeCount] = useState(0);
   const [linkCount, setLinkCount] = useState(0);
 
-  const width = 800;
-  const height = 600;
-
   const color = d3.scaleOrdinal()
     .domain(['predicate', 'entity'])
     .range(['#4F46E5', '#5B21B6']);
@@ -161,6 +158,10 @@ export default function HomePage() {
 
     const svg = d3.select(svgRef.current);
     svg.selectAll("*").remove();
+
+    const containerWidth = svgRef.current.clientWidth || 800;
+    const width = Math.max(containerWidth, 800);
+    const height = 600;
 
     const nodeArray = Array.from(graphData.nodes.values());
 
