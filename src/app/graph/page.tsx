@@ -184,12 +184,12 @@ export default function HomePage() {
     const strokeWidthScale = d3.scaleLinear()
       .domain([1, maxLinkCount])
       .range([1.5, 8]);
-
+    
     const link = svg.append("g")
       .selectAll("line")
       .data(graphData.links)
       .enter().append("line")
-      .attr("class", "link")
+      .attr("class", styles.link)
       .attr("stroke", "#999")
       .attr("stroke-opacity", 0.6)
       .attr("stroke-width", (d: LinkData) => strokeWidthScale(d.count))
@@ -203,7 +203,7 @@ export default function HomePage() {
       .selectAll("text")
       .data(graphData.links)
       .enter().append("text")
-      .attr("class", "link-label")
+      .attr("class", styles["link-label"])
       .attr("text-anchor", "middle")
       .attr("font-size", "10px")
       .attr("fill", "#666")
@@ -214,12 +214,11 @@ export default function HomePage() {
         setSelectedLink(d);
         setLinkModalOpen(true);
       });
-
     const node = svg.append("g")
       .selectAll("g")
       .data(nodeArray)
       .enter().append("g")
-      .attr("class", "node")
+      .attr("class", styles.node)
       .call(d3.drag<any, NodeData>()
         .on("start", dragstarted)
         .on("drag", dragged)
