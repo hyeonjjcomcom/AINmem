@@ -187,7 +187,7 @@
 .link {
     stroke: #555555;
     stroke-opacity: 0.8;
-    stroke-width: 2;
+    /*stroke-width: 2;*/
     transition: all 0.3s ease;
     cursor: pointer;
 }
