@@ -53,7 +53,7 @@ const navItems = [
 const Sidebar: React.FC = () => {
   const router = useRouter(); 
   const pathname = usePathname();
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false); // 드롭다운 상태 추가
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
@@ -144,7 +144,7 @@ const Sidebar: React.FC = () => {
         </div>
       )}
       {isLoginModalOpen && (
-        <LoginModal isOpen={isLoginModalOpen} onClose={handleLoginModalClose} />
+        <LoginModal isOpen={isLoginModalOpen} onClose={handleLoginModalClose} setIsLoggedIn = {setIsLoggedIn}/>
       )}
     </aside>
   );

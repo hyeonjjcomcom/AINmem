@@ -10,6 +10,7 @@ import styles from './LoginModal.module.css';
 interface LoginModalProps {
   isOpen: boolean;
   onClose: () => void;
+  setIsLoggedIn : React.Dispatch<React.SetStateAction<boolean>>; 
 }
 
 interface VerifyPayload {
@@ -19,7 +20,7 @@ interface VerifyPayload {
   chainID: number
 }
 
-const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
+const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose , setIsLoggedIn}) => {
   const [email, setEmail] = useState('');
   const ain = new Ain('https://testnet-api.ainetwork.ai', 'wss://testnet-event.ainetwork.ai', 0);
 
@@ -66,6 +67,13 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
     
     const result = await checkVerify(payload);
     console.log("검증 결과값: ",result)
+    if (result===true) {
+      setIsLoggedIn(true);
+      onClose();
+    }else {
+      alert("검증 실패. 로그인에 실패하였습니다.");
+    }
+
   };
 
 
