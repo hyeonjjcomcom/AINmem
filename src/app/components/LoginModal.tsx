@@ -10,7 +10,8 @@ import styles from './LoginModal.module.css';
 interface LoginModalProps {
   isOpen: boolean;
   onClose: () => void;
-  setIsLoggedIn : React.Dispatch<React.SetStateAction<boolean>>; 
+  setIsLoggedIn : React.Dispatch<React.SetStateAction<boolean>>;
+  setUserName : React.Dispatch<React.SetStateAction<string | null>>;
 }
 
 interface VerifyPayload {
@@ -20,7 +21,7 @@ interface VerifyPayload {
   chainID: number
 }
 
-const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose , setIsLoggedIn}) => {
+const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose , setIsLoggedIn, setUserName}) => {
   const [email, setEmail] = useState('');
   const ain = new Ain('https://testnet-api.ainetwork.ai', 'wss://testnet-event.ainetwork.ai', 0);
 
@@ -69,13 +70,13 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose , setIsLoggedIn
     console.log("검증 결과값: ",result)
     if (result===true) {
       setIsLoggedIn(true);
+      setUserName(address);
       onClose();
     }else {
       alert("검증 실패. 로그인에 실패하였습니다.");
     }
 
   };
-
 
   const walletOptions = [
     { name: 'AINwallet', icon: 'AINwallet_logo.svg', onclick: handleAINwalletClick },

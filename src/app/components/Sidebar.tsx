@@ -54,6 +54,7 @@ const Sidebar: React.FC = () => {
   const router = useRouter(); 
   const pathname = usePathname();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userName, setUserName] = useState<string | null>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false); // 드롭다운 상태 추가
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
@@ -88,6 +89,24 @@ const Sidebar: React.FC = () => {
     setIsDropdownOpen(false);
   };
 
+  // userName을 받아 포맷팅된 문자열을 반환하는 함수
+  const formatUserName = (name: string | null): string => {
+    // 1. name이 null이거나 빈 문자열이면 아무것도 표시하지 않음
+    if (!name) {
+      return '';
+    }
+
+    // 2. name의 길이가 8자 이하면 그대로 보여줌 (예: "abcdefgh")
+    if (name.length <= 8) {
+      return name;
+    }
+
+    // 3. 8자보다 길면 앞 4자, 뒤 4자를 잘라 중간에 "..."을 넣어 반환
+    const firstPart = name.slice(0, 4);
+    const lastPart = name.slice(-4);
+    return `${firstPart}...${lastPart}`;
+  };
+
   return (
     <aside className={styles.sidebar} id="sidebar">
       <div className={styles.logo}>
@@ -117,7 +136,7 @@ const Sidebar: React.FC = () => {
             U
           </div>
           <div className={styles['user-info']} onClick={toggleDropdown}>
-            <div style={{ fontSize: '14px', fontWeight: '500' }}>User</div>
+            <div style={{ fontSize: '14px', fontWeight: '500' }}>{formatUserName(userName)}</div>
             <div style={{ fontSize: '12px', color: '#888' }}>Free Plan</div>
           </div>
           
@@ -144,7 +163,7 @@ const Sidebar: React.FC = () => {
         </div>
       )}
       {isLoginModalOpen && (
-        <LoginModal isOpen={isLoginModalOpen} onClose={handleLoginModalClose} setIsLoggedIn = {setIsLoggedIn}/>
+        <LoginModal isOpen={isLoginModalOpen} onClose={handleLoginModalClose} setIsLoggedIn = {setIsLoggedIn} setUserName = {setUserName}/>
       )}
     </aside>
   );
