@@ -195,6 +195,11 @@ export default function HomePage() {
       .attr("stroke-opacity", 0.6)
       .attr("stroke-width", (d: LinkData) => strokeWidthScale(d.count))
       .style("cursor", "pointer")
+      .each(function(d) {
+          // CSS 변수 설정하고 클래스 추가
+          this.style.setProperty('--dynamic-stroke-width', strokeWidthScale(d.count) + 'px');
+          d3.select(this).classed('dynamic-width', true);
+      })
       .on("click", function(event, d) {
         setSelectedLink(d);
         setLinkModalOpen(true);
