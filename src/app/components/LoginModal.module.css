@@ -105,6 +105,12 @@
   object-fit: cover;
 }
 
+.logo-image {
+  width: calc(100% + 1px);
+  height: calc(100% + 1px);
+  object-fit: cover;
+}
+
 /* Title */
 .modal-title {
   font-size: 24px;

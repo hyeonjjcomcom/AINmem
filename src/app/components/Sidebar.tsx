@@ -5,6 +5,7 @@ import React, { useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 
 import UserDropdown from './UserDropdown'; // 같은 레벨의 파일에서 import
+import LoginModal from './LoginModal';
 
 interface SvgIconProps {
   path: string;
@@ -54,13 +55,21 @@ const Sidebar: React.FC = () => {
   const pathname = usePathname();
   const [isLoggedIn, setIsLoggedIn] = useState(true);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false); // 드롭다운 상태 추가
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
   const handleNavigation = (path: string) => {
     router.push(path); 
   };
 
-  const handleLogin = () => {
-    setIsLoggedIn(true);
+  //로그인 모달 닫기
+  const handleLoginModalClose = () => {
+    setIsLoginModalOpen(false); // 모달 닫기
+  };
+
+  //로그인 모달 열기
+  const handleLoginModal = () => {
+    setIsLoginModalOpen(true);
+    //setIsLoggedIn(true);
     console.log('User logged in');
   };
 
@@ -127,12 +136,15 @@ const Sidebar: React.FC = () => {
             <div style={{ fontSize: '14px', fontWeight: '500' }}>Hello</div>
             <div 
               style={{ fontSize: '12px', color: '#888', cursor: 'pointer' }} 
-              onClick={handleLogin}
+              onClick={handleLoginModal}
             >
               Please Login
             </div>
           </div>
         </div>
+      )}
+      {isLoginModalOpen && (
+        <LoginModal isOpen={isLoginModalOpen} onClose={handleLoginModalClose} />
       )}
     </aside>
   );
