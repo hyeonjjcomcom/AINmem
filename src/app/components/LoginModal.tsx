@@ -108,6 +108,21 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose , setIsLoggedIn
             {/* Logo Section */}
             <div className={styles["logo-section"]}>
               <div className={styles["logo-container"]}>
+                <video 
+                  autoPlay 
+                  loop 
+                  muted 
+                  playsInline 
+                  preload="auto"
+                  className={styles["logo-video"]}
+                >
+                  <source src="Ainmem_V0.mp4" type="video/mp4" />
+                </video>
+              </div>
+            </div>
+            {/*
+            <div className={styles["logo-section"]}>
+              <div className={styles["logo-container"]}>
                 <img
                   src="/AINmem_V0.png" 
                   alt="로고 이미지" 
@@ -115,7 +130,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose , setIsLoggedIn
                 >
                 </img>
               </div>
-            </div>
+            </div>*/}
 
             {/* Title */}
             <h4 className={styles["modal-title"]}>AINmem으로 연결</h4>
