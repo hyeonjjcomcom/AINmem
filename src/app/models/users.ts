@@ -3,8 +3,8 @@ import mongoose, { Document, Schema } from 'mongoose';
 // 사용자 인터페이스 정의
 export interface User extends Document {
   user_address: string;
-  email: string;
-  nickname: string;
+  email: string | null;
+  nickname: string | null;
   // 나중에 추가될 필드들을 위한 확장 가능한 구조
   createdAt?: Date;
   updatedAt?: Date;
@@ -20,14 +20,13 @@ const UserSchema: Schema = new Schema({
   },
   email: {
     type: String,
-    required: true,
     unique: true,
+    sparse: true,
     lowercase: true,
     trim: true
   },
   nickname: {
     type: String,
-    required: true,
     trim: true
   }
 }, {
@@ -37,7 +36,7 @@ const UserSchema: Schema = new Schema({
 
 // 인덱스 설정 (성능 최적화)
 UserSchema.index({ user_address: 1 });
-UserSchema.index({ email: 1 });
+UserSchema.index({ email: 1 }, { sparse: true });
 
 // 모델 생성 (이미 존재하면 기존 모델 사용)
 export default mongoose.models.User || mongoose.model<User>('User', UserSchema);

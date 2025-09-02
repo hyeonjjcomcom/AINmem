@@ -72,6 +72,23 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose , setIsLoggedIn
       //로그인이 정상적으로 되었을 경우
       setIsLoggedIn(true);
       setUserName(address);
+
+      //검증 완료 후 유저 database에 등록
+      try {
+        const response = await fetch('/api/users', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            user_address: address,
+            email: null,
+            nickname: null
+          })
+        });
+      } catch (error: any) {
+        console.log('database users table 유저 등록 시 에러 발생',error);
+      }
       onClose();
     }else {
       alert("검증 실패. 로그인에 실패하였습니다.");

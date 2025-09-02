@@ -19,19 +19,20 @@ export async function POST(request: Request) {
     return Response.json({ 
       success: true, 
       user: {
-        id: user._id,
         user_address: user.user_address,
         email: user.email,
         nickname: user.nickname
       }
     });
   } catch (error: any) {
+    console.error('❌ POST /api/users error:', error);   // 에러 전체 출력
+    console.error('❌ error.message:', error?.message);
+    console.error('❌ error.stack:', error?.stack);
     if (error.code === 11000) {
       return Response.json({ 
         error: '이미 존재하는 사용자입니다' 
       }, { status: 400 });
     }
-    
     return Response.json({ 
       error: '사용자 생성 실패' 
     }, { status: 500 });
