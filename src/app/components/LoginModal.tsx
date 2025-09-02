@@ -69,6 +69,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose , setIsLoggedIn
     const result = await checkVerify(payload);
     console.log("검증 결과값: ",result)
     if (result===true) {
+      //로그인이 정상적으로 되었을 경우
       setIsLoggedIn(true);
       setUserName(address);
       onClose();
