@@ -258,6 +258,9 @@
     padding: 20px;
     max-height: 60vh;
     overflow-y: auto;
+        /* 스크롤바 스타일링 */
+    scrollbar-width: thin;
+    scrollbar-color: #444 #1a1a1a;
 }
 
 .detail-section {
@@ -275,6 +278,9 @@
     color: #ccc;
     line-height: 1.6;
     white-space: pre-wrap;
+    word-wrap: break-word;
+    word-break: break-word;
+    overflow-wrap: break-word;
 }
 
 /* Mobile Responsive */
