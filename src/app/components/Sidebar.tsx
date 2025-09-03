@@ -1,7 +1,7 @@
 "use client";
 
 import styles from './Sidebar.module.css';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 
 import UserDropdown from './UserDropdown'; // 같은 레벨의 파일에서 import
@@ -54,9 +54,23 @@ const Sidebar: React.FC = () => {
   const router = useRouter(); 
   const pathname = usePathname();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userName, setUserName] = useState<string | null>(null);
+  const [userName, setUserName] = useState<string | null>(() => {
+    if (typeof window !== "undefined") {
+      return sessionStorage.getItem("userName");
+    }
+    return null; // SSR 시 초기값
+  });
   const [isDropdownOpen, setIsDropdownOpen] = useState(false); // 드롭다운 상태 추가
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+
+  useEffect(() => {
+    const stored = sessionStorage.getItem("isLogined");
+    const storedUserName = sessionStorage.getItem("userName");
+    if (stored === "true") {
+      setIsLoggedIn(true);
+      setUserName(storedUserName);
+    }
+  }, []);
 
   const handleNavigation = (path: string) => {
     router.push(path); 
@@ -76,6 +90,9 @@ const Sidebar: React.FC = () => {
 
   const handleLogout = () => {
     setIsLoggedIn(false);
+    setUserName(null);
+    sessionStorage.removeItem("isLogined");
+    sessionStorage.removeItem("userName");
     console.log('User logged out');
   };
 

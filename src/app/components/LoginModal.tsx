@@ -72,6 +72,8 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose , setIsLoggedIn
       //로그인이 정상적으로 되었을 경우
       setIsLoggedIn(true);
       setUserName(address);
+      sessionStorage.setItem("isLogined", "true");
+      sessionStorage.setItem("userName", address); 
 
       //검증 완료 후 유저 database에 등록
       try {
