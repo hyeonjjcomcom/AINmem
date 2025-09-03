@@ -36,7 +36,6 @@ const UserSchema: Schema = new Schema({
 
 // 인덱스 설정 (성능 최적화)
 UserSchema.index({ user_address: 1 });
-UserSchema.index({ email: 1 }, { sparse: true });
 
 // 모델 생성 (이미 존재하면 기존 모델 사용)
 export default mongoose.models.User || mongoose.model<User>('User', UserSchema);
