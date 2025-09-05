@@ -31,6 +31,8 @@ const Memories: React.FC<MemoriesProps> = ({
   const [selectedMemory, setSelectedMemory] = useState<Memory | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
+  const [apiMemories, setApiMemories] = useState<Memory[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   // 샘플 데이터 (memories가 비어있을 때)
   const sampleMemories: Memory[] = [
@@ -60,7 +62,60 @@ const Memories: React.FC<MemoriesProps> = ({
     }
   ];
 
-  const memoriesData = memories.length > 0 ? memories : sampleMemories;
+  // API에서 데이터 가져오기
+  useEffect(() => {
+    const fetchMemories = async () => {
+      try {
+        setIsLoading(true);
+        const response = await fetch('/api?endpoint=memories');
+        
+        if (response.ok) {
+          const data = await response.json();
+          
+          // API 데이터를 Memory 인터페이스에 맞게 변환
+          const transformedData: Memory[] = data.map((item: any) => {
+            let parsedContent = '';
+            let inputText = '';
+            
+            // content가 JSON 문자열인 경우 파싱
+            if (item.content) {
+              try {
+                const parsed = JSON.parse(item.content);
+                inputText = parsed.input_text || '';
+                parsedContent = inputText;
+              } catch (e) {
+                parsedContent = item.content;
+              }
+            }
+            
+            return {
+              _id: item.id,
+              id: item.id,
+              title: item.title,
+              input_text: inputText || parsedContent,
+              content: parsedContent,
+              timestamp: item.createdAt,
+              createdAt: item.createdAt,
+              tags: item.tags || [],
+              category: item.category || 'notes'
+            };
+          });
+          
+          setApiMemories(transformedData);
+        } else {
+          console.error('Failed to fetch memories from API');
+        }
+      } catch (error) {
+        console.error('Error fetching memories:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchMemories();
+  }, []);
+
+  const memoriesData = apiMemories.length > 0 ? apiMemories : (memories.length > 0 ? memories : sampleMemories);
 
   // 텍스트 콘텐츠 추출
   const getDisplayText = (memory: Memory): string => {
@@ -224,7 +279,52 @@ const Memories: React.FC<MemoriesProps> = ({
             </button>
             <button 
               className={`${styles['btn']} ${styles['btn-primary']}`}
-              onClick={() => window.location.reload()}
+              onClick={() => {
+                setIsLoading(true);
+                const fetchMemories = async () => {
+                  try {
+                    const response = await fetch('/api?endpoint=memories');
+                    
+                    if (response.ok) {
+                      const data = await response.json();
+                      
+                      const transformedData: Memory[] = data.map((item: any) => {
+                        let parsedContent = '';
+                        let inputText = '';
+                        
+                        if (item.content) {
+                          try {
+                            const parsed = JSON.parse(item.content);
+                            inputText = parsed.input_text || '';
+                            parsedContent = inputText;
+                          } catch (e) {
+                            parsedContent = item.content;
+                          }
+                        }
+                        
+                        return {
+                          _id: item.id,
+                          id: item.id,
+                          title: item.title,
+                          input_text: inputText || parsedContent,
+                          content: parsedContent,
+                          timestamp: item.createdAt,
+                          createdAt: item.createdAt,
+                          tags: item.tags || [],
+                          category: item.category || 'notes'
+                        };
+                      });
+                      
+                      setApiMemories(transformedData);
+                    }
+                  } catch (error) {
+                    console.error('Error refreshing memories:', error);
+                  } finally {
+                    setIsLoading(false);
+                  }
+                };
+                fetchMemories();
+              }}
             >
               <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
@@ -247,7 +347,11 @@ const Memories: React.FC<MemoriesProps> = ({
             ))}
           </div>
 
-          {filteredMemories.length === 0 ? (
+          {isLoading ? (
+            <div className={styles['empty-state']}>
+              <div className={styles['loading-spinner']}>Loading memories...</div>
+            </div>
+          ) : filteredMemories.length === 0 ? (
             <div className={styles['empty-state']}>
               <svg className={styles['empty-icon']} fill="currentColor" viewBox="0 0 24 24">
                 <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>

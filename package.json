@@ -11,6 +11,9 @@
     "@ainblockchain/ain-js": "^1.13.3",
     "@ainblockchain/ain-util": "^1.3.0",
     "d3": "^7.9.0",
+    "ethers": "^6.15.0",
+    "fol-sdk": "github:ainetwork-ai/fol-sdk#develop",
+    "mongoose": "^8.18.0",
     "next": "15.5.0",
     "react": "19.1.0",
     "react-dom": "19.1.0"
@@ -18,6 +21,7 @@
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@types/d3": "^7.4.3",
+    "@types/mongoose": "^5.11.96",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
