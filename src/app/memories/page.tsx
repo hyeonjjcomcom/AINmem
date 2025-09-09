@@ -16,17 +16,10 @@ interface Memory {
   user_id?: string;
 }
 
-interface MemoriesProps {
-  memories?: Memory[];
-  dbName?: string;
-  collectionName?: string;
-}
+const Memories = () => {
+  const dbName = "sample_db";
+  const collectionName = "memories_collection";
 
-const Memories: React.FC<MemoriesProps> = ({ 
-  memories = [], 
-  dbName = "sample_db", 
-  collectionName = "memories_collection" 
-}) => {
   const [currentFilter, setCurrentFilter] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [selectedMemory, setSelectedMemory] = useState<Memory | null>(null);
@@ -98,7 +91,7 @@ const Memories: React.FC<MemoriesProps> = ({
 }, []);
 
 
-  const memoriesData = apiMemories.length > 0 ? apiMemories : memories;
+  const memoriesData = apiMemories;
 
   // 텍스트 콘텐츠 추출
   const getDisplayText = (memory: Memory): string => {
