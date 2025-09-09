@@ -1,28 +1,4 @@
 /* CSS 변수 정의 */
-:root {
-    /* 컬러 팔레트 */
-    --primary-color: #6366f1;
-    --secondary-color: #8b5cf6;
-    --background-color: #0a0a0a;
-    --surface-color: #111111;
-    --surface-secondary: #1a1a1a;
-    --text-primary: #ffffff;
-    --text-secondary: #cccccc;
-    --text-muted: #888888;
-    --border-color: #2a2a2a;
-    --hover-color: #1a1a1a;
-    --success-color: #10b981;
-    --warning-color: #f59e0b;
-    --error-color: #ef4444;
-    
-    /* 간격 및 크기 */
-    --sidebar-width: 250px;
-    --header-height: 64px;
-    --border-radius: 8px;
-    --border-radius-lg: 12px;
-    --shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
-}
 
 /* 6. 메인 컨테이너 */
 .main-container {
