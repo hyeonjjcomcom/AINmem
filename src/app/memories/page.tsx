@@ -13,19 +13,13 @@ interface Memory {
   createdAt?: string;
   tags?: string[];
   category?: string;
+  user_id?: string;
 }
 
-interface MemoriesProps {
-  memories?: Memory[];
-  dbName?: string;
-  collectionName?: string;
-}
+const Memories = () => {
+  const dbName = "sample_db";
+  const collectionName = "memories_collection";
 
-const Memories: React.FC<MemoriesProps> = ({ 
-  memories = [], 
-  dbName = "sample_db", 
-  collectionName = "memories_collection" 
-}) => {
   const [currentFilter, setCurrentFilter] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [selectedMemory, setSelectedMemory] = useState<Memory | null>(null);
@@ -34,49 +28,30 @@ const Memories: React.FC<MemoriesProps> = ({
   const [apiMemories, setApiMemories] = useState<Memory[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  // 샘플 데이터 (memories가 비어있을 때)
-  const sampleMemories: Memory[] = [
-    {
-      _id: '1',
-      title: 'Meeting Notes',
-      input_text: 'Team meeting discussion about Q3 roadmap and feature prioritization',
-      timestamp: new Date(Date.now() - 86400000).toISOString(),
-      tags: ['work', 'meeting'],
-      category: 'work'
-    },
-    {
-      _id: '2',
-      title: 'Project Ideas',
-      input_text: 'New app concept for personal productivity. Could integrate with calendar and task management.',
-      timestamp: new Date(Date.now() - 172800000).toISOString(),
-      tags: ['ideas', 'productivity'],
-      category: 'ideas'
-    },
-    {
-      _id: '3',
-      title: 'Personal Reflection',
-      input_text: 'Thinking about work-life balance and how to manage stress better during busy periods.',
-      timestamp: new Date(Date.now() - 259200000).toISOString(),
-      tags: ['personal', 'reflection'],
-      category: 'personal'
-    }
-  ];
-
   // API에서 데이터 가져오기
   useEffect(() => {
     const fetchMemories = async () => {
       try {
+        const isLoggined = sessionStorage.getItem('isLogined');
+        if (isLoggined !== 'true') {
+          // 로그인 상태가 아니면 fetch하지 않음
+          return;
+        }
+
         setIsLoading(true);
-        const response = await fetch('/api?endpoint=memories');
-        
+
+        const userName = sessionStorage.getItem('userName') || '';
+
+        const response = await fetch(`/api?endpoint=memories&userName=${encodeURIComponent(userName)}`);
+
         if (response.ok) {
           const data = await response.json();
-          
+
           // API 데이터를 Memory 인터페이스에 맞게 변환
           const transformedData: Memory[] = data.map((item: any) => {
             let parsedContent = '';
             let inputText = '';
-            
+
             // content가 JSON 문자열인 경우 파싱
             if (item.content) {
               try {
@@ -87,7 +62,7 @@ const Memories: React.FC<MemoriesProps> = ({
                 parsedContent = item.content;
               }
             }
-            
+
             return {
               _id: item.id,
               id: item.id,
@@ -100,7 +75,7 @@ const Memories: React.FC<MemoriesProps> = ({
               category: item.category || 'notes'
             };
           });
-          
+
           setApiMemories(transformedData);
         } else {
           console.error('Failed to fetch memories from API');
@@ -112,10 +87,11 @@ const Memories: React.FC<MemoriesProps> = ({
       }
     };
 
-    fetchMemories();
-  }, []);
+  fetchMemories();
+}, []);
 
-  const memoriesData = apiMemories.length > 0 ? apiMemories : (memories.length > 0 ? memories : sampleMemories);
+
+  const memoriesData = apiMemories;
 
   // 텍스트 콘텐츠 추출
   const getDisplayText = (memory: Memory): string => {
@@ -123,7 +99,7 @@ const Memories: React.FC<MemoriesProps> = ({
       try {
         if (memory.input_text.startsWith('{') || memory.input_text.startsWith('[')) {
           const parsed = JSON.parse(memory.input_text);
-          
+          if (parsed.user_id) return parsed.user_id;
           if (parsed.input_text) return parsed.input_text;
           if (parsed.content) return parsed.content;
           if (parsed.text) return parsed.text;

@@ -57,6 +57,7 @@ export default function HomePage() {
   const [selectedConstant, setSelectedConstant] = useState<string | null>(null);
   const [nodeCount, setNodeCount] = useState(0);
   const [linkCount, setLinkCount] = useState(0);
+  const [isBuilding, setIsBuilding] = useState(false);
 
   const color = d3.scaleOrdinal()
     .domain(['predicate', 'entity'])
@@ -66,6 +67,7 @@ export default function HomePage() {
     return data;
   };
 
+  
   const buildGraph = async () => {
     try {
       // ✅ 수정: 새로운 API 형식으로 변경
@@ -295,6 +297,7 @@ export default function HomePage() {
   };
 
   const buildNewGraph = async () => {
+    setIsBuilding(true); // 빌드 시작
     try {
       // ✅ 수정: 새로운 API 형식으로 변경
       await fetch('/api?endpoint=facts', { method: 'DELETE' });
@@ -316,6 +319,8 @@ export default function HomePage() {
       console.log('📊 New graph built successfully!');
     } catch (error) {
       console.error('Error building new graph:', error);
+    } finally {
+      setIsBuilding(false); // 빌드 완료 (성공/실패 상관없이)
     }
   };
 
@@ -443,6 +448,29 @@ export default function HomePage() {
           isOpen={constantModalOpen}
           onClose={() => setConstantModalOpen(false)}
         />
+        {/* 로딩 오버레이 추가 */}
+        {isBuilding && (
+          <div style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            backgroundColor: 'rgba(0, 0, 0, 0.7)',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            zIndex: 9999,
+            color: 'white',
+            fontSize: '18px',
+            fontWeight: 'bold'
+          }}>
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ marginBottom: '20px' }}>🔄</div>
+              <div>Building Graph...</div>
+            </div>
+          </div>
+        )}
       </main>
     </>
   );

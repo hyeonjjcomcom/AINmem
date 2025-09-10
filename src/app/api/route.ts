@@ -8,14 +8,7 @@ import {
   MongoDbFolStore,
   createFolClient
 } from 'fol-sdk';
-
-// MongoDB 연결 함수
-async function connectMongo() {
-  if (mongoose.connection.readyState === 0) {
-    await mongoose.connect(process.env.MONGODB_URI!);
-    console.log("MongoDB 연결됨");
-  }
-}
+import connectDB from '@/app/lib/mongodb';
 
 // 메모리 저장소 (실제로는 Redis 사용 권장)
 const nonces: { [key: string]: string } = {};
@@ -36,11 +29,11 @@ export async function GET(request: NextRequest) {
   const endpoint = searchParams.get('endpoint');
   
   try {
-    await connectMongo();
+    await connectDB;
 
     switch (endpoint) {
       case 'memories':
-        return await getMemoriesData();
+        return await getMemoriesData(request); // ✅ userName만 넘김
       
       case 'memoriesDocument':
         return await getMemoriesDocument();
@@ -71,7 +64,7 @@ export async function POST(request: NextRequest) {
   const endpoint = searchParams.get('endpoint');
   
   try {
-    await connectMongo();
+    await connectDB();
     const body = await request.json();
 
     switch (endpoint) {
@@ -101,7 +94,7 @@ export async function DELETE(request: NextRequest) {
   const endpoint = searchParams.get('endpoint');
   
   try {
-    await connectMongo();
+    await connectDB();
 
     switch (endpoint) {
       case 'facts':
@@ -126,34 +119,45 @@ export async function DELETE(request: NextRequest) {
 }
 
 // API 함수들
-async function getMemoriesData() {
+async function getMemoriesData(request: Request) {
   try {
+    // 쿼리 파라미터에서 userName 추출
+    const { searchParams } = new URL(request.url);
+    const userName = searchParams.get("userName");
+    console.log(userName);
+
+    // userName이 있으면 user_id 기준으로 필터링, 없으면 전체
+    const query = userName ? { user_id: userName } : {};
+
     const data = await mongoose.connection
-      .collection('chatlogs')
-      .find({})
+      .collection("chatlogs")
+      .find(query)
       .sort({ createdAt: 1 })
       .toArray();
-    
+
     const memories = data.map((item, index) => {
       const doc = item.toObject ? item.toObject() : item;
       return {
         id: doc._id || index,
         title: doc.title || `Memory ${index + 1}`,
         content: doc.content || doc.message || JSON.stringify(doc, null, 2),
-        tags: doc.tags || ['general'],
-        category: doc.category || 'notes',
-        date: doc.createdAt ? new Date(doc.createdAt).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
-        createdAt: doc.createdAt || new Date()
+        tags: doc.tags || ["general"],
+        category: doc.category || "notes",
+        date: doc.createdAt
+          ? new Date(doc.createdAt).toISOString().split("T")[0]
+          : new Date().toISOString().split("T")[0],
+        createdAt: doc.createdAt || new Date(),
       };
     });
-    
-    console.log('📊 Fetched memories data:', memories);
+
+    console.log("📊 Fetched memories data:", memories);
     return NextResponse.json(memories.reverse());
   } catch (error) {
-    console.error('❌ Error fetching memories data:', error);
+    console.error("❌ Error fetching memories data:", error);
     throw error;
   }
 }
+
 
 async function getMemoriesDocument() {
   try {
