@@ -4,34 +4,13 @@ import connectDB from '@/app/lib/mongodb';
 import { v4 as uuidv4 } from 'uuid';
 
 // import { enc } from 'your-token-encoder'; // 실제 토큰 인코더 import
-// import ChatLog from 'your-chatlog-model'; // 실제 MongoDB 모델 import
+import { encoding_for_model } from '@dqbd/tiktoken';
+const enc = encoding_for_model('gpt-4'); // 또는 'gpt-3.5-turbo'
 
-// 스키마 정의
-const chatLogSchema = new mongoose.Schema({
-  id: { type: String, required: true }, // UUID
-  user_id: String,
-  session_id: String,
-  turn_number: Number,
-  timestamp: { type: Date, default: Date.now },
-  input_text: String,
-  input_metadata: mongoose.Schema.Types.Mixed,
-  input_type: String,
-  model_response: String,
-  response_type: String,
-  model_version: String,
-  latency: Number,
-  is_successful: Boolean,
-  error_message: String,
-  feedback: String,
-  tags: [String],
-  tokens_input: Number,
-  tokens_output: Number
-});
+import ChatLog from '@/app/models/chatLogs'; // 실제 MongoDB 모델 import
 
-const ChatLog = mongoose.model('ChatLog', chatLogSchema);
 
 export async function POST(request: NextRequest) {
-
   try {
     await connectDB();
     const data = await request.json();
@@ -78,7 +57,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ status: 'ok', id: log.id }, { status: 200 });
 
-  } catch (err) {
+  } catch (err: any) {
     console.error("❌ DB 저장 오류:", err);
     return NextResponse.json(
       { status: 'error', error: err.message }, 
