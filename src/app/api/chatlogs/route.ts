@@ -1,9 +1,7 @@
-// app/api/log/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/app/lib/mongodb';
 import { v4 as uuidv4 } from 'uuid';
 
-// import { enc } from 'your-token-encoder'; // 실제 토큰 인코더 import
 import { encoding_for_model } from '@dqbd/tiktoken';
 const enc = encoding_for_model('gpt-4'); // 또는 'gpt-3.5-turbo'
 
