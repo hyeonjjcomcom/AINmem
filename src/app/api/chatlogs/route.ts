@@ -7,7 +7,6 @@ const enc = encoding_for_model('gpt-4'); // 또는 'gpt-3.5-turbo'
 
 import ChatLog from '@/app/models/chatLogs'; // 실제 MongoDB 모델 import
 
-
 export async function POST(request: NextRequest) {
   try {
     await connectDB();
