@@ -1,12 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/app/lib/mongodb';
 import { v4 as uuidv4 } from 'uuid';
-
-import { encoding_for_model } from '@dqbd/tiktoken';
-const enc = encoding_for_model('gpt-4'); // 또는 'gpt-3.5-turbo'
+import { encode } from 'gpt-tokenizer'; // 대체 토크나이저 라이브러리
 
 import ChatLog from '@/app/models/chatLogs'; // 실제 MongoDB 모델 import
-
 
 export async function POST(request: NextRequest) {
   try {
@@ -30,7 +27,7 @@ export async function POST(request: NextRequest) {
 
     // input_text 문자열화 + 토큰 수 계산
     const safeInputText = typeof input_text === 'string' ? input_text : String(input_text || '');
-    const inputTokens = enc.encode(safeInputText);
+    const inputTokens = encode(safeInputText);
     data.tokens_input = inputTokens.length;
 
     // 🔥 turn_number 설정
@@ -62,4 +59,9 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
+}
+
+// 👉 브라우저에서 보낼 때 필요 (CORS preflight OPTIONS 요청 처리)
+export async function OPTIONS() {
+  return NextResponse.json({}, { status: 200 });
 }
