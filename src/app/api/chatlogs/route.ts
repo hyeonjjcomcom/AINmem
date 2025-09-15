@@ -4,6 +4,12 @@ import { v4 as uuidv4 } from 'uuid';
 import { encode } from 'gpt-tokenizer'; // 대체 토크나이저 라이브러리
 import ChatLog from '@/app/models/chatLogs'; // 실제 MongoDB 모델 import
 
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",  // 또는 특정 도메인
+  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type, Authorization",
+};
+
 export async function POST(request: NextRequest) {
   try {
     await connectDB();
@@ -49,18 +55,21 @@ export async function POST(request: NextRequest) {
 
     const log = await ChatLog.findOneAndUpdate(filter, update, options);
 
-    return NextResponse.json({ status: 'ok', id: log.id }, { status: 200 });
+    return NextResponse.json({ ok: true }, { headers: corsHeaders });
 
   } catch (err: any) {
     console.error("❌ DB 저장 오류:", err);
     return NextResponse.json(
-      { status: 'error', error: err.message }, 
-      { status: 500 }
+      { status: 'error', error: err.message },
+      { status: 500, headers: corsHeaders }
     );
   }
 }
 
-// 👉 브라우저에서 보낼 때 필요 (CORS preflight OPTIONS 요청 처리)
+// 👉 CORS preflight (OPTIONS 요청 처리)
 export async function OPTIONS() {
-  return NextResponse.json({}, { status: 200 });
+  return new NextResponse(null, {
+    status: 200,
+    headers: corsHeaders,
+  });
 }
