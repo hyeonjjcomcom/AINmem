@@ -2,6 +2,7 @@
 import Ain from '@ainblockchain/ain-js';
 import { NextRequest } from 'next/server';
 import ainUtil from '@ainblockchain/ain-util';
+import { ecVerifySig } from '@ainblockchain/ain-util';
 
 interface VerifyPayload {
   message: any, 
