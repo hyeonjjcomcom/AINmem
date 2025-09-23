@@ -2,7 +2,6 @@
 import Ain from '@ainblockchain/ain-js';
 import { NextRequest } from 'next/server';
 import ainUtil from '@ainblockchain/ain-util';
-import { ecVerifySig } from '@ainblockchain/ain-util';
 
 interface VerifyPayload {
   message: any, 
@@ -26,7 +25,7 @@ export async function POST(request: NextRequest) {
     
     // 여기서 실제 검증 로직 수행
     // const isValid = await verifySignature(message, signature, address);
-    const isValid = await ecVerifySig(message, signature, address,chainID);
+    const isValid = await ainUtil.ecVerifySig(message, signature, address,chainID);
     return Response.json({
       isValid
     });
