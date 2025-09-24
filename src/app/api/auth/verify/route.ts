@@ -25,11 +25,6 @@ export async function POST(request: NextRequest) {
     const ainUtilModule = await import('@ainblockchain/ain-util');
     const ainUtil = ainUtilModule.default || ainUtilModule;
 
-    console.log(ain);
-    console.log('ainUtil:', ainUtil);
-    console.log('message:', message);
-    console.log('signature:', signature);
-    console.log('address:', address);
     console.log('chainID:', chainID);
     // 여기서 실제 검증 로직 수행
     // const isValid = await verifySignature(message, signature, address);

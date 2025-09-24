@@ -50,6 +50,13 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose , setIsLoggedIn
     // address가 잘 나온다는 것은 지갑과 잘 연결이 되었다는 의미.
     const address = await ain.signer.getAddress()
     console.log('address:', address);
+
+    let chainID = 0; // 기본값 설정
+    if (typeof window !== 'undefined' && window.ainetwork) {
+      const network = await window.ainetwork?.getNetwork();
+      console.log('network:', network);
+      chainID = network.chainId;
+    }
     
     // signMessage 해서 암호화된걸(시그니쳐) 서버로 보내고
     const testMessage = "hello, we are ainmem"
@@ -61,7 +68,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose , setIsLoggedIn
       message: testMessage,  // data -> message로 변경
       signature,
       address,
-      chainID: 0 //testnet, 실제 배포 시에는 변경 필요
+      chainID
     };
     
     const result = await checkVerify(payload);

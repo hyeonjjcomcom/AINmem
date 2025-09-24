@@ -18,12 +18,13 @@ const SvgIcon: React.FC<SvgIconProps> = ({ path }) => (
 );
 
 const navItems = [
+  /* hide request page
   { 
     id: 'requests', 
     label: 'Requests', 
     iconPath: 'M2.01 21L23 12 2.01 3 2 10l15 2-15 2z',
     path: '/requests' 
-  },
+  },*/
   { 
     id: 'memories', 
     label: 'Memories', 
