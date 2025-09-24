@@ -15,11 +15,11 @@ interface Memory {
   category?: string;
   user_id?: string;
 }
-
 const Memories = () => {
   const dbName = "sample_db";
   const collectionName = "memories_collection";
 
+  // 기존 state들...
   const [currentFilter, setCurrentFilter] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [selectedMemory, setSelectedMemory] = useState<Memory | null>(null);
@@ -27,14 +27,48 @@ const Memories = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
   const [apiMemories, setApiMemories] = useState<Memory[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  
+  // 로그인 상태를 추적하는 state 추가
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
 
-  // API에서 데이터 가져오기
+  // 로그인 상태 확인 useEffect
+  useEffect(() => {
+    const checkLoginStatus = () => {
+      const loginStatus = sessionStorage.getItem('isLogined') === 'true';
+      setIsLoggedIn(loginStatus);
+    };
+
+    // 초기 로그인 상태 확인
+    checkLoginStatus();
+
+    // storage 변경 감지 (같은 탭에서의 변경도 감지)
+    const handleStorageChange = () => {
+      checkLoginStatus();
+    };
+
+    // 커스텀 이벤트 리스너 (사이드바에서 로그인 시 발생)
+    const handleLoginEvent = () => {
+      checkLoginStatus();
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('userLoggedIn', handleLoginEvent);
+    window.addEventListener('userLoggedOut', handleLoginEvent);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('userLoggedIn', handleLoginEvent);
+      window.removeEventListener('userLoggedOut', handleLoginEvent);
+    };
+  }, []);
+
+  // 로그인 상태가 변경될 때마다 데이터 fetch
   useEffect(() => {
     const fetchMemories = async () => {
       try {
-        const isLoggined = sessionStorage.getItem('isLogined');
-        if (isLoggined !== 'true') {
-          // 로그인 상태가 아니면 fetch하지 않음
+        if (!isLoggedIn) {
+          setApiMemories([]);
+          setIsLoading(false);
           return;
         }
 
@@ -79,16 +113,18 @@ const Memories = () => {
           setApiMemories(transformedData);
         } else {
           console.error('Failed to fetch memories from API');
+          setApiMemories([]);
         }
       } catch (error) {
         console.error('Error fetching memories:', error);
+        setApiMemories([]);
       } finally {
         setIsLoading(false);
       }
     };
 
-  fetchMemories();
-}, []);
+    fetchMemories();
+  }, [isLoggedIn]);
 
 
   const memoriesData = apiMemories;

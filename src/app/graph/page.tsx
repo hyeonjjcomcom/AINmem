@@ -299,12 +299,14 @@ export default function HomePage() {
   const buildNewGraph = async () => {
     setIsBuilding(true); // 빌드 시작
     try {
-      // ✅ 수정: 새로운 API 형식으로 변경
+      const user_id = sessionStorage.getItem("userName");
+      console.log('Building graph for user_id:', user_id);
+
       await fetch('/api?endpoint=facts', { method: 'DELETE' });
       await fetch('/api?endpoint=constants', { method: 'DELETE' });
       await fetch('/api?endpoint=predicates', { method: 'DELETE' });
 
-      const response = await fetch('/api?endpoint=memoriesDocument', { method: 'GET' });
+      const response = await fetch(`/api?endpoint=memoriesDocument&user_id=${user_id}`, { method: 'GET' });
       const document = await response.text();
 
       console.log('📄 Document to build:', document);

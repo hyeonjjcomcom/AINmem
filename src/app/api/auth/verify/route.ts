@@ -1,7 +1,6 @@
 // localhost:3000/api/auth/varify
 import Ain from '@ainblockchain/ain-js';
 import { NextRequest } from 'next/server';
-import ainUtil from '@ainblockchain/ain-util';
 
 interface VerifyPayload {
   message: any, 
@@ -23,9 +22,13 @@ export async function POST(request: NextRequest) {
     
     const ain = new Ain('https://testnet-api.ainetwork.ai', 'wss://testnet-event.ainetwork.ai', 0);
     
+    const ainUtilModule = await import('@ainblockchain/ain-util');
+    const ainUtil = ainUtilModule.default || ainUtilModule;
+
+    console.log('chainID:', chainID);
     // 여기서 실제 검증 로직 수행
     // const isValid = await verifySignature(message, signature, address);
-    const isValid = await ainUtil.ecVerifySig(message, signature, address,chainID);
+    const isValid = await ainUtil.ecVerifySig(message, signature, address, chainID);
     return Response.json({
       isValid
     });
