@@ -27,6 +27,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose , setIsLoggedIn
 
   async function checkVerify(payload: VerifyPayload): Promise<boolean> {
     try {
+      console.log('Sending payload to verify API:', payload);
       const res = await fetch('/api/auth/verify', {
         method: 'POST',
         headers: {
@@ -34,10 +35,6 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose , setIsLoggedIn
         },
         body: JSON.stringify(payload),
       });
-
-      if (!res.ok) {
-        throw new Error(`HTTP error! status: ${res.status}`);
-      }
 
       const { isValid } = await res.json(); // 서버에서 { isValid: true/false } 반환
       return isValid;
@@ -57,7 +54,8 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose , setIsLoggedIn
     // signMessage 해서 암호화된걸(시그니쳐) 서버로 보내고
     const testMessage = "hello, we are ainmem"
     const signature = await ain.signer.signMessage(testMessage);
-    
+    console.log('signature:', signature);
+
     // VerifyPayload 인터페이스에 맞춰 데이터 구성
     const payload: VerifyPayload = {
       message: testMessage,  // data -> message로 변경
