@@ -9,7 +9,7 @@ import styles from './LoginModal.module.css';
 
 interface LoginModalProps {
   isOpen: boolean;
-  onClose: () => void;
+  onClose: (loginSuccess?: boolean) => void; // ← 여기 수정
   setIsLoggedIn : React.Dispatch<React.SetStateAction<boolean>>;
   setUserName : React.Dispatch<React.SetStateAction<string | null>>;
 }
@@ -80,6 +80,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose , setIsLoggedIn
       sessionStorage.setItem("isLogined", "true");
       sessionStorage.setItem("userName", address); 
 
+
       //검증 완료 후 유저 database에 등록
       try {
         const response = await fetch('/api/users', {
@@ -96,7 +97,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose , setIsLoggedIn
       } catch (error: any) {
         console.log('database users table 유저 등록 시 에러 발생',error);
       }
-      onClose();
+      onClose(true);
     }else {
       alert("검증 실패. 로그인에 실패하였습니다.");
     }
@@ -117,7 +118,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose , setIsLoggedIn
       <div className={styles["modal-container"]}>
         <div className={styles["modal-content"]}>
           {/* Close Button */}
-          <button className={styles["close-button"]} onClick={onClose}>
+          <button className={styles["close-button"]} onClick={() => onClose(false)}>
             <svg 
               aria-label="Close" 
               fill="currentColor" 
