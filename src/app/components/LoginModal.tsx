@@ -53,7 +53,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose , setIsLoggedIn
 
     let chainID = 0; // 기본값 설정
     if (typeof window !== 'undefined' && window.ainetwork) {
-      const network = await window.ainetwork?.getNetwork();
+      const network = await (window as any).ainetwork?.getNetwork();
       console.log('network:', network);
       chainID = network.chainId;
     }
