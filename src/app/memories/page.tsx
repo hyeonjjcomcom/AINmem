@@ -295,7 +295,8 @@ const Memories = () => {
                 setIsLoading(true);
                 const fetchMemories = async () => {
                   try {
-                    const response = await fetch('/api?endpoint=memories');
+                    const userName = sessionStorage.getItem('userName') || '';
+                    const response = await fetch(`/api?endpoint=memories&userName=${encodeURIComponent(userName)}`);
                     
                     if (response.ok) {
                       const data = await response.json();
