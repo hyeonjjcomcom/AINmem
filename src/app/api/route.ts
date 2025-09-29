@@ -9,6 +9,7 @@ import {
   createFolClient
 } from 'fol-sdk';
 import connectDB from '@/app/lib/mongodb';
+import { use } from 'react';
 
 // 메모리 저장소 (실제로는 Redis 사용 권장)
 const nonces: { [key: string]: string } = {};
@@ -90,10 +91,10 @@ export async function POST(request: NextRequest) {
   try {
     await connectDB();
     const body = await request.json();
-
+    console.log('📥 POST request body:', body);
     switch (endpoint) {
       case 'buildFols':
-        return await buildFols(body);
+        return await buildFols(body, body.user_id); // ✅ user_id 추가
       
       case 'login':
         return await loginWithSignature(body);
@@ -248,7 +249,7 @@ async function getPredicates() {
   }
 }
 
-async function buildFols(body: { document: string }) {
+async function buildFols(body: { document: string }, user_id: string) {
   try {
     const geminiApiKey = process.env.GEMINI_API_KEY;
 
@@ -260,9 +261,9 @@ async function buildFols(body: { document: string }) {
     const builder = new FolBuilder({ llm: llmAdapter });
     const client = createFolClient(builder, store);
 
-    console.log('📥 Received request body:', body.document);
+    console.log('📥 User ID:', user_id);
 
-    const result = await client.buildAndSave(body.document);
+    const result = await client.buildAndSave(body.document, user_id);
     console.log('✅ Document built and saved successfully.');
     
     return NextResponse.json({ 
