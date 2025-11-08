@@ -64,14 +64,38 @@ const Sidebar: React.FC = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false); // 드롭다운 상태 추가
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
-  useEffect(() => {
-    const stored = sessionStorage.getItem("isLogined");
-    const storedUserName = sessionStorage.getItem("userName");
+  const syncAuthStateFromStorage = () => {
+    console.log('Syncing auth state...'); // 디버깅용 로그
+    const stored = typeof window !== "undefined" ? sessionStorage.getItem("isLogined") : null;
+    const storedUserName = typeof window !== "undefined" ? sessionStorage.getItem("userName") : null;
+    
     if (stored === "true") {
       setIsLoggedIn(true);
       setUserName(storedUserName);
+    } else {
+      setIsLoggedIn(false);
+      setUserName(null);
     }
-  }, []);
+  };
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return; // 서버 사이드 렌더링 시 window 객체 접근 방지
+    }
+
+    // 1. 컴포넌트 마운트 시 최초 1회 상태 동기화
+    syncAuthStateFromStorage();
+
+    // 2. 로그인/로그아웃 커스텀 이벤트에 대한 리스너 등록
+    window.addEventListener('userLoggedIn', syncAuthStateFromStorage);
+    window.addEventListener('userLoggedOut', syncAuthStateFromStorage); // 로그아웃 이벤트도 수신
+
+    // 3. 컴포넌트 언마운트 시 리스너 제거 (메모리 누수 방지)
+    return () => {
+      window.removeEventListener('userLoggedIn', syncAuthStateFromStorage);
+      window.removeEventListener('userLoggedOut', syncAuthStateFromStorage);
+    };
+  }, []); // 이 useEffect는 마운트/언마운트 시 한 번만 실행
 
   const handleNavigation = (path: string) => {
     router.push(path); 

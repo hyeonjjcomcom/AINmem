@@ -4,6 +4,7 @@ import Sidebar from '../components/Sidebar';
 import MemoryDetailModal from '../components/MemoryDetailModal';
 import MemoryHeader from '../memories/MemoryHeader';
 import styles from './Memories.module.css';
+import AuthOverlay from '../components/AuthOverlay';
 
 interface Memory {
   _id?: string;
@@ -303,6 +304,9 @@ const Memories = () => {
       <Sidebar />
       {/* Main Content */}
       <main className={styles['main-content']}>
+
+        {!isLoggedIn && <AuthOverlay />}
+
         <MemoryHeader
           filteredMemories={filteredMemories}
           handleRefresh={handleRefresh}

@@ -8,6 +8,7 @@ import ConstantModal from '../components/ConstantModal';
 
 import { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
+import AuthOverlay from '../components/AuthOverlay';
 
 interface ConstantData {
   value?: string;
@@ -58,6 +59,7 @@ export default function HomePage() {
   const [nodeCount, setNodeCount] = useState(0);
   const [linkCount, setLinkCount] = useState(0);
   const [isBuilding, setIsBuilding] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
 
   const color = d3.scaleOrdinal()
     .domain(['predicate', 'entity'])
@@ -363,10 +365,44 @@ export default function HomePage() {
     }
   }, [showLabels]);
 
+  // 로그인 상태 확인 useEffect
+  useEffect(() => {
+    const checkLoginStatus = () => {
+      const loginStatus = sessionStorage.getItem('isLogined') === 'true';
+      setIsLoggedIn(loginStatus);
+    };
+
+    // 초기 로그인 상태 확인
+    checkLoginStatus();
+
+    // storage 변경 감지 (같은 탭에서의 변경도 감지)
+    const handleStorageChange = () => {
+      checkLoginStatus();
+    };
+
+    // 커스텀 이벤트 리스너 (사이드바에서 로그인 시 발생)
+    const handleLoginEvent = () => {
+      checkLoginStatus();
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('userLoggedIn', handleLoginEvent);
+    window.addEventListener('userLoggedOut', handleLoginEvent);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('userLoggedIn', handleLoginEvent);
+      window.removeEventListener('userLoggedOut', handleLoginEvent);
+    };
+  }, []);
+
   return (
     <>
       <Sidebar />
       <main className={styles['main-content']}>
+        {!isLoggedIn && (
+          <AuthOverlay />
+        )}
         <div className={styles['graph-wrapper']}>
           <header className={styles.header}>
             <div className={styles['header-left']}>
