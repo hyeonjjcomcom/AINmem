@@ -152,7 +152,7 @@ const Memories = () => {
     // 로그인된 경우에만 데이터 fetch
     setIsLoading(true);
     try {
-      const response = await fetch(`/api?endpoint=memories&userName=${encodeURIComponent(userName)}`);
+      const response = await fetch(`/api/memories?userName=${encodeURIComponent(userName)}`);
       if (!response.ok) throw new Error('Failed to fetch memories');
       
       const data = await response.json();
