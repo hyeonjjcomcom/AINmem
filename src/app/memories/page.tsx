@@ -141,17 +141,21 @@ const Memories = () => {
     setSelectedMemory(null);
   };
 
-  // 새로고침 핸들러
-  const handleRefresh = async () => {
+  //memories endpoint api 호출, 파라미터 userName(유저 지갑 주소)
+  const fetchMemories = async (userName: string) => {
+    // 로그인되지 않은 경우 빈 배열 설정
+    if (!isLoggedIn) {
+      setApiMemories([]);
+      setIsLoading(false);
+      return;
+    }
+    // 로그인된 경우에만 데이터 fetch
     setIsLoading(true);
     try {
-      const userName = sessionStorage.getItem('userName') || '';
       const response = await fetch(`/api?endpoint=memories&userName=${encodeURIComponent(userName)}`);
-
       if (!response.ok) throw new Error('Failed to fetch memories');
-
+      
       const data = await response.json();
-
       const transformedData: Memory[] = data.map((item: any) => {
         let parsedContent = '';
         let inputText = '';
@@ -181,10 +185,15 @@ const Memories = () => {
 
       setApiMemories(transformedData);
     } catch (error) {
-      console.error('Error refreshing memories:', error);
+      console.error('Error fetching memories:', error);
     } finally {
       setIsLoading(false);
     }
+  };
+
+  // 새로고침 핸들러
+  const handleRefresh = async () => {
+    fetchMemories(sessionStorage.getItem('userName') || '');
   };
 
   // 키보드 단축키
@@ -237,66 +246,7 @@ const Memories = () => {
 
   // 로그인 상태가 변경될 때마다 데이터 fetch
   useEffect(() => {
-    const fetchMemories = async () => {
-      try {
-        if (!isLoggedIn) {
-          setApiMemories([]);
-          setIsLoading(false);
-          return;
-        }
-
-        setIsLoading(true);
-
-        const userName = sessionStorage.getItem('userName') || '';
-
-        const response = await fetch(`/api?endpoint=memories&userName=${encodeURIComponent(userName)}`);
-
-        if (response.ok) {
-          const data = await response.json();
-
-          // API 데이터를 Memory 인터페이스에 맞게 변환
-          const transformedData: Memory[] = data.map((item: any) => {
-            let parsedContent = '';
-            let inputText = '';
-
-            // content가 JSON 문자열인 경우 파싱
-            if (item.content) {
-              try {
-                const parsed = JSON.parse(item.content);
-                inputText = parsed.input_text || '';
-                parsedContent = inputText;
-              } catch (e) {
-                parsedContent = item.content;
-              }
-            }
-
-            return {
-              _id: item.id,
-              id: item.id,
-              title: item.title,
-              input_text: inputText || parsedContent,
-              content: parsedContent,
-              timestamp: item.createdAt,
-              createdAt: item.createdAt,
-              tags: item.tags || [],
-              category: item.category || 'notes'
-            };
-          });
-
-          setApiMemories(transformedData);
-        } else {
-          console.error('Failed to fetch memories from API');
-          setApiMemories([]);
-        }
-      } catch (error) {
-        console.error('Error fetching memories:', error);
-        setApiMemories([]);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchMemories();
+    fetchMemories(sessionStorage.getItem('userName') || '');
   }, [isLoggedIn]);
 
   return (
