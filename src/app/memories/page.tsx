@@ -6,6 +6,8 @@ import MemoryHeader from '../memories/MemoryHeader';
 import styles from './Memories.module.css';
 import AuthOverlay from '../components/AuthOverlay';
 
+import { useAuth } from '@/contexts/AuthContext';
+
 interface Memory {
   id?: string;
   input_text?: string;
@@ -29,7 +31,7 @@ const Memories = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   
   // 로그인 상태를 추적하는 state 추가
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+  const { isLoggedIn, userName } = useAuth();
 
   const memoriesData = apiMemories;
 
@@ -190,7 +192,7 @@ const Memories = () => {
 
   // 새로고침 핸들러
   const handleRefresh = async () => {
-    fetchMemories(sessionStorage.getItem('userName') || '');
+    fetchMemories(userName || '');
   };
 
   // 키보드 단축키
@@ -210,41 +212,10 @@ const Memories = () => {
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-    // 로그인 상태 확인 useEffect
-  useEffect(() => {
-    const checkLoginStatus = () => {
-      const loginStatus = sessionStorage.getItem('isLogined') === 'true';
-      setIsLoggedIn(loginStatus);
-    };
-
-    // 초기 로그인 상태 확인
-    checkLoginStatus();
-
-    // storage 변경 감지 (같은 탭에서의 변경도 감지)
-    const handleStorageChange = () => {
-      checkLoginStatus();
-    };
-
-    // 커스텀 이벤트 리스너 (사이드바에서 로그인 시 발생)
-    const handleLoginEvent = () => {
-      checkLoginStatus();
-    };
-
-    window.addEventListener('storage', handleStorageChange);
-    window.addEventListener('userLoggedIn', handleLoginEvent);
-    window.addEventListener('userLoggedOut', handleLoginEvent);
-
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-      window.removeEventListener('userLoggedIn', handleLoginEvent);
-      window.removeEventListener('userLoggedOut', handleLoginEvent);
-    };
-  }, []);
-
   // 로그인 상태가 변경될 때마다 데이터 fetch
   useEffect(() => {
-    fetchMemories(sessionStorage.getItem('userName') || '');
-  }, [isLoggedIn]);
+    fetchMemories(userName || '');
+  }, [isLoggedIn, userName]);
 
   return (
     <>

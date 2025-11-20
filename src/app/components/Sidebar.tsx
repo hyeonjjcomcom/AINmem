@@ -7,6 +7,8 @@ import { useRouter, usePathname } from 'next/navigation';
 import UserDropdown from './UserDropdown'; // 같은 레벨의 파일에서 import
 import LoginModal from './LoginModal';
 
+import { useAuth } from '@/contexts/AuthContext';
+
 interface SvgIconProps {
   path: string;
 }
@@ -54,48 +56,9 @@ const navItems = [
 const Sidebar: React.FC = () => {
   const router = useRouter(); 
   const pathname = usePathname();
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userName, setUserName] = useState<string | null>(() => {
-    if (typeof window !== "undefined") {
-      return sessionStorage.getItem("userName");
-    }
-    return null; // SSR 시 초기값
-  });
+  const { isLoggedIn, updateLoginState, userName, setAuthUser } = useAuth();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false); // 드롭다운 상태 추가
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-
-  const syncAuthStateFromStorage = () => {
-    console.log('Syncing auth state...'); // 디버깅용 로그
-    const stored = typeof window !== "undefined" ? sessionStorage.getItem("isLogined") : null;
-    const storedUserName = typeof window !== "undefined" ? sessionStorage.getItem("userName") : null;
-    
-    if (stored === "true") {
-      setIsLoggedIn(true);
-      setUserName(storedUserName);
-    } else {
-      setIsLoggedIn(false);
-      setUserName(null);
-    }
-  };
-
-  useEffect(() => {
-    if (typeof window === "undefined") {
-      return; // 서버 사이드 렌더링 시 window 객체 접근 방지
-    }
-
-    // 1. 컴포넌트 마운트 시 최초 1회 상태 동기화
-    syncAuthStateFromStorage();
-
-    // 2. 로그인/로그아웃 커스텀 이벤트에 대한 리스너 등록
-    window.addEventListener('userLoggedIn', syncAuthStateFromStorage);
-    window.addEventListener('userLoggedOut', syncAuthStateFromStorage); // 로그아웃 이벤트도 수신
-
-    // 3. 컴포넌트 언마운트 시 리스너 제거 (메모리 누수 방지)
-    return () => {
-      window.removeEventListener('userLoggedIn', syncAuthStateFromStorage);
-      window.removeEventListener('userLoggedOut', syncAuthStateFromStorage);
-    };
-  }, []); // 이 useEffect는 마운트/언마운트 시 한 번만 실행
 
   const handleNavigation = (path: string) => {
     router.push(path); 
@@ -104,12 +67,6 @@ const Sidebar: React.FC = () => {
   //로그인 모달 닫기
   const handleLoginModalClose = (loginSuccess = false) => {
     setIsLoginModalOpen(false);
-    
-    // 로그인 성공 시 다른 컴포넌트들에게 알림
-    if (loginSuccess) {
-      // 커스텀 이벤트 발생
-      window.dispatchEvent(new CustomEvent('userLoggedIn'));
-    }
   };
 
   //로그인 모달 열기
@@ -120,14 +77,8 @@ const Sidebar: React.FC = () => {
   };
 
   const handleLogout = () => {
-    setIsLoggedIn(false);
-    setUserName(null);
-    sessionStorage.removeItem("isLogined");
-    sessionStorage.removeItem("userName");
-    
-    // 로그아웃 이벤트 발생
-    window.dispatchEvent(new CustomEvent('userLoggedOut'));
-    
+    updateLoginState(false);
+    setAuthUser(null);
     console.log('User logged out');
   };
 
@@ -218,8 +169,6 @@ const Sidebar: React.FC = () => {
         <LoginModal 
           isOpen={isLoginModalOpen} 
           onClose={handleLoginModalClose} // 이제 loginSuccess 매개변수를 받음
-          setIsLoggedIn={setIsLoggedIn} 
-          setUserName={setUserName}
         />
       )}
     </aside>

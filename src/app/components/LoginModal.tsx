@@ -7,11 +7,11 @@ import { AinWalletSigner } from '@ainblockchain/ain-js/lib/signer/ain-wallet-sig
 import React, { useState } from 'react';
 import styles from './LoginModal.module.css';
 
+import { useAuth } from '@/contexts/AuthContext';
+
 interface LoginModalProps {
   isOpen: boolean;
-  onClose: (loginSuccess?: boolean) => void; // ← 여기 수정
-  setIsLoggedIn : React.Dispatch<React.SetStateAction<boolean>>;
-  setUserName : React.Dispatch<React.SetStateAction<string | null>>;
+  onClose: (loginSuccess?: boolean) => void;
 }
 
 interface VerifyPayload {
@@ -21,8 +21,9 @@ interface VerifyPayload {
   chainID: number
 }
 
-const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose , setIsLoggedIn, setUserName}) => {
+const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
   const [email, setEmail] = useState('');
+  const { updateLoginState, setAuthUser } = useAuth();
   const ain = new Ain('https://testnet-api.ainetwork.ai', 'wss://testnet-event.ainetwork.ai', 0);
 
   async function checkVerify(payload: VerifyPayload): Promise<boolean> {
@@ -75,11 +76,8 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose , setIsLoggedIn
     console.log("검증 결과값: ",result)
     if (result===true) {
       //로그인이 정상적으로 되었을 경우
-      setIsLoggedIn(true);
-      setUserName(address);
-      sessionStorage.setItem("isLogined", "true");
-      sessionStorage.setItem("userName", address); 
-
+      updateLoginState(true);
+      setAuthUser(address);
 
       //검증 완료 후 유저 database에 등록
       try {

@@ -2,15 +2,11 @@ import React, { useState } from 'react';
 import styles from './AuthOverlay.module.css'; // 전용 CSS 파일을 만들거나 기존 CSS를 가져옵니다.
 import LoginModal from './LoginModal';
 
+import { useAuth } from '@/contexts/AuthContext';
+
 export default function AuthOverlay() {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userName, setUserName] = useState<string | null>(() => {
-    if (typeof window !== "undefined") {
-      return sessionStorage.getItem("userName");
-    }
-    return null; // SSR 시 초기값
-  });
+  const { userName, setAuthUser } = useAuth();
 
   //로그인 모달 열기
   const handleLoginModal = () => {
@@ -47,8 +43,6 @@ export default function AuthOverlay() {
         <LoginModal 
           isOpen={isLoginModalOpen} 
           onClose={handleLoginModalClose} // 이제 loginSuccess 매개변수를 받음
-          setIsLoggedIn={setIsLoggedIn} 
-          setUserName={setUserName}
         />
       )}
     </div>
