@@ -7,7 +7,6 @@ import styles from './Memories.module.css';
 import AuthOverlay from '../components/AuthOverlay';
 
 interface Memory {
-  _id?: string;
   id?: string;
   input_text?: string;
   content?: string;
@@ -123,8 +122,8 @@ const Memories = () => {
 
     // 날짜순 정렬 (최신순)
     return filtered.sort((a, b) => {
-      const dateA = new Date(a.timestamp || a.createdAt || 0);
-      const dateB = new Date(b.timestamp || b.createdAt || 0);
+      const dateA = new Date(a.createdAt || 0);
+      const dateB = new Date(b.createdAt || 0);
       return dateB.getTime() - dateA.getTime();
     });
   }, [memoriesData, currentFilter, searchTerm]);
@@ -171,12 +170,10 @@ const Memories = () => {
         }
 
         return {
-          _id: item.id,
           id: item.id,
           title: item.title,
           input_text: inputText || parsedContent,
           content: parsedContent,
-          timestamp: item.createdAt,
           createdAt: item.createdAt,
           tags: item.tags || [],
           category: item.category || 'notes'
@@ -292,11 +289,11 @@ const Memories = () => {
               {filteredMemories.map((memory) => {
                 const displayText = getDisplayText(memory);
                 const displayTitle = getDisplayTitle(memory);
-                const dateValue = memory.timestamp || memory.createdAt || new Date().toISOString();
+                const dateValue = memory.createdAt || new Date().toISOString();
                 
                 return (
                   <div
-                    key={memory._id || memory.id}
+                    key={memory.id}
                     className={styles['memory-card']}
                     onClick={() => handleMemoryClick(memory)}
                   >

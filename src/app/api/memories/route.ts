@@ -35,7 +35,7 @@ async function getMemoriesData(request: NextRequest) {
       };
     });
 
-    console.log("📊 Fetched memories data:", memories);
+    //console.log("📊 Fetched memories data:", memories);
     return NextResponse.json(memories.reverse());
   } catch (error) {
     console.error("❌ Error fetching memories data:", error);

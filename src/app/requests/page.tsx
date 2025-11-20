@@ -244,7 +244,7 @@ const RequestsPage: React.FC = () => {
               </tr>
               <tr className={styles['table-row']} data-event-id="sample-2">
                 <td className={styles['table-cell']}>
-                  <span className={styles.timestamp}>about 17 hours ago</span>
+                  <span>about 17 hours ago</span>
                 </td>
                 <td className={styles['table-cell']}>
                   <div className={styles['action-badge']}>ADD</div>
@@ -282,7 +282,7 @@ const RequestsPage: React.FC = () => {
               </tr>
               <tr className={styles['table-row']} data-event-id="sample-3">
                 <td className={styles['table-cell']}>
-                  <span className={styles.timestamp}>about 17 hours ago</span>
+                  <span>about 17 hours ago</span>
                 </td>
                 <td className={styles['table-cell']}>
                   <div className={styles['action-badge']}>ADD</div>

@@ -3,7 +3,6 @@ import React from 'react';
 import styles from './MemoryDetailModal.module.css'; // 스타일 분리 or 기존 스타일 재사용
 
 interface Memory {
-  _id?: string;
   id?: string;
   input_text?: string;
   content?: string;
@@ -94,14 +93,14 @@ const MemoryDetailModal = ({ isOpen, memory, onClose }: MemoryDetailModalProps) 
           <div className={styles['detail-section']}>
             <div className={styles['detail-label']}>Document ID</div>
             <div className={styles['detail-content']}>
-              {memory._id || memory.id || 'N/A'}
+              {memory.id || 'N/A'}
             </div>
           </div>
 
           <div className={styles['detail-section']}>
             <div className={styles['detail-label']}>Timestamp</div>
             <div className={styles['detail-content']}>
-              {new Date(memory.timestamp || memory.createdAt || new Date()).toLocaleString()}
+              {new Date(memory.createdAt || new Date()).toLocaleString()}
             </div>
           </div>
 

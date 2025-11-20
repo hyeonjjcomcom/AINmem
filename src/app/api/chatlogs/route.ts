@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/app/lib/mongodb';
-import { v4 as uuidv4 } from 'uuid';
 import { encode } from 'gpt-tokenizer'; // 대체 토크나이저 라이브러리
 import ChatLog from '@/app/models/chatLogs'; // 실제 MongoDB 모델 import
 
@@ -23,11 +22,6 @@ export async function POST(request: NextRequest) {
         { status: 'error', error: '필수 필드 누락' }, 
         { status: 400 }
       );
-    }
-
-    // UUID 없으면 생성
-    if (!data.id) {
-      data.id = uuidv4();
     }
 
     // input_text 문자열화 + 토큰 수 계산
