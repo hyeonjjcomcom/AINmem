@@ -31,7 +31,7 @@ const Memories = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   
   // 로그인 상태를 추적하는 state 추가
-  const { isLoggedIn, userName } = useAuth();
+  const { isLoggedIn, userName, isHydrated } = useAuth();
 
   const memoriesData = apiMemories;
 
@@ -223,7 +223,7 @@ const Memories = () => {
       {/* Main Content */}
       <main className={styles['main-content']}>
 
-        {!isLoggedIn && <AuthOverlay />}
+        {isHydrated && !isLoggedIn && <AuthOverlay />}
 
         <MemoryHeader
           filteredMemories={filteredMemories}

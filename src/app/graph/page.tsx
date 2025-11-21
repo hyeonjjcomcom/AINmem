@@ -61,7 +61,7 @@ export default function HomePage() {
   const [nodeCount, setNodeCount] = useState(0);
   const [linkCount, setLinkCount] = useState(0);
   const [isBuilding, setIsBuilding] = useState(false);
-  const { isLoggedIn, userName } = useAuth();
+  const { isLoggedIn, userName, isHydrated } = useAuth();
 
   const color = d3.scaleOrdinal()
     .domain(['predicate', 'entity'])
@@ -370,7 +370,7 @@ export default function HomePage() {
     <>
       <Sidebar />
       <main className={styles['main-content']}>
-        {!isLoggedIn && (
+        {isHydrated && !isLoggedIn && (
           <AuthOverlay />
         )}
         <div className={styles['graph-wrapper']}>

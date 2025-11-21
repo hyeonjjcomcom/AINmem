@@ -1,10 +1,11 @@
-// contexts/AuthContext.tsx (새 파일 생성)
+// contexts/AuthContext.tsx
 "use client";
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 
 interface AuthContextType {
   isLoggedIn: boolean;
   userName: string | null;
+  isHydrated: boolean;
   updateLoginState: (isLoggedIn: boolean) => void;
   setAuthUser: (name: string | null) => void;
 }
@@ -13,41 +14,37 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // app/page.tsx의 상태 관리 로직을 이곳으로 옮겨와 Context Provider로 감쌉니다.
-  const [isLoggedIn, setIsLoggedIn] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return sessionStorage.getItem('isLogined') === 'true';
-    }
-    return false;
-  });
+  // 초기값은 항상 false/null로 설정 (서버와 클라이언트 일치)
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userName, setUserName] = useState<string | null>(null);
+  const [isHydrated, setIsHydrated] = useState(false);
+
+  // 클라이언트 마운트 후 sessionStorage에서 값 복원
+  useEffect(() => {
+    const storedLogin = sessionStorage.getItem('isLogined') === 'true';
+    const storedUserName = sessionStorage.getItem('userName');
+
+    setIsLoggedIn(storedLogin);
+    setUserName(storedUserName);
+    setIsHydrated(true);
+  }, []);
 
   const updateLoginState = (newLoginState: boolean) => {
     setIsLoggedIn(newLoginState);
-    if (typeof window !== 'undefined') {
-      sessionStorage.setItem('isLogined', newLoginState ? 'true' : 'false');
-    }
+    sessionStorage.setItem('isLogined', newLoginState ? 'true' : 'false');
   };
 
-  const [userName, setUserName] = useState<string | null>(() => {
-    if (typeof window !== 'undefined') {
-      return sessionStorage.getItem('userName');
-    }
-    return null;
-  });
-
   const setAuthUser = (name: string | null) => {
-      setUserName(name);
-      if (typeof window !== 'undefined') {
-          if (name) {
-              sessionStorage.setItem('userName', name);
-          } else {
-              sessionStorage.removeItem('userName');
-          }
-      }
+    setUserName(name);
+    if (name) {
+      sessionStorage.setItem('userName', name);
+    } else {
+      sessionStorage.removeItem('userName');
+    }
   };
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, userName, updateLoginState, setAuthUser }}>
+    <AuthContext.Provider value={{ isLoggedIn, userName, isHydrated, updateLoginState, setAuthUser }}>
       {children}
     </AuthContext.Provider>
   );
