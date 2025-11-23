@@ -2,11 +2,9 @@ import mongoose, { Document, Schema } from 'mongoose';
 
 // ChatLog 인터페이스 정의
 export interface ChatLog extends Document {
-  id: string; // UUID
   user_id: string;
   session_id: string;
   turn_number: number;
-  timestamp: Date;
   input_text: string;
   input_metadata?: any; // Mixed type
   input_type?: string;
@@ -20,18 +18,10 @@ export interface ChatLog extends Document {
   tags?: string[];
   tokens_input?: number;
   tokens_output?: number;
-  createdAt?: Date;
-  updatedAt?: Date;
 }
 
 // ChatLog 스키마 정의
 const ChatLogSchema: Schema = new Schema({
-  id: { 
-    type: String, 
-    required: true,
-    unique: true,
-    trim: true
-  },
   user_id: {
     type: String,
     required: true,
@@ -46,11 +36,6 @@ const ChatLogSchema: Schema = new Schema({
     type: Number,
     required: true,
     min: 1
-  },
-  timestamp: { 
-    type: Date, 
-    default: Date.now,
-    required: true
   },
   input_text: {
     type: String,
@@ -109,9 +94,8 @@ const ChatLogSchema: Schema = new Schema({
 // 인덱스 설정 (성능 최적화)
 ChatLogSchema.index({ user_id: 1 });
 ChatLogSchema.index({ session_id: 1 });
-ChatLogSchema.index({ timestamp: -1 }); // 최신순 정렬용
+ChatLogSchema.index({ createdAt: -1 }); // 최신순 정렬용
 ChatLogSchema.index({ user_id: 1, session_id: 1 }); // 복합 인덱스
-ChatLogSchema.index({ id: 1 }); // UUID 검색용
 
 // 모델 생성 (이미 존재하면 기존 모델 사용)
 export default mongoose.models.ChatLog || mongoose.model<ChatLog>('ChatLog', ChatLogSchema);

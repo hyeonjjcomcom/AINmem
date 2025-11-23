@@ -18,22 +18,28 @@ const nextConfig = {
         'os': false,
       };
     }
-    
+
     // 서버에서는 외부 패키지로 처리
     if (isServer) {
       config.externals = config.externals || [];
       config.externals.push('eccrypto');
     }
-    
+
     return config;
   },
-  
+
   // 서버 컴포넌트에서만 사용하도록 명시
   experimental: {
     serverComponentsExternalPackages: [
       'eccrypto',
-      '@ainblockchain/ain-util', 
+      '@ainblockchain/ain-util',
     ]
+  },
+
+  // WebSocket 관련 에러 방지
+  devIndicators: {
+    buildActivity: true,
+    buildActivityPosition: 'bottom-right',
   }
 };
 

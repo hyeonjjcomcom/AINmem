@@ -7,6 +7,8 @@ import { useRouter, usePathname } from 'next/navigation';
 import UserDropdown from './UserDropdown'; // 같은 레벨의 파일에서 import
 import LoginModal from './LoginModal';
 
+import { useAuth } from '@/contexts/AuthContext';
+
 interface SvgIconProps {
   path: string;
 }
@@ -54,24 +56,10 @@ const navItems = [
 const Sidebar: React.FC = () => {
   const router = useRouter(); 
   const pathname = usePathname();
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userName, setUserName] = useState<string | null>(() => {
-    if (typeof window !== "undefined") {
-      return sessionStorage.getItem("userName");
-    }
-    return null; // SSR 시 초기값
-  });
+  const { isLoggedIn, updateLoginState, userName, setAuthUser, isHydrated } = useAuth();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false); // 드롭다운 상태 추가
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-
-  useEffect(() => {
-    const stored = sessionStorage.getItem("isLogined");
-    const storedUserName = sessionStorage.getItem("userName");
-    if (stored === "true") {
-      setIsLoggedIn(true);
-      setUserName(storedUserName);
-    }
-  }, []);
+  const [isClient, setIsClient] = useState(false);
 
   const handleNavigation = (path: string) => {
     router.push(path); 
@@ -80,12 +68,6 @@ const Sidebar: React.FC = () => {
   //로그인 모달 닫기
   const handleLoginModalClose = (loginSuccess = false) => {
     setIsLoginModalOpen(false);
-    
-    // 로그인 성공 시 다른 컴포넌트들에게 알림
-    if (loginSuccess) {
-      // 커스텀 이벤트 발생
-      window.dispatchEvent(new CustomEvent('userLoggedIn'));
-    }
   };
 
   //로그인 모달 열기
@@ -96,14 +78,8 @@ const Sidebar: React.FC = () => {
   };
 
   const handleLogout = () => {
-    setIsLoggedIn(false);
-    setUserName(null);
-    sessionStorage.removeItem("isLogined");
-    sessionStorage.removeItem("userName");
-    
-    // 로그아웃 이벤트 발생
-    window.dispatchEvent(new CustomEvent('userLoggedOut'));
-    
+    updateLoginState(false);
+    setAuthUser(null);
     console.log('User logged out');
   };
 
@@ -135,6 +111,10 @@ const Sidebar: React.FC = () => {
     return `${firstPart}...${lastPart}`;
   };
 
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   return (
     <aside className={styles.sidebar} id="sidebar">
       <div className={styles.logo}>
@@ -154,35 +134,37 @@ const Sidebar: React.FC = () => {
         ))}
       </nav>
 
-      {isLoggedIn ? (
+      {!isHydrated || isLoggedIn ? (
         <div className={styles['user-section']} id="logged-in-section">
-          <div 
-            className={styles['user-avatar']} 
+          <div
+            className={styles['user-avatar']}
             id="profile-avatar"
-            onClick={toggleDropdown} // 아바타 클릭 시 드롭다운 토글
+            onClick={toggleDropdown}
           >
             U
           </div>
           <div className={styles['user-info']} onClick={toggleDropdown}>
-            <div style={{ fontSize: '14px', fontWeight: '500' }}>{formatUserName(userName)}</div>
+            <div style={{ fontSize: '14px', fontWeight: '500' }}>{isHydrated ? formatUserName(userName) : 'Loading...'}</div>
             <div style={{ fontSize: '12px', color: '#888' }}>Free Plan</div>
           </div>
-          
-          <UserDropdown
-            userName="User"
-            userEmail="user@example.com"
-            showDropdown={isDropdownOpen}
-            onClose={closeDropdown}
-            onLogout={handleLogout}
-          />
+
+          {isHydrated && isLoggedIn && (
+            <UserDropdown
+              userName="User"
+              userEmail="user@example.com"
+              showDropdown={isDropdownOpen}
+              onClose={closeDropdown}
+              onLogout={handleLogout}
+            />
+          )}
         </div>
       ) : (
         <div className={styles['user-section']} id="login-section">
           <div className={styles['user-avatar']} id="default-profile-avatar">?</div>
           <div className={styles['user-info']}>
             <div style={{ fontSize: '14px', fontWeight: '500' }}>Hello</div>
-            <div 
-              style={{ fontSize: '12px', color: '#888', cursor: 'pointer' }} 
+            <div
+              style={{ fontSize: '12px', color: '#888', cursor: 'pointer' }}
               onClick={handleLoginModal}
             >
               Please Login
@@ -194,8 +176,6 @@ const Sidebar: React.FC = () => {
         <LoginModal 
           isOpen={isLoginModalOpen} 
           onClose={handleLoginModalClose} // 이제 loginSuccess 매개변수를 받음
-          setIsLoggedIn={setIsLoggedIn} 
-          setUserName={setUserName}
         />
       )}
     </aside>

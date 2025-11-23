@@ -8,6 +8,9 @@ import ConstantModal from '../components/ConstantModal';
 
 import { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
+import AuthOverlay from '../components/AuthOverlay';
+
+import { useAuth } from '@/contexts/AuthContext';
 
 interface ConstantData {
   value?: string;
@@ -58,6 +61,7 @@ export default function HomePage() {
   const [nodeCount, setNodeCount] = useState(0);
   const [linkCount, setLinkCount] = useState(0);
   const [isBuilding, setIsBuilding] = useState(false);
+  const { isLoggedIn, userName, isHydrated } = useAuth();
 
   const color = d3.scaleOrdinal()
     .domain(['predicate', 'entity'])
@@ -67,7 +71,6 @@ export default function HomePage() {
     return data;
   };
 
-  
   const buildGraph = async () => {
     try {
       // ✅ 수정: 새로운 API 형식으로 변경
@@ -299,7 +302,7 @@ export default function HomePage() {
   const buildNewGraph = async () => {
     setIsBuilding(true); // 빌드 시작
     try {
-      const user_id = sessionStorage.getItem("userName");
+      const user_id = userName;
       console.log('Building graph for user_id:', user_id);
 
       await fetch('/api?endpoint=facts', { method: 'DELETE' });
@@ -367,6 +370,9 @@ export default function HomePage() {
     <>
       <Sidebar />
       <main className={styles['main-content']}>
+        {isHydrated && !isLoggedIn && (
+          <AuthOverlay />
+        )}
         <div className={styles['graph-wrapper']}>
           <header className={styles.header}>
             <div className={styles['header-left']}>
