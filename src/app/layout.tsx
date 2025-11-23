@@ -1,4 +1,5 @@
 import './globals.css';
+import { AuthProvider } from '@/contexts/AuthContext';
 import { Metadata, Viewport } from 'next';
 
 export const metadata: Metadata = {
@@ -20,9 +21,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <div className="container">
-          {children}
-        </div>
+        <AuthProvider>
+          <div className="container">
+            {children}
+          </div>
+        </AuthProvider>
       </body>
     </html>
   );

@@ -2,13 +2,12 @@
 "use client";  
 
 import Sidebar from '../components/Sidebar';
-import styles from './GraphPage.module.css';
+import styles from './GraphPage.white.module.css';
 import LinkModal from '../components/LinkModal';
 import ConstantModal from '../components/ConstantModal';
 
 import { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
-import AuthOverlay from '../components/AuthOverlay';
 
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -61,27 +60,170 @@ export default function HomePage() {
   const [nodeCount, setNodeCount] = useState(0);
   const [linkCount, setLinkCount] = useState(0);
   const [isBuilding, setIsBuilding] = useState(false);
-  const { isLoggedIn, userName, isHydrated } = useAuth();
+  const { isLoggedIn, userName } = useAuth();
 
   const color = d3.scaleOrdinal()
     .domain(['predicate', 'entity'])
-    .range(['#4F46E5', '#5B21B6']);
+    .range(['#a78bfa', '#c4b5fd']);
 
   const filterData = (data: FactItem[]) => {
     return data;
   };
 
+  
   const buildGraph = async () => {
     try {
       // ✅ 수정: 새로운 API 형식으로 변경
+      /*
       const data = await fetch('/api?endpoint=facts').then(res => {
         if (!res.ok) {
           throw new Error(`HTTP 오류 발생! 상태 코드: ${res.status}`);
         }
         return res.json();
       });
+      */
+      const data = [
+        {
+            "value": "훈련생(trainee_a)",
+            "description": "A는 훈련생입니다.",
+            "predicates": [ "훈련생" ],
+            "constants": [ "훈련생 A" ],
+            "updated_at": "2025-09-29T05:38:58.830Z"
+        },
+        {
+            "value": "훈련과정(course_x)",
+            "description": "X는 훈련과정입니다.",
+            "predicates": [ "훈련과정" ],
+            "constants": [ "훈련과정 X" ],
+            "updated_at": "2025-09-29T05:38:58.830Z"
+        },
+        {
+            "value": "아이피주소(ip_192_168_0_1)",
+            "description": "192.168.0.1은 IP 주소입니다.",
+            "predicates": [ "아이피주소" ],
+            "constants": [ "ip_192_168_0_1" ],
+            "updated_at": "2025-09-29T05:38:58.830Z"
+        },
+        {
+            "value": "아이피주소(ip_192_168_0_2)",
+            "description": "192.168.0.2는 IP 주소입니다.",
+            "predicates": [ "아이피주소" ],
+            "constants": [ "ip_192_168_0_2" ],
+            "updated_at": "2025-09-29T05:38:58.830Z"
+        },
+        {
+            "value": "수강한다(trainee_a, course_x)",
+            "description": "훈련생 A는 훈련과정 X를 수강하고 있습니다.",
+            "predicates": [ "수강한다" ],
+            "constants": [ "훈련생 A", "훈련과정 X" ],
+            "updated_at": "2025-09-29T05:38:58.830Z"
+        },
+        {
+            "value": "로그인아이피(trainee_a, ip_192_168_0_1)",
+            "description": "훈련생 A의 기록된 로그인 IP는 192.168.0.1입니다.",
+            "predicates": [ "로그인아이피" ],
+            "constants": [ "훈련생 A", "ip_192_168_0_1" ],
+            "updated_at": "2025-09-29T05:38:58.830Z"
+        },
+        {
+            "value": "학습아이피(trainee_a, ip_192_168_0_2)",
+            "description": "훈련생 A의 실제 학습 IP는 192.168.0.2입니다.",
+            "predicates": [ "학습아이피" ],
+            "constants": [ "훈련생 A", "ip_192_168_0_2" ],
+            "updated_at": "2025-09-29T05:38:58.830Z"
+        },
+        {
+            "value": "위반이다(trainee_a, 데이터불일치위반)",
+            "description": "결과적으로, 훈련생 A는 '데이터 불일치' 규정을 위반했습니다.",
+            "predicates": [ "위반이다" ],
+            "constants": [ "훈련생 A", "데이터불일치위반" ],
+            "updated_at": "2025-09-29T05:38:58.830Z"
+        },
+        {
+            "value": "탐지한다(AI model, 데이터불일치위반, trainee_a)",
+            "description": "AI 모델이 훈련생 A의 '데이터 불일치' 위반을 탐지했습니다.",
+            "predicates": [ "탐지한다" ],
+            "constants": [ "AI model", "데이터불일치위반", "훈련생 A" ],
+            "updated_at": "2025-09-29T05:38:58.830Z"
+        },
+        {
+            "value": "∀x,y ((위반이다(x, 데이터불일치위반) ∧ 탐지한다(AI model, 데이터불일치위반, x)) → 신호부여(x, 부정훈련위험도상승신호))",
+            "description": "모든 훈련생 x에 대해, 만약 AI 모델이 '데이터 불일치' 위반을 탐지하면, 해당 훈련생에게 '부정훈련 위험도 상승' 신호가 부여됩니다.",
+            "predicates": [ "위반이다", "탐지한다", "신호부여" ],
+            "constants": [
+            "x",
+            "데이터불일치위반",
+            "AI model",
+            "부정훈련위험도상승신호"
+            ],
+            "updated_at": "2025-09-29T05:38:58.830Z"
+        },
+        {
+            "value": "신호부여(trainee_a, 부정훈련위험도상승신호)",
+            "description": "결과적으로, 훈련생 A에게 '부정훈련 위험도 상승' 신호가 부여되었습니다.",
+            "predicates": [ "신호부여" ],
+            "constants": [ "훈련생 A", "부정훈련위험도상승신호" ],
+            "updated_at": "2025-09-29T05:38:58.830Z"
+        },
+        {
+            "value": "훈련생(trainee_b)",
+            "description": "B는 훈련생입니다.",
+            "predicates": [ "훈련생" ],
+            "constants": [ "훈련생 B" ],
+            "updated_at": "2025-09-29T05:38:58.830Z"
+        },
+        {
+            "value": "수강한다(trainee_a, course_x)",
+            "description": "훈련생 B는 훈련과정 Y를 수강하고 있습니다.",
+            "predicates": [ "수강한다" ],
+            "constants": [ "훈련생 B", "훈련과정 Y" ],
+            "updated_at": "2025-09-29T05:38:58.830Z"
+        },
+        {
+            "value": "학습아이피(trainee_b, ip_192_168_0_2)",
+            "description": "훈련생 B의 실제 학습 IP는 192.168.0.2입니다.",
+            "predicates": [ "학습아이피" ],
+            "constants": [ "훈련생 B", "ip_192_168_0_2" ],
+            "updated_at": "2025-09-29T05:38:58.830Z"
+        },
+        {
+            "value": "로그인아이피(trainee_b, ip_192_168_0_2)",
+            "description": "훈련생 B의 기록된 로그인 IP는 192.168.0.1입니다.",
+            "predicates": [ "로그인아이피" ],
+            "constants": [ "훈련생 B", "ip_192_168_0_2" ],
+            "updated_at": "2025-09-29T05:38:58.830Z"
+        }
+      ];
 
-      const constants = await fetch('/api?endpoint=constants').then(res => res.json());
+
+      /*const constants = await fetch('/api?endpoint=constants').then(res => res.json());
+      setConstantsData(constants); */
+
+      const constants = [
+        { value: '훈련생 A', description: '훈련생 A를 나타내는 상수입니다.' },
+        { value: '훈련과정 X', description: '훈련과정 X를 나타내는 상수입니다.' },
+        {
+          value: 'ip_192_168_0_1',
+          description: 'IP 주소 192.168.0.1을 나타내는 상수입니다.'
+        },
+        {
+          value: 'ip_192_168_0_2',
+          description: 'IP 주소 192.168.0.2를 나타내는 상수입니다.'
+        },
+        {
+          value: '데이터 불일치 규정 위반',
+          description: "'데이터 불일치' 규정 위반 유형을 나타내는 상수입니다."
+        },
+        { value: 'AI 모델', description: '규정 위반을 탐지하는 AI 모델을 나타내는 상수입니다.' },
+        {
+          value: '부정훈련 위험도 상승',
+          description: "'부정훈련 위험도 상승' 신호를 나타내는 상수입니다."
+        },
+        {
+          value: 'x',
+          description: 'Auto-extracted constant from fact: ∀x,y ((IsViolation(x, data_mismatch_violation) ∧ Detects(AI model, data_mismatch_violation, x)) → AssignsSignal(x, increased_fraud_risk_signal))'
+        }
+      ];
       setConstantsData(constants);
 
       const filteredData = filterData(data);
@@ -216,7 +358,7 @@ export default function HomePage() {
       .enter().append("text")
       .attr("class", styles["link-label"])
       .attr("text-anchor", "middle")
-      .attr("font-size", "10px")
+      .attr("font-size", "20px")
       .attr("fill", "#666")
       .text((d: LinkData) => d.count > 1 ? `${d.count} relations` : d.predicates[0])
       .style("opacity", showLabels ? 1 : 0)
@@ -370,9 +512,6 @@ export default function HomePage() {
     <>
       <Sidebar />
       <main className={styles['main-content']}>
-        {isHydrated && !isLoggedIn && (
-          <AuthOverlay />
-        )}
         <div className={styles['graph-wrapper']}>
           <header className={styles.header}>
             <div className={styles['header-left']}>
@@ -410,9 +549,11 @@ export default function HomePage() {
           <div className={styles.filters}>
             <span className={styles['filter-label']}>Filters:</span>
             <div className={`${styles['filter-tag']} ${styles.active}`}>All</div>
+            {/*
             <div className={styles['filter-tag']}>Wan AI</div>
             <div className={styles['filter-tag']}>Artany AI</div>
             <div className={styles['filter-tag']}>Business</div>
+            */}
           </div>
 
           <div className={styles.content}>
@@ -434,6 +575,7 @@ export default function HomePage() {
               <span>Links:</span> <span className={styles['stat-value']}>{linkCount}</span>
             </div>
             <div className={styles.legend}>
+            {/*
               <div className={styles['legend-item']}>
                 <div className={`${styles['legend-circle']} ${styles.constant}`}></div>
                 <span>Constants</span>
@@ -442,6 +584,7 @@ export default function HomePage() {
                 <div className={`${styles['legend-circle']} ${styles.predicate}`}></div>
                 <span>Predicates</span>
               </div>
+            */}
             </div>
           </div>
         </div>

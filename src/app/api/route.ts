@@ -9,19 +9,42 @@ import {
   createFolClient
 } from 'fol-sdk';
 import connectDB from '@/app/lib/mongodb';
+import { use } from 'react';
 
 // 메모리 저장소 (실제로는 Redis 사용 권장)
 const nonces: { [key: string]: string } = {};
 
-// ✅ FolStore 인스턴스를 전역에서 재사용
-let folStoreInstance: MongoDbFolStore | null = null;
+// ✅ 올바른 전역 변수 사용
+declare global {
+  var folStoreInstance: MongoDbFolStore | undefined;
+}
 
 function getFolStore(): MongoDbFolStore {
-  if (!folStoreInstance) {
+  if (!global.folStoreInstance) {
+    // 🔧 개발 환경에서 기존 Mongoose 모델들 정리
+    if (process.env.NODE_ENV === 'development') {
+      try {
+        // 기존 모델들 삭제
+        if (mongoose.models.Constant) {
+          delete mongoose.models.Constant;
+        }
+        if (mongoose.models.Fact) {
+          delete mongoose.models.Fact;
+        }
+        if (mongoose.models.Predicate) {
+          delete mongoose.models.Predicate;
+        }
+        
+        console.log('🧹 Cleared existing Mongoose models for development');
+      } catch (error) {
+        console.log('⚠️ Error clearing models (this is usually fine):', error);
+      }
+    }
+    
     const mongoUrl = process.env.MONGODB_URI || 'mongodb://localhost:27017/fol-sdk';
-    folStoreInstance = new MongoDbFolStore(mongoUrl);
+    global.folStoreInstance = new MongoDbFolStore(mongoUrl);
   }
-  return folStoreInstance;
+  return global.folStoreInstance;
 }
 
 export async function GET(request: NextRequest) {
@@ -35,8 +58,10 @@ export async function GET(request: NextRequest) {
       case 'memories':
         return await getMemoriesData(request); // ✅ userName만 넘김
       
-      case 'memoriesDocument':
-        return await getMemoriesDocument();
+      case 'memoriesDocument': {
+        const user_id = searchParams.get('user_id');
+        return await getMemoriesDocument(user_id);
+      }
       
       case 'constants':
         return await getConstants();
@@ -66,10 +91,10 @@ export async function POST(request: NextRequest) {
   try {
     await connectDB();
     const body = await request.json();
-
+    console.log('📥 POST request body:', body);
     switch (endpoint) {
       case 'buildFols':
-        return await buildFols(body);
+        return await buildFols(body, body.user_id); // ✅ user_id 추가
       
       case 'login':
         return await loginWithSignature(body);
@@ -159,10 +184,14 @@ async function getMemoriesData(request: Request) {
 }
 
 
-async function getMemoriesDocument() {
+async function getMemoriesDocument(user_id:any) {
   try {
     let document = "";
-    const data = await mongoose.connection.collection('chatlogs').find({}).toArray();
+    
+    // user_id 조건을 추가한 쿼리
+    const data = await mongoose.connection.collection('chatlogs').find({ 
+      user_id: user_id 
+    }).toArray();
     
     for (const item of data) {
       document += item.input_text + " ";
@@ -220,7 +249,7 @@ async function getPredicates() {
   }
 }
 
-async function buildFols(body: { document: string }) {
+async function buildFols(body: { document: string }, user_id: string) {
   try {
     const geminiApiKey = process.env.GEMINI_API_KEY;
 
@@ -232,9 +261,9 @@ async function buildFols(body: { document: string }) {
     const builder = new FolBuilder({ llm: llmAdapter });
     const client = createFolClient(builder, store);
 
-    console.log('📥 Received request body:', body.document);
+    console.log('📥 User ID:', user_id);
 
-    const result = await client.buildAndSave(body.document);
+    const result = await client.buildAndSave(body.document, user_id);
     console.log('✅ Document built and saved successfully.');
     
     return NextResponse.json({ 

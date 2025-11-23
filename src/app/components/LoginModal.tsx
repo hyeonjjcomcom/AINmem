@@ -7,11 +7,11 @@ import { AinWalletSigner } from '@ainblockchain/ain-js/lib/signer/ain-wallet-sig
 import React, { useState } from 'react';
 import styles from './LoginModal.module.css';
 
+import { useAuth } from '@/contexts/AuthContext';
+
 interface LoginModalProps {
   isOpen: boolean;
-  onClose: () => void;
-  setIsLoggedIn : React.Dispatch<React.SetStateAction<boolean>>;
-  setUserName : React.Dispatch<React.SetStateAction<string | null>>;
+  onClose: (loginSuccess?: boolean) => void;
 }
 
 interface VerifyPayload {
@@ -21,12 +21,14 @@ interface VerifyPayload {
   chainID: number
 }
 
-const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose , setIsLoggedIn, setUserName}) => {
+const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
   const [email, setEmail] = useState('');
+  const { updateLoginState, setAuthUser } = useAuth();
   const ain = new Ain('https://testnet-api.ainetwork.ai', 'wss://testnet-event.ainetwork.ai', 0);
 
   async function checkVerify(payload: VerifyPayload): Promise<boolean> {
     try {
+      console.log('Sending payload to verify API:', payload);
       const res = await fetch('/api/auth/verify', {
         method: 'POST',
         headers: {
@@ -34,10 +36,6 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose , setIsLoggedIn
         },
         body: JSON.stringify(payload),
       });
-
-      if (!res.ok) {
-        throw new Error(`HTTP error! status: ${res.status}`);
-      }
 
       const { isValid } = await res.json(); // 서버에서 { isValid: true/false } 반환
       return isValid;
@@ -53,27 +51,33 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose , setIsLoggedIn
     // address가 잘 나온다는 것은 지갑과 잘 연결이 되었다는 의미.
     const address = await ain.signer.getAddress()
     console.log('address:', address);
+
+    let chainID = 0; // 기본값 설정
+    if (typeof window !== 'undefined' && window.ainetwork) {
+      const network = await (window as any).ainetwork?.getNetwork();
+      console.log('network:', network);
+      chainID = network.chainId;
+    }
     
     // signMessage 해서 암호화된걸(시그니쳐) 서버로 보내고
     const testMessage = "hello, we are ainmem"
     const signature = await ain.signer.signMessage(testMessage);
-    
+    console.log('signature:', signature);
+
     // VerifyPayload 인터페이스에 맞춰 데이터 구성
     const payload: VerifyPayload = {
       message: testMessage,  // data -> message로 변경
       signature,
       address,
-      chainID: 0 //testnet, 실제 배포 시에는 변경 필요
+      chainID
     };
     
     const result = await checkVerify(payload);
     console.log("검증 결과값: ",result)
     if (result===true) {
       //로그인이 정상적으로 되었을 경우
-      setIsLoggedIn(true);
-      setUserName(address);
-      sessionStorage.setItem("isLogined", "true");
-      sessionStorage.setItem("userName", address); 
+      updateLoginState(true);
+      setAuthUser(address);
 
       //검증 완료 후 유저 database에 등록
       try {
@@ -91,7 +95,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose , setIsLoggedIn
       } catch (error: any) {
         console.log('database users table 유저 등록 시 에러 발생',error);
       }
-      onClose();
+      onClose(true);
     }else {
       alert("검증 실패. 로그인에 실패하였습니다.");
     }
@@ -112,7 +116,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose , setIsLoggedIn
       <div className={styles["modal-container"]}>
         <div className={styles["modal-content"]}>
           {/* Close Button */}
-          <button className={styles["close-button"]} onClick={onClose}>
+          <button className={styles["close-button"]} onClick={() => onClose(false)}>
             <svg 
               aria-label="Close" 
               fill="currentColor" 

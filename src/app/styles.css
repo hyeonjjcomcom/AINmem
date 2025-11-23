@@ -1,0 +1,387 @@
+/* ======================== */
+/* 1. CSS Variables */
+/* ======================== */
+:root {
+    /* Colors from globals.css */
+    --primary-color: #6366f1;
+    --secondary-color: #8b5cf6;
+    --background-color: #0a0a0a;
+    --surface-color: #111111;
+    --surface-secondary: #1a1a1a;
+    --text-primary: #ffffff;
+    --text-secondary: #cccccc;
+    --text-muted: #888888;
+    --border-color: #2a2a2a;
+    --hover-color: #1a1a1a;
+
+    /* Spacing */
+    --border-radius: 8px;
+    --border-radius-lg: 12px;
+    --shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+.landing {
+    min-height: 100vh;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    background-color: var(--background-color);
+    color: var(--text-primary);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    overflow-x: hidden;
+    display: block;
+}
+
+.landing-divider {
+    border: none;
+    border-top: 1px solid var(--border-color);
+    margin: 0;
+}
+
+/* ======================== */
+/* 2. Common Styles */
+/* ======================== */
+.landing-section {
+    padding: 80px 40px;
+    text-align: center;
+}
+
+.landing-section.light-bg {
+    background-color: var(--surface-color);
+}
+
+.landing-section.dark-bg {
+    background-color: var(--background-color);
+}
+
+.landing-section.hero {
+    padding: 100px 40px;
+    min-height: 80vh;
+}
+
+.landing-section-title {
+    font-size: 28px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: var(--text-primary);
+}
+
+.landing-section-subtitle {
+    font-size: 14px;
+    margin-bottom: 40px;
+    color: var(--text-muted);
+}
+
+/* ======================== */
+/* 3. Navigation & CTA */
+/* ======================== */
+.landing-navbar {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 40px;
+    background-color: var(--background-color);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.landing-logo {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.landing-navbar nav {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+}
+
+.landing-nav-link {
+    font-size: 14px;
+    color: var(--text-muted);
+    transition: color 0.2s;
+    text-decoration: none;
+}
+
+.landing-nav-link:hover {
+    color: var(--text-primary);
+}
+
+/* CTA Buttons */
+.landing-cta {
+    padding: 8px 16px;
+    border-radius: var(--border-radius);
+    font-size: 14px;
+    font-weight: 500;
+    display: inline-block;
+    transition: all 0.2s;
+    text-decoration: none;
+    border: 1px solid transparent;
+    cursor: pointer;
+    font-family: inherit;
+    background: none;
+}
+
+.landing-cta.primary-cta {
+    background-color: var(--primary-color);
+    color: var(--text-primary);
+}
+
+.landing-cta.primary-cta:hover {
+    background-color: #5855eb;
+}
+
+.landing-cta.secondary-cta {
+    background-color: var(--surface-secondary);
+    color: var(--text-primary);
+    border-color: var(--border-color);
+}
+
+.landing-cta.secondary-cta:hover {
+    background-color: var(--hover-color);
+    border-color: var(--primary-color);
+}
+
+/* ======================== */
+/* 4. Hero Section */
+/* ======================== */
+.landing-title {
+    font-size: 48px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: var(--text-primary);
+}
+
+.landing-subtitle {
+    font-size: 16px;
+    color: var(--text-muted);
+    margin-bottom: 40px;
+}
+
+.landing-ctas {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+.landing-visual {
+    margin-top: 60px;
+    margin-bottom: 40px;
+    width: 90%;
+    max-width: 1600px;
+    height: 400px;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--text-muted);
+}
+
+/* ======================== */
+/* 5. Cards & Feature Tables */
+/* ======================== */
+.landing-cards {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-top: 30px;
+    width: 90%;
+    max-width: 1600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.landing-card {
+    padding: 30px;
+    border-radius: var(--border-radius-lg);
+    text-align: left;
+    background-color: var(--surface-color);
+    width: 30%;
+    border: 1px solid var(--border-color);
+}
+
+.landing-card-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: var(--text-primary);
+}
+
+.landing-card-description {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+/* Features Section */
+.landing-feature-group {
+    width: 90%;
+    max-width: 1600px;
+    margin: 0 auto 60px;
+    padding: 30px;
+    border-radius: var(--border-radius-lg);
+    text-align: left;
+    background-color: var(--surface-color);
+    border: 1px solid var(--border-color);
+}
+
+.landing-group-title {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: var(--text-primary);
+}
+
+.landing-group-subtitle {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-bottom: 30px;
+}
+
+.landing-table-container {
+    overflow-x: auto;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+}
+
+.landing-table-container table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 600px;
+    background-color: var(--surface-secondary);
+}
+
+.landing-table-container th, .landing-table-container td {
+    padding: 15px;
+    border-bottom: 1px solid var(--border-color);
+    text-align: left;
+}
+
+.landing-table-container th {
+    background-color: var(--surface-color);
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 14px;
+}
+
+.landing-table-container td {
+    color: var(--text-secondary);
+    font-size: 14px;
+}
+
+.landing-table-container td strong {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+/* ======================== */
+/* 6. Testimonials */
+/* ======================== */
+.landing-quote {
+    font-size: 14px;
+    font-style: italic;
+    margin-bottom: 20px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+.landing-author {
+    font-weight: 500;
+    color: var(--text-muted);
+    font-size: 12px;
+}
+
+/* ======================== */
+/* 7. Research & Stats */
+/* ======================== */
+.landing-stats {
+    display: flex;
+    justify-content: center;
+    gap: 50px;
+    margin: 40px 0;
+}
+
+.landing-stat-item {
+    text-align: center;
+}
+
+.landing-stat-value {
+    font-size: 36px;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-bottom: 5px;
+}
+
+.landing-stat-label {
+    color: var(--text-muted);
+    font-size: 14px;
+}
+
+/* ======================== */
+/* 8. Footer */
+/* ======================== */
+.landing-footer {
+    padding: 30px 40px;
+    background-color: var(--background-color);
+    color: var(--text-muted);
+    font-size: 12px;
+    border-top: 1px solid var(--border-color);
+    text-align: center;
+}
+
+/* ======================== */
+/* 9. Responsive Design */
+/* ======================== */
+@media (max-width: 900px) {
+    .landing-title {
+        font-size: 36px;
+    }
+
+    .landing-cards {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .landing-card {
+        width: 100%;
+    }
+
+    .landing-navbar nav {
+        display: none;
+    }
+
+    .landing-ctas {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .landing-ctas a {
+        width: 100%;
+    }
+
+    .landing-feature-group {
+        padding: 20px;
+    }
+}
+
+@media (max-width: 600px) {
+    .landing-title {
+        font-size: 28px;
+    }
+
+    .landing-section-title {
+        font-size: 24px;
+    }
+
+    .landing-section {
+        padding: 50px 20px;
+    }
+}

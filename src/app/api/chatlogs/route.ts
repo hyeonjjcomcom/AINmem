@@ -1,14 +1,13 @@
-// app/api/log/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/app/lib/mongodb';
-import { v4 as uuidv4 } from 'uuid';
-
-// import { enc } from 'your-token-encoder'; // 실제 토큰 인코더 import
-import { encoding_for_model } from '@dqbd/tiktoken';
-const enc = encoding_for_model('gpt-4'); // 또는 'gpt-3.5-turbo'
-
+import { encode } from 'gpt-tokenizer'; // 대체 토크나이저 라이브러리
 import ChatLog from '@/app/models/chatLogs'; // 실제 MongoDB 모델 import
 
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",  // 또는 특정 도메인
+  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type, Authorization",
+};
 
 export async function POST(request: NextRequest) {
   try {
@@ -25,14 +24,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // UUID 없으면 생성
-    if (!data.id) {
-      data.id = uuidv4();
-    }
-
     // input_text 문자열화 + 토큰 수 계산
     const safeInputText = typeof input_text === 'string' ? input_text : String(input_text || '');
-    const inputTokens = enc.encode(safeInputText);
+    const inputTokens = encode(safeInputText);
     data.tokens_input = inputTokens.length;
 
     // 🔥 turn_number 설정
@@ -55,13 +49,21 @@ export async function POST(request: NextRequest) {
 
     const log = await ChatLog.findOneAndUpdate(filter, update, options);
 
-    return NextResponse.json({ status: 'ok', id: log.id }, { status: 200 });
+    return NextResponse.json({ ok: true }, { headers: corsHeaders });
 
   } catch (err: any) {
     console.error("❌ DB 저장 오류:", err);
     return NextResponse.json(
-      { status: 'error', error: err.message }, 
-      { status: 500 }
+      { status: 'error', error: err.message },
+      { status: 500, headers: corsHeaders }
     );
   }
+}
+
+// 👉 CORS preflight (OPTIONS 요청 처리)
+export async function OPTIONS() {
+  return new NextResponse(null, {
+    status: 200,
+    headers: corsHeaders,
+  });
 }
