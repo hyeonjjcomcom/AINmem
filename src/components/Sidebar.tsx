@@ -117,7 +117,7 @@ const Sidebar: React.FC = () => {
 
   return (
     <aside className={styles.sidebar} id="sidebar">
-      <div className={styles.logo}>
+      <div className={styles.logo} onClick={() => handleNavigation('/')}>
         AIN Mem
       </div>
       
