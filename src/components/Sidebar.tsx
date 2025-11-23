@@ -4,8 +4,8 @@ import styles from './Sidebar.module.css';
 import React, { useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 
-import UserDropdown from './UserDropdown'; // 같은 레벨의 파일에서 import
-import LoginModal from './LoginModal';
+import UserDropdown from '@/components/UserDropdown';
+import LoginModal from '@/components/LoginModal';
 
 import { useAuth } from '@/contexts/AuthContext';
 

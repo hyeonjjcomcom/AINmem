@@ -60,6 +60,25 @@ Dedicated routes:
 - Client-side code cannot use `@ainblockchain/ain-js` or crypto packages (configured in next.config.ts)
 - Auth state is managed via `AuthContext` and persisted in sessionStorage
 
+## Git Workflow
+
+### Dual Repository Setup
+This project is pushed to two remote repositories simultaneously:
+- `origin` - Primary repository
+- `bitbucket` - Backup/mirror repository
+
+**Important**: When pushing changes, ALWAYS push to both remotes:
+```bash
+git push origin <branch-name>
+git push bitbucket <branch-name>
+```
+
+Example for current branch:
+```bash
+git push origin migrate-next
+git push bitbucket migrate-next
+```
+
 ## Environment Variables
 
 Required in `.env`:

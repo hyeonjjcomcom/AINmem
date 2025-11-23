@@ -1,14 +1,14 @@
 // app/page.tsx
 "use client";  
 
-import Sidebar from '../components/Sidebar';
+import Sidebar from '@/components/Sidebar';
 import styles from './GraphPage.module.css';
-import LinkModal from '../components/LinkModal';
-import ConstantModal from '../components/ConstantModal';
+import LinkModal from '@/components/LinkModal';
+import ConstantModal from '@/components/ConstantModal';
 
 import { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
-import AuthOverlay from '../components/AuthOverlay';
+import AuthOverlay from '@/components/AuthOverlay';
 
 import { useAuth } from '@/contexts/AuthContext';
 

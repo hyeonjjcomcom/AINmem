@@ -1,10 +1,10 @@
 "use client";
 import React, { useState, useEffect, useMemo } from 'react';
-import Sidebar from '../components/Sidebar';
-import MemoryDetailModal from '../components/MemoryDetailModal';
+import Sidebar from '@/components/Sidebar';
+import MemoryDetailModal from '@/components/MemoryDetailModal';
 import MemoryHeader from '../memories/MemoryHeader';
 import styles from './Memories.module.css';
-import AuthOverlay from '../components/AuthOverlay';
+import AuthOverlay from '@/components/AuthOverlay';
 
 import { useAuth } from '@/contexts/AuthContext';
 
