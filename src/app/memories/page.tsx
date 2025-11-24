@@ -142,6 +142,26 @@ const Memories = () => {
     setSelectedMemory(null);
   };
 
+  // 메모리 삭제 핸들러
+  const handleDelete = async (memoryId: string) => {
+    try {
+      const response = await fetch(`/api/memories?id=${encodeURIComponent(memoryId)}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to delete memory');
+      }
+
+      // 삭제 성공 후 메모리 목록 새로고침
+      await fetchMemories(userName || '');
+    } catch (error) {
+      console.error('Error deleting memory:', error);
+      throw error; // 모달이 에러를 처리할 수 있도록 re-throw
+    }
+  };
+
   //memories endpoint api 호출, 파라미터 userName(유저 지갑 주소)
   const fetchMemories = async (userName: string) => {
     // 로그인되지 않은 경우 빈 배열 설정
@@ -296,6 +316,7 @@ const Memories = () => {
         isOpen={isModalOpen}
         memory={selectedMemory}
         onClose={closeModal}
+        onDelete={handleDelete}
       />
     </>
   );

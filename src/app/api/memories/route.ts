@@ -52,7 +52,47 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('❌ API Error:', error);
     return NextResponse.json(
-      { error: 'Internal Server Error' }, 
+      { error: 'Internal Server Error' },
+      { status: 500 }
+    );
+  }
+}
+
+// ✅ /api/memories 경로의 DELETE 요청 처리
+export async function DELETE(request: NextRequest) {
+  try {
+    await connectDB();
+
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+
+    if (!id) {
+      return NextResponse.json(
+        { error: 'Memory ID is required' },
+        { status: 400 }
+      );
+    }
+
+    const result = await mongoose.connection
+      .collection('chatlogs')
+      .deleteOne({ _id: new mongoose.Types.ObjectId(id) });
+
+    if (result.deletedCount === 0) {
+      return NextResponse.json(
+        { error: 'Memory not found' },
+        { status: 404 }
+      );
+    }
+
+    console.log(`✅ Successfully deleted memory with id: ${id}`);
+    return NextResponse.json({
+      message: 'Memory deleted successfully',
+      deletedCount: result.deletedCount
+    });
+  } catch (error) {
+    console.error('❌ DELETE API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal Server Error' },
       { status: 500 }
     );
   }
