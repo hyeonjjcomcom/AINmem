@@ -21,7 +21,7 @@ const Home: React.FC = () => {
 
   // Pricing 버튼 클릭 핸들러
   const handlePricingClick = () => {
-    alert('AINMem is currently free to use! We are preparing various pricing plans. Stay tuned for updates.');
+    alert('AINMem은 현재 무료로 이용 가능합니다! 다양한 요금제를 준비 중이니 기대해주세요.');
   };
 
   return (
