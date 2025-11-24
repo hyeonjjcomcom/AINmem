@@ -5,6 +5,9 @@ import { Metadata, Viewport } from 'next';
 export const metadata: Metadata = {
   title: 'AINMem',
   description: 'Visualizing relationships between logical propositions',
+  icons: {
+    icon: '/favicon.png',
+  },
 };
 
 // 뷰포트 설정을 별도로 분리
