@@ -44,14 +44,21 @@ export async function GET(request: NextRequest) {
 }
 
 // --- DELETE (삭제) 로직 ---
-async function deleteConstants() {
+async function deleteConstants(userId?: string | null) {
   try {
-    console.log('🗑️ Deleting all constants...');
-    const result = await mongoose.connection.collection('constants').deleteMany({});
-    
+    const query = userId ? { user_id: userId } : {};
+
+    if (userId) {
+      console.log(`🗑️ Deleting constants for user ${userId}...`);
+    } else {
+      console.log('🗑️ Deleting all constants...');
+    }
+
+    const result = await mongoose.connection.collection('constants').deleteMany(query);
+
     console.log(`✅ Successfully deleted ${result.deletedCount} constants`);
     return NextResponse.json({
-      message: 'All constants deleted successfully',
+      message: userId ? `Constants for user ${userId} deleted successfully` : 'All constants deleted successfully',
       deletedCount: result.deletedCount
     });
   } catch (error) {
@@ -61,14 +68,19 @@ async function deleteConstants() {
 }
 
 // ✅ /api/constants 경로의 DELETE 요청 처리
-export async function DELETE() {
+export async function DELETE(request: NextRequest) {
   try {
     await connectDB();
-    return await deleteConstants();
+
+    // URL에서 userId 쿼리 파라미터 추출
+    const searchParams = request.nextUrl.searchParams;
+    const userId = searchParams.get('userId');
+
+    return await deleteConstants(userId);
   } catch (error) {
     console.error('❌ DELETE API Error:', error);
     return NextResponse.json(
-      { error: 'Internal Server Error' }, 
+      { error: 'Internal Server Error' },
       { status: 500 }
     );
   }

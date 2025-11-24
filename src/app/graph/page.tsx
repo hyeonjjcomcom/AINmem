@@ -334,9 +334,9 @@ export default function HomePage() {
       const user_id = userName;
       console.log('Building graph for user_id:', user_id);
 
-      await fetch('/api?endpoint=facts', { method: 'DELETE' });
-      await fetch('/api?endpoint=constants', { method: 'DELETE' });
-      await fetch('/api?endpoint=predicates', { method: 'DELETE' });
+      await fetch(`/api/facts?userId=${user_id}`, { method: 'DELETE' });
+      await fetch(`/api/constants?userId=${user_id}`, { method: 'DELETE' });
+      await fetch(`/api/predicates?userId=${user_id}`, { method: 'DELETE' });
 
       const response = await fetch(`/api?endpoint=memoriesDocument&user_id=${user_id}`, { method: 'GET' });
       const document = await response.text();
