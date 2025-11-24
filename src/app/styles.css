@@ -30,7 +30,12 @@
     color: var(--text-primary);
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     overflow-x: hidden;
-    display: block;
+    display: flex;
+    flex-direction: column;
+}
+
+.landing-spacer {
+    flex: 1;
 }
 
 .landing-divider {
@@ -186,150 +191,43 @@
 }
 
 /* ======================== */
-/* 5. Cards & Feature Tables */
+/* 5. Content Container */
 /* ======================== */
-.landing-cards {
-    display: flex;
-    justify-content: center;
-    gap: 30px;
-    margin-top: 30px;
+.landing-content-container {
     width: 90%;
     max-width: 1600px;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-.landing-card {
+    margin: 0 auto;
     padding: 30px;
     border-radius: var(--border-radius-lg);
-    text-align: left;
-    background-color: var(--surface-color);
-    width: 30%;
-    border: 1px solid var(--border-color);
-}
-
-.landing-card-title {
-    font-size: 18px;
-    font-weight: 600;
-    margin-bottom: 10px;
-    color: var(--text-primary);
-}
-
-.landing-card-description {
-    font-size: 14px;
-    color: var(--text-secondary);
-    line-height: 1.6;
-}
-
-/* Features Section */
-.landing-feature-group {
-    width: 90%;
-    max-width: 1600px;
-    margin: 0 auto 60px;
-    padding: 30px;
-    border-radius: var(--border-radius-lg);
-    text-align: left;
     background-color: var(--surface-color);
     border: 1px solid var(--border-color);
 }
 
-.landing-group-title {
+.landing-content-title {
     font-size: 24px;
     font-weight: 600;
     margin-bottom: 10px;
     color: var(--text-primary);
 }
 
-.landing-group-subtitle {
+.landing-content-subtitle {
     font-size: 14px;
     color: var(--text-muted);
     margin-bottom: 30px;
 }
 
-.landing-table-container {
-    overflow-x: auto;
-    border-radius: var(--border-radius);
-    box-shadow: var(--shadow);
-}
-
-.landing-table-container table {
-    width: 100%;
-    border-collapse: collapse;
-    min-width: 600px;
-    background-color: var(--surface-secondary);
-}
-
-.landing-table-container th, .landing-table-container td {
-    padding: 15px;
-    border-bottom: 1px solid var(--border-color);
-    text-align: left;
-}
-
-.landing-table-container th {
-    background-color: var(--surface-color);
-    font-weight: 600;
-    color: var(--text-primary);
+.landing-content-text {
     font-size: 14px;
-}
-
-.landing-table-container td {
-    color: var(--text-secondary);
-    font-size: 14px;
-}
-
-.landing-table-container td strong {
-    font-weight: 600;
-    color: var(--text-primary);
-}
-
-/* ======================== */
-/* 6. Testimonials */
-/* ======================== */
-.landing-quote {
-    font-size: 14px;
-    font-style: italic;
-    margin-bottom: 20px;
     color: var(--text-secondary);
     line-height: 1.6;
 }
 
-.landing-author {
-    font-weight: 500;
-    color: var(--text-muted);
-    font-size: 12px;
-}
-
 /* ======================== */
-/* 7. Research & Stats */
-/* ======================== */
-.landing-stats {
-    display: flex;
-    justify-content: center;
-    gap: 50px;
-    margin: 40px 0;
-}
-
-.landing-stat-item {
-    text-align: center;
-}
-
-.landing-stat-value {
-    font-size: 36px;
-    font-weight: 600;
-    color: var(--primary-color);
-    margin-bottom: 5px;
-}
-
-.landing-stat-label {
-    color: var(--text-muted);
-    font-size: 14px;
-}
-
-/* ======================== */
-/* 8. Footer */
+/* 6. Footer */
 /* ======================== */
 .landing-footer {
     padding: 30px 40px;
+    margin: 0;
     background-color: var(--background-color);
     color: var(--text-muted);
     font-size: 12px;
@@ -337,21 +235,16 @@
     text-align: center;
 }
 
+.landing-footer p {
+    margin: 0;
+}
+
 /* ======================== */
-/* 9. Responsive Design */
+/* 7. Responsive Design */
 /* ======================== */
 @media (max-width: 900px) {
     .landing-title {
         font-size: 36px;
-    }
-
-    .landing-cards {
-        flex-direction: column;
-        gap: 20px;
-    }
-
-    .landing-card {
-        width: 100%;
     }
 
     .landing-navbar nav {
@@ -363,11 +256,11 @@
         gap: 12px;
     }
 
-    .landing-ctas a {
+    .landing-ctas button {
         width: 100%;
     }
 
-    .landing-feature-group {
+    .landing-content-container {
         padding: 20px;
     }
 }

@@ -454,9 +454,9 @@ export default function HomePage() {
           <div className={styles.filters}>
             <span className={styles['filter-label']}>Filters:</span>
             <div className={`${styles['filter-tag']} ${styles.active}`}>All</div>
-            <div className={styles['filter-tag']}>Wan AI</div>
-            <div className={styles['filter-tag']}>Artany AI</div>
-            <div className={styles['filter-tag']}>Business</div>
+            <div className={styles['filter-tag']}>Life</div>
+            <div className={styles['filter-tag']}>Work</div>
+            <div className={styles['filter-tag']}>Note</div>
           </div>
 
           <div className={styles.content}>
