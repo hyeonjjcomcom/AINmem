@@ -50,9 +50,9 @@ const Home: React.FC = () => {
             <button onClick={() => handleNavigation('/memories')} className="landing-cta primary-cta">Get Started</button>
             <button onClick={handlePricingClick} className="landing-cta secondary-cta">View Pricing</button>
           </div>
-          {/* 제품 시연 영역 (추후 스크린샷 또는 데모 영상 추가 예정) */}
+          {/* 제품 시연 영역 */}
           <div className="landing-visual">
-            {/* TODO: 제품 스크린샷 또는 데모 영상 추가 */}
+            <img src="/AINMem.png" alt="AINMem Knowledge Graph Visualization" className="landing-hero-image" />
           </div>
         </div>
       </section>
