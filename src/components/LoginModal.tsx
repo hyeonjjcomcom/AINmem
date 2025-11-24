@@ -46,60 +46,70 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
   }
 
   const handleAINwalletClick = async () => {
-    ain.setSigner(new AinWalletSigner());
-    
-    // address가 잘 나온다는 것은 지갑과 잘 연결이 되었다는 의미.
-    const address = await ain.signer.getAddress()
-    console.log('address:', address);
-
-    let chainID = 0; // 기본값 설정
-    if (typeof window !== 'undefined' && window.ainetwork) {
-      const network = await (window as any).ainetwork?.getNetwork();
-      console.log('network:', network);
-      chainID = network.chainId;
-    }
-    
-    // signMessage 해서 암호화된걸(시그니쳐) 서버로 보내고
-    const testMessage = "hello, we are ainmem"
-    const signature = await ain.signer.signMessage(testMessage);
-    console.log('signature:', signature);
-
-    // VerifyPayload 인터페이스에 맞춰 데이터 구성
-    const payload: VerifyPayload = {
-      message: testMessage,  // data -> message로 변경
-      signature,
-      address,
-      chainID
-    };
-    
-    const result = await checkVerify(payload);
-    console.log("검증 결과값: ",result)
-    if (result===true) {
-      //로그인이 정상적으로 되었을 경우
-      updateLoginState(true);
-      setAuthUser(address);
-
-      //검증 완료 후 유저 database에 등록
-      try {
-        const response = await fetch('/api/users', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            user_address: address,
-            email: null,
-            nickname: null
-          })
-        });
-      } catch (error: any) {
-        console.log('database users table 유저 등록 시 에러 발생',error);
+    try {
+      // AINwallet extension 확인
+      if (typeof window === 'undefined' || !window.ainetwork) {
+        alert("AINwallet extension이 설치되어 있지 않습니다. 먼저 AINwallet을 설치해주세요.");
+        return;
       }
-      onClose(true);
-    }else {
-      alert("검증 실패. 로그인에 실패하였습니다.");
-    }
 
+      ain.setSigner(new AinWalletSigner());
+
+      // address가 잘 나온다는 것은 지갑과 잘 연결이 되었다는 의미.
+      const address = await ain.signer.getAddress()
+      console.log('address:', address);
+
+      let chainID = 0; // 기본값 설정
+      if (typeof window !== 'undefined' && window.ainetwork) {
+        const network = await (window as any).ainetwork?.getNetwork();
+        console.log('network:', network);
+        chainID = network.chainId;
+      }
+
+      // signMessage 해서 암호화된걸(시그니쳐) 서버로 보내고
+      const testMessage = "hello, we are ainmem"
+      const signature = await ain.signer.signMessage(testMessage);
+      console.log('signature:', signature);
+
+      // VerifyPayload 인터페이스에 맞춰 데이터 구성
+      const payload: VerifyPayload = {
+        message: testMessage,  // data -> message로 변경
+        signature,
+        address,
+        chainID
+      };
+
+      const result = await checkVerify(payload);
+      console.log("검증 결과값: ",result)
+      if (result===true) {
+        //로그인이 정상적으로 되었을 경우
+        updateLoginState(true);
+        setAuthUser(address);
+
+        //검증 완료 후 유저 database에 등록
+        try {
+          const response = await fetch('/api/users', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              user_address: address,
+              email: null,
+              nickname: null
+            })
+          });
+        } catch (error: any) {
+          console.log('database users table 유저 등록 시 에러 발생',error);
+        }
+        onClose(true);
+      }else {
+        alert("검증 실패. 로그인에 실패하였습니다.");
+      }
+    } catch (error: any) {
+      console.error('AINwallet 로그인 에러:', error);
+      alert("AINwallet 연결에 실패했습니다. 다시 시도해주세요.");
+    }
   };
 
   const walletOptions = [
