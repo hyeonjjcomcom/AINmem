@@ -402,9 +402,9 @@ export default function HomePage() {
               <p className={styles['page-subtitle']}>Visualizing relationships between logical propositions</p>
             </div>
             <div className={styles['header-right']}>
-              <button 
+              <button
                 className={`${styles.btn} ${styles['btn-secondary']}`}
-                onClick={centerGraph}
+                onClick={createGraph}
               >
                 <span>⟲</span> Restart
               </button>
