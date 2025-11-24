@@ -49,6 +49,7 @@ interface FactItem {
 
 export default function HomePage() {
   const svgRef = useRef<SVGSVGElement>(null);
+  const zoomRef = useRef<d3.ZoomBehavior<SVGSVGElement, unknown> | null>(null);
   const [constantsData, setConstantsData] = useState<ConstantData[]>([]);
   const [nodes, setNodes] = useState(new Map<string, NodeData>());
   const [links, setLinks] = useState<LinkData[]>([]);
@@ -202,12 +203,24 @@ export default function HomePage() {
 
     setSimulation(newSimulation);
 
+    // ✅ Zoom/Pan 기능 추가
+    const g = svg.append("g");
+
+    const zoom = d3.zoom<SVGSVGElement, unknown>()
+      .scaleExtent([0.1, 10])
+      .on('zoom', (event) => {
+        g.attr('transform', event.transform);
+      });
+
+    svg.call(zoom);
+    zoomRef.current = zoom;
+
     const maxLinkCount = Math.max(...graphData.links.map(l => l.count));
     const strokeWidthScale = d3.scaleLinear()
       .domain([1, maxLinkCount])
       .range([1.5, 8]);
-    
-    const link = svg.append("g")
+
+    const link = g.append("g")
       .selectAll("line")
       .data(graphData.links)
       .enter().append("line")
@@ -226,7 +239,7 @@ export default function HomePage() {
         setLinkModalOpen(true);
       });
 
-    const linkLabel = svg.append("g")
+    const linkLabel = g.append("g")
       .selectAll("text")
       .data(graphData.links)
       .enter().append("text")
@@ -241,7 +254,7 @@ export default function HomePage() {
         setSelectedLink(d);
         setLinkModalOpen(true);
       });
-    const node = svg.append("g")
+    const node = g.append("g")
       .selectAll("g")
       .data(nodeArray)
       .enter().append("g")
@@ -348,6 +361,15 @@ export default function HomePage() {
   };
 
   const centerGraph = () => {
+    // Zoom을 초기 상태로 리셋
+    if (svgRef.current && zoomRef.current) {
+      const svg = d3.select(svgRef.current);
+      svg.transition()
+        .duration(750)
+        .call(zoomRef.current.transform, d3.zoomIdentity);
+    }
+
+    // 시뮬레이션도 재시작
     if (simulation) {
       simulation.alpha(0.3).restart();
     }
