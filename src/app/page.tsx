@@ -57,6 +57,39 @@ const Home: React.FC = () => {
         </div>
       </section>
 
+      {/* About 섹션 */}
+      <section id="about" className="landing-section">
+        <div className="landing-content-container">
+          <h2 className="landing-content-title">About AINMem</h2>
+          <p className="landing-content-subtitle">Infinite Memory Solution for AI Agents</p>
+
+          <div className="landing-content-text">
+            <p>
+              AINMem is an innovative knowledge graph platform that provides AI agents with permanent and structured memory.
+              By transforming conversation logs and user data into a First-Order Logic (FOL) based semantic structure,
+              AI can go beyond simply storing conversations to understanding relationships and context, enabling true learning.
+            </p>
+
+            <p>
+              Through intuitive visualization powered by D3.js, users can explore the AI's knowledge structure in real-time
+              and instantly see how logical propositions consisting of Constants (entities), Facts (truths), and Predicates (relationships)
+              are interconnected.
+            </p>
+
+            <p>
+              Through integration with the AIN blockchain, AINMem ensures decentralized identity authentication and data ownership.
+              Users log in securely via AINwallet, and all memory data is linked to their wallet address to build personalized knowledge graphs.
+              The combination of MongoDB and FOL-SDK enables large-scale data processing and complex logical reasoning, while the modern architecture
+              based on Next.js 15 delivers a fast and responsive user experience.
+            </p>
+
+            <p>
+              AINMem is not just a chat history repository—it's creating a future where AI agents truly "remember and learn."
+            </p>
+          </div>
+        </div>
+      </section>
+
       <div className="landing-spacer"></div>
 
       <hr className="landing-divider"/>
