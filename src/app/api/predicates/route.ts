@@ -6,12 +6,20 @@ import connectDB from '@/app/lib/mongodb';
 import { getFolStore } from '../lib/utils'; // 💡 공통 함수 임포트
 
 // --- GET (조회) 로직 ---
-async function getPredicates() {
+async function getPredicates(userId?: string | null) {
   try {
-    const store = getFolStore();
-    const data = (await store.getAllFols()).predicates;
-    
-    console.log('📊 Fetched predicates data:', data);
+    // userId가 있으면 MongoDB에서 직접 필터링
+    let data;
+    if (userId) {
+      const query = { user_id: userId };
+      data = await mongoose.connection.collection('predicates').find(query).toArray();
+      console.log(`📊 Fetched predicates for user ${userId}:`, data.length, 'items');
+    } else {
+      const store = getFolStore();
+      data = (await store.getAllFols()).predicates;
+      console.log('📊 Fetched all predicates:', data.length, 'items');
+    }
+
     return NextResponse.json(data);
   } catch (error) {
     console.error('❌ Error fetching predicates:', error);
@@ -20,14 +28,19 @@ async function getPredicates() {
 }
 
 // ✅ /api/predicates 경로의 GET 요청 처리
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
     await connectDB();
-    return await getPredicates();
+
+    // URL에서 userId 쿼리 파라미터 추출
+    const searchParams = request.nextUrl.searchParams;
+    const userId = searchParams.get('userId');
+
+    return await getPredicates(userId);
   } catch (error) {
     console.error('❌ API Error:', error);
     return NextResponse.json(
-      { error: 'Internal Server Error' }, 
+      { error: 'Internal Server Error' },
       { status: 500 }
     );
   }

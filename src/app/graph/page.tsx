@@ -73,15 +73,31 @@ export default function HomePage() {
 
   const buildGraph = async () => {
     try {
-      // ✅ 수정: 새로운 API 형식으로 변경
-      const data = await fetch('/api?endpoint=facts').then(res => {
+      // ⚠️ userName이 없으면 API 호출하지 않음 (보안)
+      if (!userName) {
+        console.warn('⚠️ No userName available. Skipping graph build.');
+        return null;
+      }
+
+      // userId 파라미터 추가
+      const userIdParam = `?userId=${encodeURIComponent(userName)}`;
+
+      console.log('🔍 Current userName:', userName);
+      console.log('🔍 API URL for facts:', `/api/facts${userIdParam}`);
+      console.log('🔍 API URL for constants:', `/api/constants${userIdParam}`);
+
+      // ✅ 수정: userId 파라미터와 함께 API 호출
+      const data = await fetch(`/api/facts${userIdParam}`).then(res => {
         if (!res.ok) {
           throw new Error(`HTTP 오류 발생! 상태 코드: ${res.status}`);
         }
         return res.json();
       });
 
-      const constants = await fetch('/api?endpoint=constants').then(res => res.json());
+      console.log('📥 Received facts data:', data.length, 'items');
+
+      const constants = await fetch(`/api/constants${userIdParam}`).then(res => res.json());
+      console.log('📥 Received constants data:', constants.length, 'items');
       setConstantsData(constants);
 
       const filteredData = filterData(data);
@@ -355,8 +371,14 @@ export default function HomePage() {
   };
 
   useEffect(() => {
-    createGraph();
-  }, []);
+    // isHydrated가 true이고 userName이 있을 때만 그래프 생성
+    if (isHydrated && userName) {
+      console.log('✅ Auth loaded, creating graph for user:', userName);
+      createGraph();
+    } else {
+      console.log('⏳ Waiting for auth... isHydrated:', isHydrated, 'userName:', userName);
+    }
+  }, [isHydrated, userName]);
 
   useEffect(() => {
     if (svgRef.current) {

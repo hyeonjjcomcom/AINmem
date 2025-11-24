@@ -6,12 +6,20 @@ import connectDB from '@/app/lib/mongodb';
 import { getFolStore } from '../lib/utils'; // 💡 공통 함수 임포트
 
 // --- GET (조회) 로직 ---
-async function getConstants() {
+async function getConstants(userId?: string | null) {
   try {
-    const store = getFolStore();
-    const data = (await store.getAllFols()).constants;
-    
-    console.log('📊 Fetched constants data:', data);
+    // userId가 있으면 MongoDB에서 직접 필터링
+    let data;
+    if (userId) {
+      const query = { user_id: userId };
+      data = await mongoose.connection.collection('constants').find(query).toArray();
+      console.log(`📊 Fetched constants for user ${userId}:`, data.length, 'items');
+    } else {
+      const store = getFolStore();
+      data = (await store.getAllFols()).constants;
+      console.log('📊 Fetched all constants:', data.length, 'items');
+    }
+
     return NextResponse.json(data);
   } catch (error) {
     console.error('❌ Error fetching constants:', error);
@@ -20,14 +28,19 @@ async function getConstants() {
 }
 
 // ✅ /api/constants 경로의 GET 요청 처리
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
     await connectDB();
-    return await getConstants();
+
+    // URL에서 userId 쿼리 파라미터 추출
+    const searchParams = request.nextUrl.searchParams;
+    const userId = searchParams.get('userId');
+
+    return await getConstants(userId);
   } catch (error) {
     console.error('❌ API Error:', error);
     return NextResponse.json(
-      { error: 'Internal Server Error' }, 
+      { error: 'Internal Server Error' },
       { status: 500 }
     );
   }
