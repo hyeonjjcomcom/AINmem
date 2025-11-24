@@ -19,6 +19,11 @@ const Home: React.FC = () => {
     router.push(path);
   };
 
+  // Pricing 버튼 클릭 핸들러
+  const handlePricingClick = () => {
+    alert('AINMem is currently free to use! We are preparing various pricing plans. Stay tuned for updates.');
+  };
+
   return (
     <div className="landing">
 
@@ -43,7 +48,7 @@ const Home: React.FC = () => {
           {/* 주요 액션 버튼 */}
           <div className="landing-ctas">
             <button onClick={() => handleNavigation('/memories')} className="landing-cta primary-cta">Get Started</button>
-            <button onClick={() => handleNavigation('/pricing')} className="landing-cta secondary-cta">View Pricing</button>
+            <button onClick={handlePricingClick} className="landing-cta secondary-cta">View Pricing</button>
           </div>
           {/* 제품 시연 영역 (추후 스크린샷 또는 데모 영상 추가 예정) */}
           <div className="landing-visual">
