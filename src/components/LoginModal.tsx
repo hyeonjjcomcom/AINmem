@@ -49,7 +49,10 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
     try {
       // AINwallet extension 확인
       if (typeof window === 'undefined' || !window.ainetwork) {
-        alert("AINwallet extension이 설치되어 있지 않습니다. 먼저 AINwallet을 설치해주세요.");
+        const installExtension = confirm("AINwallet extension이 설치되어 있지 않습니다.\n\n설치 페이지로 이동하시겠습니까?");
+        if (installExtension) {
+          window.open('https://chromewebstore.google.com/detail/hbdheoebpgogdkagfojahleegjfkhkpl?utm_source=item-share-cb', '_blank');
+        }
         return;
       }
 
