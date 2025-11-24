@@ -3,20 +3,17 @@
 import { NextResponse, NextRequest } from 'next/server';
 import mongoose from 'mongoose';
 import connectDB from '@/app/lib/mongodb';
-import { getFolStore } from '../lib/utils'; // 💡 공통 함수 임포트
 
 // --- GET (조회) 로직 ---
 async function getConstants(userId?: string | null) {
   try {
-    // userId가 있으면 MongoDB에서 직접 필터링
-    let data;
+    // MongoDB에서 직접 조회 (userId가 있으면 필터링, 없으면 전체)
+    const query = userId ? { user_id: userId } : {};
+    const data = await mongoose.connection.collection('constants').find(query).toArray();
+
     if (userId) {
-      const query = { user_id: userId };
-      data = await mongoose.connection.collection('constants').find(query).toArray();
       console.log(`📊 Fetched constants for user ${userId}:`, data.length, 'items');
     } else {
-      const store = getFolStore();
-      data = (await store.getAllFols()).constants;
       console.log('📊 Fetched all constants:', data.length, 'items');
     }
 
