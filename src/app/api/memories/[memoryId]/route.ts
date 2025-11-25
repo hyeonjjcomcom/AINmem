@@ -7,12 +7,12 @@ import connectDB from '@/lib/mongodb';
 // ✅ /api/memories/[memoryId] 경로의 DELETE 요청 처리
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { memoryId: string } }
+  { params }: { params: Promise<{ memoryId: string }> }
 ) {
   try {
     await connectDB();
 
-    const { memoryId } = params;
+    const { memoryId } = await params;
 
     // ID 유효성 검증
     if (!memoryId || !mongoose.Types.ObjectId.isValid(memoryId)) {

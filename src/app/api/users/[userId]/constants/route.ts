@@ -19,12 +19,12 @@ async function getConstants(userId: string) {
 // ✅ /api/users/[userId]/constants 경로의 GET 요청 처리
 export async function GET(
   request: NextRequest,
-  { params }: { params: { userId: string } }
+  { params }: { params: Promise<{ userId: string }> }
 ) {
   try {
     await connectDB();
 
-    const { userId } = params;
+    const { userId } = await params;
 
     // userId 유효성 검증
     if (!userId) {
@@ -65,12 +65,12 @@ async function deleteConstants(userId: string) {
 // ✅ /api/users/[userId]/constants 경로의 DELETE 요청 처리
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { userId: string } }
+  { params }: { params: Promise<{ userId: string }> }
 ) {
   try {
     await connectDB();
 
-    const { userId } = params;
+    const { userId } = await params;
 
     // userId 유효성 검증
     if (!userId) {
