@@ -2,8 +2,19 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    overflow: hidden;
+    overflow: hidden !important;
     position: relative;
+    height: 100vh;
+}
+
+/* 그래프 페이지에서는 스크롤바 제거 */
+.main-content * {
+    scrollbar-width: auto;
+}
+
+.main-content *::-webkit-scrollbar {
+    width: auto;
+    height: auto;
 }
 
 .graph-wrapper {
@@ -95,28 +106,20 @@
 .graph-container {
     width: 100%;
     height: 500px;
-    overflow: auto;
+    overflow: hidden;
     border-top: 1px solid #2a2a2a;
     position: relative;
     flex: 1;
 }
 
+/* 그래프 컨테이너 내부의 스크롤바 완전히 숨김 */
 .graph-container::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+    display: none;
 }
 
-.graph-container::-webkit-scrollbar-track {
-    background: #1a1a1a;
-}
-
-.graph-container::-webkit-scrollbar-thumb {
-    background: #2a2a2a;
-    border-radius: 4px;
-}
-
-.graph-container::-webkit-scrollbar-thumb:hover {
-    background: #6366f1;
+.graph-container {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
 }
 
 .filters {
