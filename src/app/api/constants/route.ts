@@ -5,18 +5,10 @@ import mongoose from 'mongoose';
 import connectDB from '@/lib/mongodb';
 
 // --- GET (조회) 로직 ---
-async function getConstants(userId?: string | null) {
+async function getConstants(userId: string) {
   try {
-    // MongoDB에서 직접 조회 (userId가 있으면 필터링, 없으면 전체)
-    const query = userId ? { user_id: userId } : {};
-    const data = await mongoose.connection.collection('constants').find(query).toArray();
-
-    if (userId) {
-      console.log(`📊 Fetched constants for user ${userId}:`, data.length, 'items');
-    } else {
-      console.log('📊 Fetched all constants:', data.length, 'items');
-    }
-
+    const data = await mongoose.connection.collection('constants').find({ user_id: userId }).toArray();
+    console.log(`📊 Fetched constants for user ${userId}:`, data.length, 'items');
     return NextResponse.json(data);
   } catch (error) {
     console.error('❌ Error fetching constants:', error);
@@ -53,21 +45,15 @@ export async function GET(request: NextRequest) {
 }
 
 // --- DELETE (삭제) 로직 ---
-async function deleteConstants(userId?: string | null) {
+async function deleteConstants(userId: string) {
   try {
-    const query = userId ? { user_id: userId } : {};
+    console.log(`🗑️ Deleting constants for user ${userId}...`);
 
-    if (userId) {
-      console.log(`🗑️ Deleting constants for user ${userId}...`);
-    } else {
-      console.log('🗑️ Deleting all constants...');
-    }
-
-    const result = await mongoose.connection.collection('constants').deleteMany(query);
+    const result = await mongoose.connection.collection('constants').deleteMany({ user_id: userId });
 
     console.log(`✅ Successfully deleted ${result.deletedCount} constants`);
     return NextResponse.json({
-      message: userId ? `Constants for user ${userId} deleted successfully` : 'All constants deleted successfully',
+      message: `Constants for user ${userId} deleted successfully`,
       deletedCount: result.deletedCount
     });
   } catch (error) {

@@ -5,18 +5,10 @@ import mongoose from 'mongoose';
 import connectDB from '@/lib/mongodb';
 
 // --- GET (조회) 로직 ---
-async function getFacts(userId?: string | null) {
+async function getFacts(userId: string) {
   try {
-    // MongoDB에서 직접 조회 (userId가 있으면 필터링, 없으면 전체)
-    const query = userId ? { user_id: userId } : {};
-    const data = await mongoose.connection.collection('facts').find(query).toArray();
-
-    if (userId) {
-      console.log(`📊 Fetched facts for user ${userId}:`, data.length, 'items');
-    } else {
-      console.log('📊 Fetched all facts:', data.length, 'items');
-    }
-
+    const data = await mongoose.connection.collection('facts').find({ user_id: userId }).toArray();
+    console.log(`📊 Fetched facts for user ${userId}:`, data.length, 'items');
     return NextResponse.json(data);
   } catch (error) {
     console.error('❌ Error fetching facts:', error);
@@ -53,21 +45,15 @@ export async function GET(request: NextRequest) {
 }
 
 // --- DELETE (삭제) 로직 ---
-async function deleteFacts(userId?: string | null) {
+async function deleteFacts(userId: string) {
   try {
-    const query = userId ? { user_id: userId } : {};
+    console.log(`🗑️ Deleting facts for user ${userId}...`);
 
-    if (userId) {
-      console.log(`🗑️ Deleting facts for user ${userId}...`);
-    } else {
-      console.log('🗑️ Deleting all facts...');
-    }
-
-    const result = await mongoose.connection.collection('facts').deleteMany(query);
+    const result = await mongoose.connection.collection('facts').deleteMany({ user_id: userId });
 
     console.log(`✅ Successfully deleted ${result.deletedCount} facts`);
     return NextResponse.json({
-      message: userId ? `Facts for user ${userId} deleted successfully` : 'All facts deleted successfully',
+      message: `Facts for user ${userId} deleted successfully`,
       deletedCount: result.deletedCount
     });
   } catch (error) {
