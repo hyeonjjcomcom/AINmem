@@ -84,3 +84,4 @@ git push bitbucket migrate-next
 Required in `.env`:
 - `MONGODB_URI` - MongoDB connection string
 - `GEMINI_API_KEY` - Google Gemini API key for FOL-SDK
+ 
