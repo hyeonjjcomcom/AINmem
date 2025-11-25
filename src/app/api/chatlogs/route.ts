@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import connectDB from '@/app/lib/mongodb';
+import connectDB from '@/lib/mongodb';
 import { encode } from 'gpt-tokenizer'; // 대체 토크나이저 라이브러리
-import ChatLog from '@/app/models/chatLogs'; // 실제 MongoDB 모델 import
+import ChatLog from '@/models/chatLogs'; // 실제 MongoDB 모델 import
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",  // 또는 특정 도메인

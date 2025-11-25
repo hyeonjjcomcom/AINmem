@@ -2,7 +2,7 @@
 
 import { NextResponse, NextRequest } from 'next/server';
 import mongoose from 'mongoose';
-import connectDB from '@/app/lib/mongodb';
+import connectDB from '@/lib/mongodb';
 
 // --- GET (조회) 로직 ---
 async function getConstants(userId?: string | null) {

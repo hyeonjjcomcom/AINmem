@@ -2,7 +2,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import mongoose from 'mongoose';
-import connectDB from '@/app/lib/mongodb';
+import connectDB from '@/lib/mongodb';
 
 async function getMemoriesDocument(user_id: string | null) {
   try {

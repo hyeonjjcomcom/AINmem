@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import Sidebar from '@/components/Sidebar';
 import MemoryDetailModal from '@/components/MemoryDetailModal';
-import MemoryHeader from '../memories/MemoryHeader';
+import MemoryHeader from './_components/MemoryHeader';
 import styles from './Memories.module.css';
 import AuthOverlay from '@/components/AuthOverlay';
 

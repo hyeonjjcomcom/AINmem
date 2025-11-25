@@ -2,8 +2,8 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { ethers } from 'ethers';
-import connectDB from '@/app/lib/mongodb';
-import { nonces } from '../../lib/utils'; // 💡 공통 함수 임포트
+import connectDB from '@/lib/mongodb';
+import { nonces } from '@/lib/folStore'; // 💡 공통 함수 임포트
 
 // --- POST (서명 기반 로그인) 로직 ---
 async function loginWithSignature(body: { address: string; signature: string }) {

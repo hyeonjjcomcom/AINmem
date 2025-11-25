@@ -2,8 +2,8 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
-import connectDB from '@/app/lib/mongodb';
-import { nonces } from '../../lib/utils'; // 💡 공통 함수 임포트
+import connectDB from '@/lib/mongodb';
+import { nonces } from '@/lib/folStore'; // 💡 공통 함수 임포트
 
 // --- POST (Nonce 생성) 로직 ---
 async function getNonce(body: { address: string }) {
