@@ -12,11 +12,11 @@ interface ConstantModalProps {
   onClose: () => void;
 }
 
-const ConstantModal: React.FC<ConstantModalProps> = ({ 
-  selectedConstantInfo, 
-  isOpen, 
-  onClose 
-}) => {
+const ConstantModal = ({
+  selectedConstantInfo,
+  isOpen,
+  onClose
+}: ConstantModalProps) => {
   const modalRef = useRef<HTMLDivElement>(null);
   const valueRef = useRef<HTMLHeadingElement>(null);
   const descriptionRef = useRef<HTMLParagraphElement>(null);

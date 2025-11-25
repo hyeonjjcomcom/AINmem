@@ -13,7 +13,7 @@ interface SvgIconProps {
   path: string;
 }
 
-const SvgIcon: React.FC<SvgIconProps> = ({ path }) => (
+const SvgIcon = ({ path }: SvgIconProps) => (
   <svg className={styles['nav-icon']} fill="currentColor" viewBox="0 0 24 24">
     <path d={path} />
   </svg>
@@ -53,7 +53,7 @@ const navItems = [
   },*/
 ];
 
-const Sidebar: React.FC = () => {
+const Sidebar = () => {
   const router = useRouter(); 
   const pathname = usePathname();
   const { isLoggedIn, updateLoginState, userName, setAuthUser, isHydrated } = useAuth();

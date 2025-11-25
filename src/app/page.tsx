@@ -11,7 +11,7 @@ import './styles.css';
  * - 고객 후기 및 성능 지표 표시
  * - CTA(Call to Action) 버튼을 통한 회원가입 유도
  */
-const Home: React.FC = () => {
+const Home = () => {
   const router = useRouter();
 
   // 페이지 네비게이션 핸들러
