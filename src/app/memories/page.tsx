@@ -145,7 +145,7 @@ const Memories = () => {
   // 메모리 삭제 핸들러
   const handleDelete = async (memoryId: string) => {
     try {
-      const response = await fetch(`/api/memories?id=${encodeURIComponent(memoryId)}`, {
+      const response = await fetch(`/api/memories/${encodeURIComponent(memoryId)}`, {
         method: 'DELETE',
       });
 
