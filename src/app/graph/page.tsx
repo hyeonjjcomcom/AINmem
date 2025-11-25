@@ -80,15 +80,12 @@ export default function HomePage() {
         return null;
       }
 
-      // userId 파라미터 추가
-      const userIdParam = `?userId=${encodeURIComponent(userName)}`;
-
       console.log('🔍 Current userName:', userName);
-      console.log('🔍 API URL for facts:', `/api/facts${userIdParam}`);
-      console.log('🔍 API URL for constants:', `/api/constants${userIdParam}`);
+      console.log('🔍 API URL for facts:', `/api/users/${userName}/facts`);
+      console.log('🔍 API URL for constants:', `/api/users/${userName}/constants`);
 
-      // ✅ 수정: userId 파라미터와 함께 API 호출
-      const data = await fetch(`/api/facts${userIdParam}`).then(res => {
+      // ✅ RESTful API 호출: /api/users/[userId]/facts
+      const data = await fetch(`/api/users/${encodeURIComponent(userName)}/facts`).then(res => {
         if (!res.ok) {
           throw new Error(`HTTP 오류 발생! 상태 코드: ${res.status}`);
         }
@@ -97,7 +94,7 @@ export default function HomePage() {
 
       console.log('📥 Received facts data:', data.length, 'items');
 
-      const constants = await fetch(`/api/constants${userIdParam}`).then(res => res.json());
+      const constants = await fetch(`/api/users/${encodeURIComponent(userName)}/constants`).then(res => res.json());
       console.log('📥 Received constants data:', constants.length, 'items');
       setConstantsData(constants);
 
@@ -332,11 +329,18 @@ export default function HomePage() {
     setIsBuilding(true); // 빌드 시작
     try {
       const user_id = userName;
+
+      if (!user_id) {
+        console.error('❌ user_id is required for building graph');
+        return;
+      }
+
       console.log('Building graph for user_id:', user_id);
 
-      await fetch(`/api/facts?userId=${user_id}`, { method: 'DELETE' });
-      await fetch(`/api/constants?userId=${user_id}`, { method: 'DELETE' });
-      await fetch(`/api/predicates?userId=${user_id}`, { method: 'DELETE' });
+      // ✅ RESTful API 호출: /api/users/[userId]/{resource}
+      await fetch(`/api/users/${encodeURIComponent(user_id)}/facts`, { method: 'DELETE' });
+      await fetch(`/api/users/${encodeURIComponent(user_id)}/constants`, { method: 'DELETE' });
+      await fetch(`/api/users/${encodeURIComponent(user_id)}/predicates`, { method: 'DELETE' });
 
       const response = await fetch(`/api?endpoint=memoriesDocument&user_id=${user_id}`, { method: 'GET' });
       const document = await response.text();

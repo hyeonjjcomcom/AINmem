@@ -25,6 +25,7 @@ async function getPredicates(userId?: string | null) {
 }
 
 // ✅ /api/predicates 경로의 GET 요청 처리
+// ⚠️ Deprecated: 하위 호환성을 위해 유지. 새 코드는 /api/users/[userId]/predicates 사용
 export async function GET(request: NextRequest) {
   try {
     await connectDB();
@@ -32,6 +33,14 @@ export async function GET(request: NextRequest) {
     // URL에서 userId 쿼리 파라미터 추출
     const searchParams = request.nextUrl.searchParams;
     const userId = searchParams.get('userId');
+
+    // userId 필수 검증 (전체 조회는 향후 관리자 기능용으로 예약)
+    if (!userId) {
+      return NextResponse.json(
+        { error: 'userId query parameter is required. Use /api/users/[userId]/predicates for RESTful access.' },
+        { status: 400 }
+      );
+    }
 
     return await getPredicates(userId);
   } catch (error) {
@@ -68,6 +77,7 @@ async function deletePredicates(userId?: string | null) {
 }
 
 // ✅ /api/predicates 경로의 DELETE 요청 처리
+// ⚠️ Deprecated: 하위 호환성을 위해 유지. 새 코드는 /api/users/[userId]/predicates 사용
 export async function DELETE(request: NextRequest) {
   try {
     await connectDB();
@@ -75,6 +85,14 @@ export async function DELETE(request: NextRequest) {
     // URL에서 userId 쿼리 파라미터 추출
     const searchParams = request.nextUrl.searchParams;
     const userId = searchParams.get('userId');
+
+    // userId 필수 검증 (전체 삭제는 향후 관리자 기능용으로 예약)
+    if (!userId) {
+      return NextResponse.json(
+        { error: 'userId query parameter is required. Use /api/users/[userId]/predicates for RESTful access.' },
+        { status: 400 }
+      );
+    }
 
     return await deletePredicates(userId);
   } catch (error) {
