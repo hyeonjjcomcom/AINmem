@@ -18,6 +18,7 @@ export interface ChatLog extends Document {
   tags?: string[];
   tokens_input?: number;
   tokens_output?: number;
+  buildAt?: Date;
 }
 
 // ChatLog 스키마 정의
@@ -85,6 +86,9 @@ const ChatLogSchema: Schema = new Schema({
   tokens_output: {
     type: Number,
     min: 0
+  },
+  buildAt: {
+    type: Date
   }
 }, {
   timestamps: true, // createdAt, updatedAt 자동 추가
@@ -96,6 +100,7 @@ ChatLogSchema.index({ user_id: 1 });
 ChatLogSchema.index({ session_id: 1 });
 ChatLogSchema.index({ createdAt: -1 }); // 최신순 정렬용
 ChatLogSchema.index({ user_id: 1, session_id: 1 }); // 복합 인덱스
+ChatLogSchema.index({ user_id: 1, buildAt: 1 }); // Delta build 쿼리 최적화용
 
 // 모델 생성 (이미 존재하면 기존 모델 사용)
 export default mongoose.models.ChatLog || mongoose.model<ChatLog>('ChatLog', ChatLogSchema);

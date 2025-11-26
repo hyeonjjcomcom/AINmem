@@ -5,6 +5,7 @@ import Sidebar from '@/components/Sidebar';
 import styles from './GraphPage.module.css';
 import LinkModal from '@/components/LinkModal';
 import ConstantModal from '@/components/ConstantModal';
+import ConfirmModal from '@/components/ConfirmModal';
 
 import { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
@@ -62,6 +63,7 @@ export default function HomePage() {
   const [nodeCount, setNodeCount] = useState(0);
   const [linkCount, setLinkCount] = useState(0);
   const [isBuilding, setIsBuilding] = useState(false);
+  const [showFullBuildConfirm, setShowFullBuildConfirm] = useState(false);
   const { isLoggedIn, userName, isHydrated } = useAuth();
 
   const color = d3.scaleOrdinal()
@@ -337,21 +339,24 @@ export default function HomePage() {
 
       console.log('Building graph for user_id:', user_id);
 
-      // ✅ RESTful API 호출: /api/users/[userId]/{resource}
-      await fetch(`/api/users/${encodeURIComponent(user_id)}/facts`, { method: 'DELETE' });
-      await fetch(`/api/users/${encodeURIComponent(user_id)}/constants`, { method: 'DELETE' });
-      await fetch(`/api/users/${encodeURIComponent(user_id)}/predicates`, { method: 'DELETE' });
-
+      // ✅ Incremental build: buildAt이 없는 메모리만 가져옴
       const response = await fetch(`/api?endpoint=memoriesDocument&user_id=${user_id}`, { method: 'GET' });
       const document = await response.text();
+
+      // 빌드할 새로운 메모리가 없으면 스킵
+      if (!document || document.trim() === '') {
+        console.log('📊 No new memories to build');
+        createGraph();
+        return;
+      }
 
       console.log('📄 Document to build:', document);
       const temp = JSON.stringify({ document, user_id });
       console.log('📄 Payload being sent:', temp);
 
-      await fetch('/api?endpoint=buildFols', { 
-        method: 'POST', 
-        headers: { 'Content-Type': 'application/json' }, 
+      await fetch('/api?endpoint=buildFols', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: temp
       });
 
@@ -361,6 +366,56 @@ export default function HomePage() {
       console.error('Error building new graph:', error);
     } finally {
       setIsBuilding(false); // 빌드 완료 (성공/실패 상관없이)
+    }
+  };
+
+  // Full Rebuild: 모든 FOL 데이터 삭제 후 전체 메모리 재빌드
+  const fullBuildGraph = async () => {
+    setShowFullBuildConfirm(false);
+    setIsBuilding(true);
+    try {
+      const user_id = userName;
+
+      if (!user_id) {
+        console.error('❌ user_id is required for building graph');
+        return;
+      }
+
+      console.log('🔄 Full rebuild for user_id:', user_id);
+
+      // 기존 FOL 데이터 삭제
+      await fetch(`/api/users/${encodeURIComponent(user_id)}/facts`, { method: 'DELETE' });
+      await fetch(`/api/users/${encodeURIComponent(user_id)}/constants`, { method: 'DELETE' });
+      await fetch(`/api/users/${encodeURIComponent(user_id)}/predicates`, { method: 'DELETE' });
+
+      // 모든 메모리의 buildAt 초기화
+      await fetch(`/api/users/${encodeURIComponent(user_id)}/memories/resetBuildAt`, { method: 'POST' });
+
+      // 전체 메모리 가져오기 (buildAt 초기화 후이므로 모든 메모리 반환)
+      const response = await fetch(`/api?endpoint=memoriesDocument&user_id=${user_id}`, { method: 'GET' });
+      const document = await response.text();
+
+      if (!document || document.trim() === '') {
+        console.log('📊 No memories to build');
+        createGraph();
+        return;
+      }
+
+      console.log('📄 Full document to build:', document);
+      const temp = JSON.stringify({ document, user_id });
+
+      await fetch('/api?endpoint=buildFols', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: temp
+      });
+
+      createGraph();
+      console.log('📊 Full rebuild completed!');
+    } catch (error) {
+      console.error('Error in full rebuild:', error);
+    } finally {
+      setIsBuilding(false);
     }
   };
 
@@ -440,11 +495,17 @@ export default function HomePage() {
               >
                 <span>🏷️</span> Labels
               </button>
-              <button 
+              <button
                 className={`${styles.btn} ${styles['btn-secondary']}`}
                 onClick={buildNewGraph}
               >
                 <span>📊</span> Build
+              </button>
+              <button
+                className={`${styles.btn} ${styles['btn-secondary']}`}
+                onClick={() => setShowFullBuildConfirm(true)}
+              >
+                <span>🔄</span> Full Build
               </button>
               <button 
                 className={`${styles.btn} ${styles['btn-primary']}`}
@@ -506,6 +567,18 @@ export default function HomePage() {
           isOpen={constantModalOpen}
           onClose={() => setConstantModalOpen(false)}
         />
+        {/* Full Build Confirm Modal */}
+        <ConfirmModal
+          isOpen={showFullBuildConfirm}
+          title="Full Build 확인"
+          message="모든 그래프 데이터를 삭제하고 처음부터 다시 빌드합니다. 계속하시겠습니까?"
+          confirmText="Full Build"
+          cancelText="취소"
+          onConfirm={fullBuildGraph}
+          onCancel={() => setShowFullBuildConfirm(false)}
+          danger
+        />
+
         {/* 로딩 오버레이 추가 */}
         {isBuilding && (
           <div style={{

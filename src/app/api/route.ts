@@ -152,10 +152,11 @@ async function getMemoriesData(request: Request) {
 async function getMemoriesDocument(user_id:any) {
   try {
     let document = "";
-    
-    // user_id 조건을 추가한 쿼리
-    const data = await mongoose.connection.collection('chatlogs').find({ 
-      user_id: user_id 
+
+    // user_id 조건 + buildAt이 없는 메모리만 가져오기 (incremental build)
+    const data = await mongoose.connection.collection('chatlogs').find({
+      user_id: user_id,
+      buildAt: { $exists: false }
     }).toArray();
     
     for (const item of data) {
@@ -228,17 +229,25 @@ async function buildFols(body: { document: string }, user_id: string) {
 
     console.log('📥 User ID:', user_id);
 
-    const result = await client.buildAndSave(body.document, user_id);
+    await client.buildAndSave(body.document, user_id);
     console.log('✅ Document built and saved successfully.');
-    
-    return NextResponse.json({ 
-      success: true, 
-      message: 'Document built and saved successfully' 
+
+    // ✅ 빌드 성공 후 buildAt 타임스탬프 업데이트 (incremental build)
+    const updateResult = await mongoose.connection.collection('chatlogs').updateMany(
+      { user_id: user_id, buildAt: { $exists: false } },
+      { $set: { buildAt: new Date() } }
+    );
+    console.log(`✅ Updated buildAt for ${updateResult.modifiedCount} memories`);
+
+    return NextResponse.json({
+      success: true,
+      message: 'Document built and saved successfully',
+      updatedMemories: updateResult.modifiedCount
     });
   } catch (error: any) {
     console.error('❌ Error building and saving document:', error);
     return NextResponse.json(
-      { success: false, error: error.message }, 
+      { success: false, error: error.message },
       { status: 500 }
     );
   }
