@@ -10,7 +10,7 @@ interface UserDropdownProps {
   onLogout: () => void // 부모에서 전달받을 콜백 함수
 }
 
-const UserDropdown: React.FC<UserDropdownProps> = ({ userName, userEmail, showDropdown, onClose, onLogout }) => {
+const UserDropdown = ({ userName, userEmail, showDropdown, onClose, onLogout }: UserDropdownProps) => {
   const [theme, setTheme] = useState<'light' | 'dark' | 'system'>('dark');
   const dropdownRef = useRef<HTMLDivElement>(null);
 

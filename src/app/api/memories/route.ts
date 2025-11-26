@@ -2,7 +2,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import mongoose from 'mongoose';
-import connectDB from '@/app/lib/mongodb';
+import connectDB from '@/lib/mongodb';
 
 async function getMemoriesData(request: NextRequest) {
   try {
@@ -52,8 +52,10 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('❌ API Error:', error);
     return NextResponse.json(
-      { error: 'Internal Server Error' }, 
+      { error: 'Internal Server Error' },
       { status: 500 }
     );
   }
 }
+
+// DELETE 메서드는 /api/memories/[memoryId]/route.ts로 이동되었습니다

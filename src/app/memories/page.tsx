@@ -1,10 +1,10 @@
 "use client";
 import React, { useState, useEffect, useMemo } from 'react';
-import Sidebar from '../components/Sidebar';
-import MemoryDetailModal from '../components/MemoryDetailModal';
-import MemoryHeader from '../memories/MemoryHeader';
+import Sidebar from '@/components/Sidebar';
+import MemoryDetailModal from '@/components/MemoryDetailModal';
+import MemoryHeader from './_components/MemoryHeader';
 import styles from './Memories.module.css';
-import AuthOverlay from '../components/AuthOverlay';
+import AuthOverlay from '@/components/AuthOverlay';
 
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -140,6 +140,26 @@ const Memories = () => {
   const closeModal = () => {
     setIsModalOpen(false);
     setSelectedMemory(null);
+  };
+
+  // 메모리 삭제 핸들러
+  const handleDelete = async (memoryId: string) => {
+    try {
+      const response = await fetch(`/api/memories/${encodeURIComponent(memoryId)}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to delete memory');
+      }
+
+      // 삭제 성공 후 메모리 목록 새로고침
+      await fetchMemories(userName || '');
+    } catch (error) {
+      console.error('Error deleting memory:', error);
+      throw error; // 모달이 에러를 처리할 수 있도록 re-throw
+    }
   };
 
   //memories endpoint api 호출, 파라미터 userName(유저 지갑 주소)
@@ -296,6 +316,7 @@ const Memories = () => {
         isOpen={isModalOpen}
         memory={selectedMemory}
         onClose={closeModal}
+        onDelete={handleDelete}
       />
     </>
   );

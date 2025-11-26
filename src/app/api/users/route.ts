@@ -1,6 +1,6 @@
 // pages/api/users/route.ts
-import connectDB from '@/app/lib/mongodb';
-import User from '@/app/models/users';
+import connectDB from '@/lib/mongodb';
+import User from '@/models/users';
 
 export async function POST(request: Request) {
   // 1. DB 연결

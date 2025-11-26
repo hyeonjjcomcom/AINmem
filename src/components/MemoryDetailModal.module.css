@@ -39,6 +39,35 @@
     font-weight: 600;
 }
 
+.header-buttons {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.delete-btn {
+    background: none;
+    border: none;
+    color: #888;
+    cursor: pointer;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s ease;
+}
+
+.delete-btn:hover {
+    color: #ef4444;
+}
+
+.delete-btn svg {
+    width: 20px;
+    height: 20px;
+}
+
 .close-btn {
     background: none;
     border: none;

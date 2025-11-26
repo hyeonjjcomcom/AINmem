@@ -1,14 +1,14 @@
 // app/page.tsx
 "use client";  
 
-import Sidebar from '../components/Sidebar';
+import Sidebar from '@/components/Sidebar';
 import styles from './GraphPage.module.css';
-import LinkModal from '../components/LinkModal';
-import ConstantModal from '../components/ConstantModal';
+import LinkModal from '@/components/LinkModal';
+import ConstantModal from '@/components/ConstantModal';
 
 import { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
-import AuthOverlay from '../components/AuthOverlay';
+import AuthOverlay from '@/components/AuthOverlay';
 
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -49,6 +49,7 @@ interface FactItem {
 
 export default function HomePage() {
   const svgRef = useRef<SVGSVGElement>(null);
+  const zoomRef = useRef<d3.ZoomBehavior<SVGSVGElement, unknown> | null>(null);
   const [constantsData, setConstantsData] = useState<ConstantData[]>([]);
   const [nodes, setNodes] = useState(new Map<string, NodeData>());
   const [links, setLinks] = useState<LinkData[]>([]);
@@ -73,15 +74,28 @@ export default function HomePage() {
 
   const buildGraph = async () => {
     try {
-      // ✅ 수정: 새로운 API 형식으로 변경
-      const data = await fetch('/api?endpoint=facts').then(res => {
+      // ⚠️ userName이 없으면 API 호출하지 않음 (보안)
+      if (!userName) {
+        console.warn('⚠️ No userName available. Skipping graph build.');
+        return null;
+      }
+
+      console.log('🔍 Current userName:', userName);
+      console.log('🔍 API URL for facts:', `/api/users/${userName}/facts`);
+      console.log('🔍 API URL for constants:', `/api/users/${userName}/constants`);
+
+      // ✅ RESTful API 호출: /api/users/[userId]/facts
+      const data = await fetch(`/api/users/${encodeURIComponent(userName)}/facts`).then(res => {
         if (!res.ok) {
           throw new Error(`HTTP 오류 발생! 상태 코드: ${res.status}`);
         }
         return res.json();
       });
 
-      const constants = await fetch('/api?endpoint=constants').then(res => res.json());
+      console.log('📥 Received facts data:', data.length, 'items');
+
+      const constants = await fetch(`/api/users/${encodeURIComponent(userName)}/constants`).then(res => res.json());
+      console.log('📥 Received constants data:', constants.length, 'items');
       setConstantsData(constants);
 
       const filteredData = filterData(data);
@@ -186,12 +200,24 @@ export default function HomePage() {
 
     setSimulation(newSimulation);
 
+    // ✅ Zoom/Pan 기능 추가
+    const g = svg.append("g");
+
+    const zoom = d3.zoom<SVGSVGElement, unknown>()
+      .scaleExtent([0.1, 10])
+      .on('zoom', (event) => {
+        g.attr('transform', event.transform);
+      });
+
+    svg.call(zoom);
+    zoomRef.current = zoom;
+
     const maxLinkCount = Math.max(...graphData.links.map(l => l.count));
     const strokeWidthScale = d3.scaleLinear()
       .domain([1, maxLinkCount])
       .range([1.5, 8]);
-    
-    const link = svg.append("g")
+
+    const link = g.append("g")
       .selectAll("line")
       .data(graphData.links)
       .enter().append("line")
@@ -210,7 +236,7 @@ export default function HomePage() {
         setLinkModalOpen(true);
       });
 
-    const linkLabel = svg.append("g")
+    const linkLabel = g.append("g")
       .selectAll("text")
       .data(graphData.links)
       .enter().append("text")
@@ -225,7 +251,7 @@ export default function HomePage() {
         setSelectedLink(d);
         setLinkModalOpen(true);
       });
-    const node = svg.append("g")
+    const node = g.append("g")
       .selectAll("g")
       .data(nodeArray)
       .enter().append("g")
@@ -303,11 +329,18 @@ export default function HomePage() {
     setIsBuilding(true); // 빌드 시작
     try {
       const user_id = userName;
+
+      if (!user_id) {
+        console.error('❌ user_id is required for building graph');
+        return;
+      }
+
       console.log('Building graph for user_id:', user_id);
 
-      await fetch('/api?endpoint=facts', { method: 'DELETE' });
-      await fetch('/api?endpoint=constants', { method: 'DELETE' });
-      await fetch('/api?endpoint=predicates', { method: 'DELETE' });
+      // ✅ RESTful API 호출: /api/users/[userId]/{resource}
+      await fetch(`/api/users/${encodeURIComponent(user_id)}/facts`, { method: 'DELETE' });
+      await fetch(`/api/users/${encodeURIComponent(user_id)}/constants`, { method: 'DELETE' });
+      await fetch(`/api/users/${encodeURIComponent(user_id)}/predicates`, { method: 'DELETE' });
 
       const response = await fetch(`/api?endpoint=memoriesDocument&user_id=${user_id}`, { method: 'GET' });
       const document = await response.text();
@@ -332,6 +365,15 @@ export default function HomePage() {
   };
 
   const centerGraph = () => {
+    // Zoom을 초기 상태로 리셋
+    if (svgRef.current && zoomRef.current) {
+      const svg = d3.select(svgRef.current);
+      svg.transition()
+        .duration(750)
+        .call(zoomRef.current.transform, d3.zoomIdentity);
+    }
+
+    // 시뮬레이션도 재시작
     if (simulation) {
       simulation.alpha(0.3).restart();
     }
@@ -355,8 +397,14 @@ export default function HomePage() {
   };
 
   useEffect(() => {
-    createGraph();
-  }, []);
+    // isHydrated가 true이고 userName이 있을 때만 그래프 생성
+    if (isHydrated && userName) {
+      console.log('✅ Auth loaded, creating graph for user:', userName);
+      createGraph();
+    } else {
+      console.log('⏳ Waiting for auth... isHydrated:', isHydrated, 'userName:', userName);
+    }
+  }, [isHydrated, userName]);
 
   useEffect(() => {
     if (svgRef.current) {
@@ -380,9 +428,9 @@ export default function HomePage() {
               <p className={styles['page-subtitle']}>Visualizing relationships between logical propositions</p>
             </div>
             <div className={styles['header-right']}>
-              <button 
+              <button
                 className={`${styles.btn} ${styles['btn-secondary']}`}
-                onClick={centerGraph}
+                onClick={createGraph}
               >
                 <span>⟲</span> Restart
               </button>
@@ -410,9 +458,9 @@ export default function HomePage() {
           <div className={styles.filters}>
             <span className={styles['filter-label']}>Filters:</span>
             <div className={`${styles['filter-tag']} ${styles.active}`}>All</div>
-            <div className={styles['filter-tag']}>Wan AI</div>
-            <div className={styles['filter-tag']}>Artany AI</div>
-            <div className={styles['filter-tag']}>Business</div>
+            <div className={styles['filter-tag']}>Life</div>
+            <div className={styles['filter-tag']}>Work</div>
+            <div className={styles['filter-tag']}>Note</div>
           </div>
 
           <div className={styles.content}>

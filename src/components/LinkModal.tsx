@@ -27,7 +27,7 @@ interface LinkModalProps {
   linkData: LinkData | null;
 }
 
-const LinkModal: React.FC<LinkModalProps> = ({ isOpen, onClose, linkData }) => {
+const LinkModal = ({ isOpen, onClose, linkData }: LinkModalProps) => {
   if (!isOpen || !linkData) return null;
 
   const getNodeName = (node: string | NodeData): string => {

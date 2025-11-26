@@ -2,8 +2,8 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { FolBuilder, GeminiAdapter, createFolClient } from 'fol-sdk';
-import connectDB from '@/app/lib/mongodb';
-import { getFolStore } from '../lib/utils'; // 💡 공통 함수 임포트
+import connectDB from '@/lib/mongodb';
+import { getFolStore } from '@/lib/folStore'; // 💡 공통 함수 임포트
 
 // --- POST (FOL 빌드) 로직 ---
 async function buildFols(body: { document: string, user_id: string }) {

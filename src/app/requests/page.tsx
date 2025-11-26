@@ -1,10 +1,10 @@
 "use client";
 
 import React from 'react';
-import Sidebar from '../components/Sidebar';
+import Sidebar from '@/components/Sidebar';
 import styles from './Requests.module.css';
 
-const RequestsPage: React.FC = () => {
+const RequestsPage = () => {
   return (
     <>
       {/* 사이드바 */}

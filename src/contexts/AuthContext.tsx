@@ -13,7 +13,7 @@ interface AuthContextType {
 // 기본값은 사용되지 않더라도 Context 생성 시 필요
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   // 초기값은 항상 false/null로 설정 (서버와 클라이언트 일치)
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userName, setUserName] = useState<string | null>(null);

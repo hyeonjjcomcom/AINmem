@@ -4,8 +4,8 @@ import styles from './Sidebar.module.css';
 import React, { useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 
-import UserDropdown from './UserDropdown'; // 같은 레벨의 파일에서 import
-import LoginModal from './LoginModal';
+import UserDropdown from '@/components/UserDropdown';
+import LoginModal from '@/components/LoginModal';
 
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -13,7 +13,7 @@ interface SvgIconProps {
   path: string;
 }
 
-const SvgIcon: React.FC<SvgIconProps> = ({ path }) => (
+const SvgIcon = ({ path }: SvgIconProps) => (
   <svg className={styles['nav-icon']} fill="currentColor" viewBox="0 0 24 24">
     <path d={path} />
   </svg>
@@ -53,7 +53,7 @@ const navItems = [
   },*/
 ];
 
-const Sidebar: React.FC = () => {
+const Sidebar = () => {
   const router = useRouter(); 
   const pathname = usePathname();
   const { isLoggedIn, updateLoginState, userName, setAuthUser, isHydrated } = useAuth();
@@ -117,7 +117,7 @@ const Sidebar: React.FC = () => {
 
   return (
     <aside className={styles.sidebar} id="sidebar">
-      <div className={styles.logo}>
+      <div className={styles.logo} onClick={() => handleNavigation('/')}>
         AIN Mem
       </div>
       
