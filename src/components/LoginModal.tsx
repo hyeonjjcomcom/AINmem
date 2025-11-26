@@ -154,29 +154,16 @@ const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
             {/* Logo Section */}
             <div className={styles["logo-section"]}>
               <div className={styles["logo-container"]}>
-                <video 
-                  autoPlay 
-                  loop 
-                  muted 
-                  playsInline 
-                  preload="auto"
+                <video
+                  src="/Ainmem_V0.mp4"
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
                   className={styles["logo-video"]}
-                >
-                  <source src="Ainmem_V0.mp4" type="video/mp4" />
-                </video>
+                />
               </div>
             </div>
-            {/*
-            <div className={styles["logo-section"]}>
-              <div className={styles["logo-container"]}>
-                <img
-                  src="/AINmem_V0.png" 
-                  alt="로고 이미지" 
-                  className={styles["logo-image"]}
-                >
-                </img>
-              </div>
-            </div>*/}
 
             {/* Title */}
             <h4 className={styles["modal-title"]}>AINmem으로 연결</h4>
@@ -201,7 +188,7 @@ const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
                   </li>
                 ))}
                 <li>
-                  <button className={styles["wallet-button"]}>
+                  <button className={styles["wallet-button"]} onClick={handleComingSoon}>
                     <div className={styles["wallet-content"]}>
                       <span className={styles["wallet-title"]}>더 많은 지갑 옵션</span>
                     </div>
@@ -209,33 +196,32 @@ const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
                 </li>
               </ul>
 
-              {/* Divider */}
               <div className={styles["divider"]}>
                 <div className={styles["divider-line"]}></div>
                 <span className={styles["divider-text"]}>또는 이메일로 계속하기</span>
                 <div className={styles["divider-line"]}></div>
               </div>
 
-              {/* Email Form */}
-              <form className={styles["email-form"]}>
+              <form className={styles["email-form"]} onSubmit={(e) => { e.preventDefault(); handleComingSoon(); }}>
                 <div className={styles["email-input-container"]}>
                   <input
                     type="email"
                     placeholder="이메일로 계속하기"
                     value={email}
+                    onFocus={handleComingSoon}
                     onChange={(e) => setEmail(e.target.value)}
                     className={styles["email-input"]}
                   />
-                  <button 
-                    type="submit" 
+                  <button
+                    type="submit"
                     disabled={!email}
                     className={styles["email-submit-button"]}
                   >
-                    <svg 
-                      aria-label="Arrow Forward" 
-                      fill="currentColor" 
-                      height="20" 
-                      viewBox="0 -960 960 960" 
+                    <svg
+                      aria-label="Arrow Forward"
+                      fill="currentColor"
+                      height="20"
+                      viewBox="0 -960 960 960"
                       width="20"
                     >
                       <path d="M647-440H160v-80h487L423-744l57-56 320 320-320 320-57-56 224-224Z"/>
