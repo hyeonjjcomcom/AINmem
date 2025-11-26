@@ -120,11 +120,15 @@ const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
     }
   };
 
+  const handleComingSoon = () => {
+    toast.info('추후 공개될 예정입니다. 조금만 기다려주세요!');
+  };
+
   const walletOptions = [
     { name: 'AINwallet', icon: 'AINwallet_logo.svg', onclick: handleAINwalletClick },
-    { name: 'MetaMask', icon: '/metamask-icon.png', onclick: undefined },
-    { name: 'Coinbase Wallet', icon: '/coinbase-icon.svg', onclick: undefined },
-    { name: 'WalletConnect', icon: '/walletconnect-icon.png', onclick: undefined },   
+    { name: 'MetaMask', icon: '/metamask-icon.png', onclick: handleComingSoon },
+    { name: 'Coinbase Wallet', icon: '/coinbase-icon.svg', onclick: handleComingSoon },
+    { name: 'WalletConnect', icon: '/walletconnect-icon.png', onclick: handleComingSoon },
   ];
 
   if (!isOpen) return null;
