@@ -448,7 +448,11 @@ export default function HomePage() {
       };
     }
     
-    return null;
+    // DB에서 못 찾아도 선택된 상수 이름은 표시
+    return {
+      name: selectedConstant,
+      description: 'No description available.'
+    };
   };
 
   useEffect(() => {
