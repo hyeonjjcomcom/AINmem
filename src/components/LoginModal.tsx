@@ -112,16 +112,16 @@ const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
         }
         onClose(true);
       }else {
-        toast.error("검증 실패. 로그인에 실패하였습니다.");
+        toast.error("Verification failed. Login unsuccessful.");
       }
     } catch (error: any) {
       console.error('AINwallet 로그인 에러:', error);
-      toast.error("AINwallet 연결에 실패했습니다. 다시 시도해주세요.");
+      toast.error("Failed to connect AINwallet. Please try again.");
     }
   };
 
   const handleComingSoon = () => {
-    toast.info('추후 공개될 예정입니다. 조금만 기다려주세요!');
+    toast.info('Coming soon. Please stay tuned!');
   };
 
   const walletOptions = [
@@ -166,7 +166,7 @@ const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
             </div>
 
             {/* Title */}
-            <h4 className={styles["modal-title"]}>AINmem으로 연결</h4>
+            <h4 className={styles["modal-title"]}>Connect with AINmem</h4>
 
             {/* Wallet Options */}
             <div className={styles["wallet-options"]}>
@@ -190,7 +190,7 @@ const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
                 <li>
                   <button className={styles["wallet-button"]} onClick={handleComingSoon}>
                     <div className={styles["wallet-content"]}>
-                      <span className={styles["wallet-title"]}>더 많은 지갑 옵션</span>
+                      <span className={styles["wallet-title"]}>More wallet options</span>
                     </div>
                   </button>
                 </li>
@@ -198,7 +198,7 @@ const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
 
               <div className={styles["divider"]}>
                 <div className={styles["divider-line"]}></div>
-                <span className={styles["divider-text"]}>또는 이메일로 계속하기</span>
+                <span className={styles["divider-text"]}>Or continue with email</span>
                 <div className={styles["divider-line"]}></div>
               </div>
 
@@ -206,7 +206,7 @@ const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
                 <div className={styles["email-input-container"]}>
                   <input
                     type="email"
-                    placeholder="이메일로 계속하기"
+                    placeholder="Continue with email"
                     value={email}
                     onFocus={handleComingSoon}
                     onChange={(e) => setEmail(e.target.value)}
@@ -232,15 +232,14 @@ const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
 
               {/* Terms Text */}
               <p className={styles["terms-text"]}>
-                지갑을 연결하고 AINmem을 사용하면{' '}
+                By connecting your wallet and using AINmem, you agree to our{' '}
                 <a href="" target="_blank" rel="noopener noreferrer">
-                  서비스 약관
+                  Terms of Service
                 </a>{' '}
-                및{' '}
+                and{' '}
                 <a href="" target="_blank" rel="noopener noreferrer">
-                  개인정보 취급방침
-                </a>
-                에 동의하는 것으로 간주됩니다.
+                  Privacy Policy
+                </a>.
               </p>
             </div>
           </div>
@@ -249,10 +248,10 @@ const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
 
       <ConfirmModal
         isOpen={showInstallConfirm}
-        title="AINwallet 설치"
-        message="AINwallet extension이 설치되어 있지 않습니다. 설치 페이지로 이동하시겠습니까?"
-        confirmText="설치하기"
-        cancelText="취소"
+        title="Install AINwallet"
+        message="AINwallet extension is not installed. Would you like to go to the installation page?"
+        confirmText="Install"
+        cancelText="Cancel"
         onConfirm={handleInstallExtension}
         onCancel={() => setShowInstallConfirm(false)}
       />

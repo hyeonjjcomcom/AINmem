@@ -89,7 +89,7 @@ export default function HomePage() {
       // ✅ RESTful API 호출: /api/users/[userId]/facts
       const data = await fetch(`/api/users/${encodeURIComponent(userName)}/facts`).then(res => {
         if (!res.ok) {
-          throw new Error(`HTTP 오류 발생! 상태 코드: ${res.status}`);
+          throw new Error(`HTTP error! Status code: ${res.status}`);
         }
         return res.json();
       });
@@ -444,7 +444,7 @@ export default function HomePage() {
     if (matchedConstant) {
       return {
         name: matchedConstant.name || matchedConstant.value, // name 필드 (또는 value를 fallback으로)
-        description: matchedConstant.description || '설명이 없습니다.' // description 필드
+        description: matchedConstant.description || 'No description available.' // description 필드
       };
     }
     
@@ -570,10 +570,10 @@ export default function HomePage() {
         {/* Full Build Confirm Modal */}
         <ConfirmModal
           isOpen={showFullBuildConfirm}
-          title="Full Build 확인"
-          message="모든 그래프 데이터를 삭제하고 처음부터 다시 빌드합니다. 계속하시겠습니까?"
+          title="Full Build Confirmation"
+          message="This will delete all graph data and rebuild from scratch. Do you want to continue?"
           confirmText="Full Build"
-          cancelText="취소"
+          cancelText="Cancel"
           onConfirm={fullBuildGraph}
           onCancel={() => setShowFullBuildConfirm(false)}
           danger

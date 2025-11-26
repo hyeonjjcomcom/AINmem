@@ -22,7 +22,7 @@ const Home = () => {
 
   // Pricing 버튼 클릭 핸들러
   const handlePricingClick = () => {
-    toast.info('AINMem은 현재 무료로 이용 가능합니다! 다양한 요금제를 준비 중이니 기대해주세요.');
+    toast.info('AINMem is currently free! Various pricing plans are coming soon.');
   };
 
   return (
