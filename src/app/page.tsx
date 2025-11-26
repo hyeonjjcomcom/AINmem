@@ -3,6 +3,7 @@
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 import './styles.css';
 
 /**
@@ -21,7 +22,7 @@ const Home = () => {
 
   // Pricing 버튼 클릭 핸들러
   const handlePricingClick = () => {
-    alert('AINMem은 현재 무료로 이용 가능합니다! 다양한 요금제를 준비 중이니 기대해주세요.');
+    toast.info('AINMem은 현재 무료로 이용 가능합니다! 다양한 요금제를 준비 중이니 기대해주세요.');
   };
 
   return (

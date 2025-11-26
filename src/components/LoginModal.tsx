@@ -5,7 +5,9 @@ import Ain from '@ainblockchain/ain-js';
 import { AinWalletSigner } from '@ainblockchain/ain-js/lib/signer/ain-wallet-signer';
 
 import React, { useState } from 'react';
+import { toast } from 'sonner';
 import styles from './LoginModal.module.css';
+import ConfirmModal from './ConfirmModal';
 
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -23,6 +25,7 @@ interface VerifyPayload {
 
 const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
   const [email, setEmail] = useState('');
+  const [showInstallConfirm, setShowInstallConfirm] = useState(false);
   const { updateLoginState, setAuthUser } = useAuth();
   const ain = new Ain('https://testnet-api.ainetwork.ai', 'wss://testnet-event.ainetwork.ai', 0);
 
@@ -45,14 +48,16 @@ const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
     }
   }
 
+  const handleInstallExtension = () => {
+    window.open('https://chromewebstore.google.com/detail/hbdheoebpgogdkagfojahleegjfkhkpl?utm_source=item-share-cb', '_blank');
+    setShowInstallConfirm(false);
+  };
+
   const handleAINwalletClick = async () => {
     try {
       // AINwallet extension 확인
       if (typeof window === 'undefined' || !window.ainetwork) {
-        const installExtension = confirm("AINwallet extension이 설치되어 있지 않습니다.\n\n설치 페이지로 이동하시겠습니까?");
-        if (installExtension) {
-          window.open('https://chromewebstore.google.com/detail/hbdheoebpgogdkagfojahleegjfkhkpl?utm_source=item-share-cb', '_blank');
-        }
+        setShowInstallConfirm(true);
         return;
       }
 
@@ -107,11 +112,11 @@ const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
         }
         onClose(true);
       }else {
-        alert("검증 실패. 로그인에 실패하였습니다.");
+        toast.error("검증 실패. 로그인에 실패하였습니다.");
       }
     } catch (error: any) {
       console.error('AINwallet 로그인 에러:', error);
-      alert("AINwallet 연결에 실패했습니다. 다시 시도해주세요.");
+      toast.error("AINwallet 연결에 실패했습니다. 다시 시도해주세요.");
     }
   };
 
@@ -251,6 +256,16 @@ const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
           </div>
         </div>
       </div>
+
+      <ConfirmModal
+        isOpen={showInstallConfirm}
+        title="AINwallet 설치"
+        message="AINwallet extension이 설치되어 있지 않습니다. 설치 페이지로 이동하시겠습니까?"
+        confirmText="설치하기"
+        cancelText="취소"
+        onConfirm={handleInstallExtension}
+        onCancel={() => setShowInstallConfirm(false)}
+      />
     </div>
   );
 };
