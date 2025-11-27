@@ -340,7 +340,7 @@ export default function HomePage() {
       console.log('Building graph for user_id:', user_id);
 
       // ✅ Incremental build: build_at이 없는 메모리만 가져옴
-      const response = await fetch(`/api?endpoint=memoriesDocument&user_id=${user_id}`, { method: 'GET' });
+      const response = await fetch(`/api/users/${encodeURIComponent(user_id)}/memories/document`, { method: 'GET' });
       const document = await response.text();
 
       // 빌드할 새로운 메모리가 없으면 스킵
@@ -392,7 +392,7 @@ export default function HomePage() {
       await fetch(`/api/users/${encodeURIComponent(user_id)}/memories/reset-build-at`, { method: 'POST' });
 
       // 전체 메모리 가져오기 (build_at 초기화 후이므로 모든 메모리 반환)
-      const response = await fetch(`/api?endpoint=memoriesDocument&user_id=${user_id}`, { method: 'GET' });
+      const response = await fetch(`/api/users/${encodeURIComponent(user_id)}/memories/document`, { method: 'GET' });
       const document = await response.text();
 
       if (!document || document.trim() === '') {

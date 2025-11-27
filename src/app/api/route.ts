@@ -17,11 +17,6 @@ export async function GET(request: NextRequest) {
       case 'memories':
         return await getMemoriesData(request); // ✅ userName만 넘김
       
-      case 'memoriesDocument': {
-        const user_id = searchParams.get('user_id');
-        return await getMemoriesDocument(user_id);
-      }
-      
       case 'constants':
         return await getConstants();
       
@@ -135,30 +130,6 @@ async function getMemoriesData(request: Request) {
   }
 }
 
-
-async function getMemoriesDocument(user_id:any) {
-  try {
-    let document = "";
-
-    // user_id 조건 + build_at이 없는 메모리만 가져오기 (incremental build)
-    const data = await ChatLog.find({
-      user_id: user_id,
-      build_at: { $exists: false }
-    });
-
-    for (const item of data) {
-      document += item.input_text + " ";
-    }
-
-    console.log('Complete generation document:', document);
-    return new NextResponse(document, {
-      headers: { 'Content-Type': 'text/plain' }
-    });
-  } catch (error) {
-    console.error('❌ Error fetching memories document data:', error);
-    throw error;
-  }
-}
 
 async function getConstants() {
   try {
