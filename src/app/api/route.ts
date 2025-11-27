@@ -153,10 +153,10 @@ async function getMemoriesDocument(user_id:any) {
   try {
     let document = "";
 
-    // user_id 조건 + buildAt이 없는 메모리만 가져오기 (incremental build)
+    // user_id 조건 + build_at이 없는 메모리만 가져오기 (incremental build)
     const data = await mongoose.connection.collection('chatlogs').find({
       user_id: user_id,
-      buildAt: { $exists: false }
+      build_at: { $exists: false }
     }).toArray();
     
     for (const item of data) {
@@ -232,12 +232,12 @@ async function buildFols(body: { document: string }, user_id: string) {
     await client.buildAndSave(body.document, user_id);
     console.log('✅ Document built and saved successfully.');
 
-    // ✅ 빌드 성공 후 buildAt 타임스탬프 업데이트 (incremental build)
+    // ✅ 빌드 성공 후 build_at 타임스탬프 업데이트 (incremental build)
     const updateResult = await mongoose.connection.collection('chatlogs').updateMany(
-      { user_id: user_id, buildAt: { $exists: false } },
-      { $set: { buildAt: new Date() } }
+      { user_id: user_id, build_at: { $exists: false } },
+      { $set: { build_at: new Date() } }
     );
-    console.log(`✅ Updated buildAt for ${updateResult.modifiedCount} memories`);
+    console.log(`✅ Updated build_at for ${updateResult.modifiedCount} memories`);
 
     return NextResponse.json({
       success: true,
