@@ -354,7 +354,7 @@ export default function HomePage() {
       const temp = JSON.stringify({ document, user_id });
       console.log('📄 Payload being sent:', temp);
 
-      await fetch('/api?endpoint=buildFols', {
+      await fetch('/api/fol/build', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: temp
@@ -404,7 +404,7 @@ export default function HomePage() {
       console.log('📄 Full document to build:', document);
       const temp = JSON.stringify({ document, user_id });
 
-      await fetch('/api?endpoint=buildFols', {
+      await fetch('/api/fol/build', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: temp

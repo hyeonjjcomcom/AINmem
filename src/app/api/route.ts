@@ -2,12 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import mongoose from 'mongoose';
 import { ethers } from 'ethers';
 import crypto from 'crypto';
-import {
-  FolBuilder,
-  GeminiAdapter,
-  MongoDbFolStore,
-  createFolClient
-} from 'fol-sdk';
 import connectDB from '@/lib/mongodb';
 import { getFolStore, nonces } from '@/lib/folStore';
 import ChatLog from '@/models/chatLogs';
@@ -58,15 +52,12 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     console.log('📥 POST request body:', body);
     switch (endpoint) {
-      case 'buildFols':
-        return await buildFols(body, body.user_id); // ✅ user_id 추가
-      
       case 'login':
         return await loginWithSignature(body);
-      
+
       case 'nonce':
         return await getNonce(body);
-      
+
       default:
         return NextResponse.json({ error: 'Invalid endpoint' }, { status: 400 });
     }
@@ -208,44 +199,6 @@ async function getPredicates() {
   } catch (error) {
     console.error('❌ Error fetching predicates:', error);
     throw error;
-  }
-}
-
-async function buildFols(body: { document: string }, user_id: string) {
-  try {
-    const geminiApiKey = process.env.GEMINI_API_KEY;
-
-    console.log('🔧 Setting up FOL-SDK components...');
-
-    const llmAdapter = new GeminiAdapter(geminiApiKey!);
-    // ✅ 재사용 가능한 FolStore 인스턴스 사용
-    const store = getFolStore();
-    const builder = new FolBuilder({ llm: llmAdapter });
-    const client = createFolClient(builder, store);
-
-    console.log('📥 User ID:', user_id);
-
-    await client.buildAndSave(body.document, user_id);
-    console.log('✅ Document built and saved successfully.');
-
-    // ✅ 빌드 성공 후 build_at 타임스탬프 업데이트 (incremental build)
-    const updateResult = await ChatLog.updateMany(
-      { user_id: user_id, build_at: { $exists: false } },
-      { $set: { build_at: new Date() } }
-    );
-    console.log(`✅ Updated build_at for ${updateResult.modifiedCount} memories`);
-
-    return NextResponse.json({
-      success: true,
-      message: 'Document built and saved successfully',
-      updatedMemories: updateResult.modifiedCount
-    });
-  } catch (error: any) {
-    console.error('❌ Error building and saving document:', error);
-    return NextResponse.json(
-      { success: false, error: error.message },
-      { status: 500 }
-    );
   }
 }
 
