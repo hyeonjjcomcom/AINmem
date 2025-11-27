@@ -77,7 +77,7 @@ export default function HomePage() {
       /*
       const data = await fetch('/api?endpoint=facts').then(res => {
         if (!res.ok) {
-          throw new Error(`HTTP 오류 발생! 상태 코드: ${res.status}`);
+          throw new Error(`HTTP error! Status code: ${res.status}`);
         }
         return res.json();
       });
@@ -489,7 +489,7 @@ export default function HomePage() {
     if (matchedConstant) {
       return {
         name: matchedConstant.name || matchedConstant.value, // name 필드 (또는 value를 fallback으로)
-        description: matchedConstant.description || '설명이 없습니다.' // description 필드
+        description: matchedConstant.description || 'No description available.' // description 필드
       };
     }
     

@@ -5,7 +5,9 @@ import Ain from '@ainblockchain/ain-js';
 import { AinWalletSigner } from '@ainblockchain/ain-js/lib/signer/ain-wallet-signer';
 
 import React, { useState } from 'react';
+import { toast } from 'sonner';
 import styles from './LoginModal.module.css';
+import ConfirmModal from './ConfirmModal';
 
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -23,6 +25,7 @@ interface VerifyPayload {
 
 const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
   const [email, setEmail] = useState('');
+  const [showInstallConfirm, setShowInstallConfirm] = useState(false);
   const { updateLoginState, setAuthUser } = useAuth();
   const ain = new Ain('https://testnet-api.ainetwork.ai', 'wss://testnet-event.ainetwork.ai', 0);
 
@@ -45,14 +48,16 @@ const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
     }
   }
 
+  const handleInstallExtension = () => {
+    window.open('https://chromewebstore.google.com/detail/hbdheoebpgogdkagfojahleegjfkhkpl?utm_source=item-share-cb', '_blank');
+    setShowInstallConfirm(false);
+  };
+
   const handleAINwalletClick = async () => {
     try {
       // AINwallet extension 확인
       if (typeof window === 'undefined' || !window.ainetwork) {
-        const installExtension = confirm("AINwallet extension이 설치되어 있지 않습니다.\n\n설치 페이지로 이동하시겠습니까?");
-        if (installExtension) {
-          window.open('https://chromewebstore.google.com/detail/hbdheoebpgogdkagfojahleegjfkhkpl?utm_source=item-share-cb', '_blank');
-        }
+        setShowInstallConfirm(true);
         return;
       }
 
@@ -107,19 +112,23 @@ const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
         }
         onClose(true);
       }else {
-        alert("검증 실패. 로그인에 실패하였습니다.");
+        toast.error("Verification failed. Login unsuccessful.");
       }
     } catch (error: any) {
       console.error('AINwallet 로그인 에러:', error);
-      alert("AINwallet 연결에 실패했습니다. 다시 시도해주세요.");
+      toast.error("Failed to connect AINwallet. Please try again.");
     }
+  };
+
+  const handleComingSoon = () => {
+    toast.info('Coming soon. Please stay tuned!');
   };
 
   const walletOptions = [
     { name: 'AINwallet', icon: 'AINwallet_logo.svg', onclick: handleAINwalletClick },
-    { name: 'MetaMask', icon: '/metamask-icon.png', onclick: undefined },
-    { name: 'Coinbase Wallet', icon: '/coinbase-icon.svg', onclick: undefined },
-    { name: 'WalletConnect', icon: '/walletconnect-icon.png', onclick: undefined },   
+    { name: 'MetaMask', icon: '/metamask-icon.png', onclick: handleComingSoon },
+    { name: 'Coinbase Wallet', icon: '/coinbase-icon.svg', onclick: handleComingSoon },
+    { name: 'WalletConnect', icon: '/walletconnect-icon.png', onclick: handleComingSoon },
   ];
 
   if (!isOpen) return null;
@@ -145,32 +154,19 @@ const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
             {/* Logo Section */}
             <div className={styles["logo-section"]}>
               <div className={styles["logo-container"]}>
-                <video 
-                  autoPlay 
-                  loop 
-                  muted 
-                  playsInline 
-                  preload="auto"
+                <video
+                  src="/Ainmem_V0.mp4"
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
                   className={styles["logo-video"]}
-                >
-                  <source src="Ainmem_V0.mp4" type="video/mp4" />
-                </video>
+                />
               </div>
             </div>
-            {/*
-            <div className={styles["logo-section"]}>
-              <div className={styles["logo-container"]}>
-                <img
-                  src="/AINmem_V0.png" 
-                  alt="로고 이미지" 
-                  className={styles["logo-image"]}
-                >
-                </img>
-              </div>
-            </div>*/}
 
             {/* Title */}
-            <h4 className={styles["modal-title"]}>AINmem으로 연결</h4>
+            <h4 className={styles["modal-title"]}>Connect with AINmem</h4>
 
             {/* Wallet Options */}
             <div className={styles["wallet-options"]}>
@@ -192,41 +188,40 @@ const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
                   </li>
                 ))}
                 <li>
-                  <button className={styles["wallet-button"]}>
+                  <button className={styles["wallet-button"]} onClick={handleComingSoon}>
                     <div className={styles["wallet-content"]}>
-                      <span className={styles["wallet-title"]}>더 많은 지갑 옵션</span>
+                      <span className={styles["wallet-title"]}>More wallet options</span>
                     </div>
                   </button>
                 </li>
               </ul>
 
-              {/* Divider */}
               <div className={styles["divider"]}>
                 <div className={styles["divider-line"]}></div>
-                <span className={styles["divider-text"]}>또는 이메일로 계속하기</span>
+                <span className={styles["divider-text"]}>Or continue with email</span>
                 <div className={styles["divider-line"]}></div>
               </div>
 
-              {/* Email Form */}
-              <form className={styles["email-form"]}>
+              <form className={styles["email-form"]} onSubmit={(e) => { e.preventDefault(); handleComingSoon(); }}>
                 <div className={styles["email-input-container"]}>
                   <input
                     type="email"
-                    placeholder="이메일로 계속하기"
+                    placeholder="Continue with email"
                     value={email}
+                    onFocus={handleComingSoon}
                     onChange={(e) => setEmail(e.target.value)}
                     className={styles["email-input"]}
                   />
-                  <button 
-                    type="submit" 
+                  <button
+                    type="submit"
                     disabled={!email}
                     className={styles["email-submit-button"]}
                   >
-                    <svg 
-                      aria-label="Arrow Forward" 
-                      fill="currentColor" 
-                      height="20" 
-                      viewBox="0 -960 960 960" 
+                    <svg
+                      aria-label="Arrow Forward"
+                      fill="currentColor"
+                      height="20"
+                      viewBox="0 -960 960 960"
                       width="20"
                     >
                       <path d="M647-440H160v-80h487L423-744l57-56 320 320-320 320-57-56 224-224Z"/>
@@ -237,20 +232,29 @@ const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
 
               {/* Terms Text */}
               <p className={styles["terms-text"]}>
-                지갑을 연결하고 AINmem을 사용하면{' '}
+                By connecting your wallet and using AINmem, you agree to our{' '}
                 <a href="" target="_blank" rel="noopener noreferrer">
-                  서비스 약관
+                  Terms of Service
                 </a>{' '}
-                및{' '}
+                and{' '}
                 <a href="" target="_blank" rel="noopener noreferrer">
-                  개인정보 취급방침
-                </a>
-                에 동의하는 것으로 간주됩니다.
+                  Privacy Policy
+                </a>.
               </p>
             </div>
           </div>
         </div>
       </div>
+
+      <ConfirmModal
+        isOpen={showInstallConfirm}
+        title="Install AINwallet"
+        message="AINwallet extension is not installed. Would you like to go to the installation page?"
+        confirmText="Install"
+        cancelText="Cancel"
+        onConfirm={handleInstallExtension}
+        onCancel={() => setShowInstallConfirm(false)}
+      />
     </div>
   );
 };

@@ -2,6 +2,8 @@ import './globals.css';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { Metadata, Viewport } from 'next';
 
+import { Toaster } from "@/components/ui/sonner"
+
 export const metadata: Metadata = {
   title: 'AINMem',
   description: 'Visualizing relationships between logical propositions',
@@ -25,6 +27,7 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <AuthProvider>
+          <Toaster />
           <div className="container">
             {children}
           </div>
