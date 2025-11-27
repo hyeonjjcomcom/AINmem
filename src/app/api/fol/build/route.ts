@@ -12,11 +12,11 @@ export async function POST(request: NextRequest) {
   try {
     await connectDB();
     const body = await request.json();
-    const { document, user_id } = body;
+    const { document, user_id, buildStartTime } = body;
 
-    if (!document || !user_id) {
+    if (!document || !user_id || !buildStartTime) {
       return NextResponse.json(
-        { success: false, error: 'document and user_id are required' },
+        { success: false, error: 'document, user_id, and buildStartTime are required' },
         { status: 400 }
       );
     }
@@ -36,8 +36,13 @@ export async function POST(request: NextRequest) {
     console.log('✅ Document built and saved successfully.');
 
     // ✅ 빌드 성공 후 build_at 타임스탬프 업데이트 (incremental build)
+    // buildStartTime 이전에 생성된 메모리만 업데이트
     const updateResult = await ChatLog.updateMany(
-      { user_id: user_id, build_at: { $exists: false } },
+      {
+        user_id: user_id,
+        build_at: { $exists: false },
+        createdAt: { $lt: new Date(buildStartTime) }
+      },
       { $set: { build_at: new Date() } }
     );
     console.log(`✅ Updated build_at for ${updateResult.modifiedCount} memories`);

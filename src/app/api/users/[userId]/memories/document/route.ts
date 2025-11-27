@@ -10,6 +10,9 @@ export async function GET(
     await connectDB();
     const { userId } = await params;
 
+    // 빌드 시작 시점 기록
+    const buildStartTime = new Date();
+
     console.log('📄 Fetching document for user:', userId);
 
     // user_id 조건 + build_at이 없는 메모리만 가져오기 (incremental build)
@@ -24,8 +27,10 @@ export async function GET(
     }
 
     console.log('Complete generation document:', document);
-    return new NextResponse(document, {
-      headers: { 'Content-Type': 'text/plain' }
+
+    return NextResponse.json({
+      document: document.trim(),
+      buildStartTime: buildStartTime.toISOString()
     });
   } catch (error: any) {
     console.error('❌ Error fetching memories document:', error);

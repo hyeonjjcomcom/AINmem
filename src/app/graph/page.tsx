@@ -341,7 +341,7 @@ export default function HomePage() {
 
       // ✅ Incremental build: build_at이 없는 메모리만 가져옴
       const response = await fetch(`/api/users/${encodeURIComponent(user_id)}/memories/document`, { method: 'GET' });
-      const document = await response.text();
+      const { document, buildStartTime } = await response.json();
 
       // 빌드할 새로운 메모리가 없으면 스킵
       if (!document || document.trim() === '') {
@@ -351,13 +351,13 @@ export default function HomePage() {
       }
 
       console.log('📄 Document to build:', document);
-      const temp = JSON.stringify({ document, user_id });
-      console.log('📄 Payload being sent:', temp);
+      const payload = JSON.stringify({ document, user_id, buildStartTime });
+      console.log('📄 Payload being sent:', payload);
 
       await fetch('/api/fol/build', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: temp
+        body: payload
       });
 
       createGraph();
@@ -393,7 +393,7 @@ export default function HomePage() {
 
       // 전체 메모리 가져오기 (build_at 초기화 후이므로 모든 메모리 반환)
       const response = await fetch(`/api/users/${encodeURIComponent(user_id)}/memories/document`, { method: 'GET' });
-      const document = await response.text();
+      const { document, buildStartTime } = await response.json();
 
       if (!document || document.trim() === '') {
         console.log('📊 No memories to build');
@@ -402,12 +402,12 @@ export default function HomePage() {
       }
 
       console.log('📄 Full document to build:', document);
-      const temp = JSON.stringify({ document, user_id });
+      const payload = JSON.stringify({ document, user_id, buildStartTime });
 
       await fetch('/api/fol/build', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: temp
+        body: payload
       });
 
       createGraph();
