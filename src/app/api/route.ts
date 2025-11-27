@@ -10,7 +10,7 @@ import {
 } from 'fol-sdk';
 import connectDB from '@/lib/mongodb';
 import { getFolStore, nonces } from '@/lib/folStore';
-import { use } from 'react';
+import ChatLog from '@/models/chatLogs';
 
 export async function GET(request: NextRequest) {
   const { searchParams, pathname } = new URL(request.url);
@@ -119,14 +119,10 @@ async function getMemoriesData(request: Request) {
     // userName이 있으면 user_id 기준으로 필터링, 없으면 전체
     const query = userName ? { user_id: userName } : {};
 
-    const data = await mongoose.connection
-      .collection("chatlogs")
-      .find(query)
-      .sort({ createdAt: 1 })
-      .toArray();
+    const data = await ChatLog.find(query).sort({ createdAt: 1 });
 
     const memories = data.map((item, index) => {
-      const doc = item.toObject ? item.toObject() : item;
+      const doc = item.toObject();
       return {
         id: doc._id || index,
         title: doc.title || `Memory ${index + 1}`,
@@ -154,15 +150,15 @@ async function getMemoriesDocument(user_id:any) {
     let document = "";
 
     // user_id 조건 + build_at이 없는 메모리만 가져오기 (incremental build)
-    const data = await mongoose.connection.collection('chatlogs').find({
+    const data = await ChatLog.find({
       user_id: user_id,
       build_at: { $exists: false }
-    }).toArray();
-    
+    });
+
     for (const item of data) {
       document += item.input_text + " ";
     }
-    
+
     console.log('Complete generation document:', document);
     return new NextResponse(document, {
       headers: { 'Content-Type': 'text/plain' }
@@ -233,7 +229,7 @@ async function buildFols(body: { document: string }, user_id: string) {
     console.log('✅ Document built and saved successfully.');
 
     // ✅ 빌드 성공 후 build_at 타임스탬프 업데이트 (incremental build)
-    const updateResult = await mongoose.connection.collection('chatlogs').updateMany(
+    const updateResult = await ChatLog.updateMany(
       { user_id: user_id, build_at: { $exists: false } },
       { $set: { build_at: new Date() } }
     );

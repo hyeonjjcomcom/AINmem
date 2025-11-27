@@ -1,22 +1,22 @@
 // app/api/memories/document/route.ts
 
 import { NextRequest, NextResponse } from 'next/server';
-import mongoose from 'mongoose';
 import connectDB from '@/lib/mongodb';
+import ChatLog from '@/models/chatLogs';
 
 async function getMemoriesDocument(user_id: string | null) {
   try {
     let document = "";
-    
+
     // user_id 조건을 추가한 쿼리
     const query = user_id ? { user_id: user_id } : {};
-    
-    const data = await mongoose.connection.collection('chatlogs').find(query).toArray();
-    
+
+    const data = await ChatLog.find(query);
+
     for (const item of data) {
       document += item.input_text + " ";
     }
-    
+
     console.log('Complete generation document:', document);
     return new NextResponse(document, {
       headers: { 'Content-Type': 'text/plain' }

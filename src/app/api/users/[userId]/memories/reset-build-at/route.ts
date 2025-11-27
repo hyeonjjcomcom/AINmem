@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import mongoose from 'mongoose';
 import connectDB from '@/lib/mongodb';
+import ChatLog from '@/models/chatLogs';
 
 export async function POST(
   request: NextRequest,
@@ -13,7 +13,7 @@ export async function POST(
     console.log('🔄 Resetting build_at for user:', userId);
 
     // 해당 유저의 모든 메모리의 build_at 필드 제거
-    const result = await mongoose.connection.collection('chatlogs').updateMany(
+    const result = await ChatLog.updateMany(
       { user_id: userId },
       { $unset: { build_at: "" } }
     );
