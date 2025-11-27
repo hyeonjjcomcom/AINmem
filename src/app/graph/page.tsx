@@ -389,7 +389,7 @@ export default function HomePage() {
       await fetch(`/api/users/${encodeURIComponent(user_id)}/predicates`, { method: 'DELETE' });
 
       // 모든 메모리의 build_at 초기화
-      await fetch(`/api/users/${encodeURIComponent(user_id)}/memories/resetBuildAt`, { method: 'POST' });
+      await fetch(`/api/users/${encodeURIComponent(user_id)}/memories/reset-build-at`, { method: 'POST' });
 
       // 전체 메모리 가져오기 (build_at 초기화 후이므로 모든 메모리 반환)
       const response = await fetch(`/api?endpoint=memoriesDocument&user_id=${user_id}`, { method: 'GET' });
