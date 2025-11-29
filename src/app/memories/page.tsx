@@ -36,11 +36,14 @@ const Memories = () => {
   const memoriesData = apiMemories;
 
   const filterTags = [
-    { id: 'all', label: 'All' },
-    { id: 'personal', label: 'Personal' },
-    { id: 'work', label: 'Work' },
-    { id: 'ideas', label: 'Ideas' },
-    { id: 'notes', label: 'Notes' }
+    { id: 'All', label: 'All' },
+    { id: 'Exploration', label: 'Exploration' },
+    { id: 'Inspiration', label: 'Inspiration' },
+    { id: 'Refinement', label: 'Refinement' },
+    { id: 'Solution', label: 'Solution' },
+    { id: 'Empathy', label: 'Empathy' },
+    { id: 'Play', label: 'Play' },
+    { id: 'Others', label: 'Others' }
   ];
 
     // 텍스트 콘텐츠 추출
@@ -104,9 +107,11 @@ const Memories = () => {
   const filteredMemories = useMemo(() => {
     let filtered = memoriesData;
 
-    // 카테고리 필터
+    // 태그 필터: All이 아닌 경우 해당 태그가 있는 메모리만 표시
     if (currentFilter !== 'all') {
-      filtered = filtered.filter(memory => memory.category === currentFilter);
+      filtered = filtered.filter(memory =>
+        memory.tags && memory.tags.includes(currentFilter)
+      );
     }
 
     // 검색 필터

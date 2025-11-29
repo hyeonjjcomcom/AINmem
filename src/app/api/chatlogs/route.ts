@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
-import { encode } from 'gpt-tokenizer'; // 대체 토크나이저 라이브러리
-import ChatLog from '@/models/chatLogs'; // 실제 MongoDB 모델 import
+import { encode } from 'gpt-tokenizer';
+import ChatLog from '@/models/chatLogs';
+import { classifyAndUpdateTags } from '@/lib/classifyTags';
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",  // 또는 특정 도메인
@@ -48,6 +49,9 @@ export async function POST(request: NextRequest) {
     const options = { upsert: true, new: true, setDefaultsOnInsert: true };
 
     const log = await ChatLog.findOneAndUpdate(filter, update, options);
+
+    // Fire-and-forget: 태그 분류를 백그라운드에서 실행 (응답 지연 없음)
+    classifyAndUpdateTags(log._id.toString(), safeInputText);
 
     return NextResponse.json({ ok: true }, { headers: corsHeaders });
 
