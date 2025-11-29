@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import mongoose from 'mongoose';
 import connectDB from '@/lib/mongodb';
+import ChatLog from '@/models/chatLogs';
 
 export async function POST(
   request: NextRequest,
@@ -10,23 +10,23 @@ export async function POST(
     await connectDB();
     const { userId } = await params;
 
-    console.log('🔄 Resetting buildAt for user:', userId);
+    console.log('🔄 Resetting build_at for user:', userId);
 
-    // 해당 유저의 모든 메모리의 buildAt 필드 제거
-    const result = await mongoose.connection.collection('chatlogs').updateMany(
+    // 해당 유저의 모든 메모리의 build_at 필드 제거
+    const result = await ChatLog.updateMany(
       { user_id: userId },
-      { $unset: { buildAt: "" } }
+      { $unset: { build_at: "" } }
     );
 
-    console.log(`✅ Reset buildAt for ${result.modifiedCount} memories`);
+    console.log(`✅ Reset build_at for ${result.modifiedCount} memories`);
 
     return NextResponse.json({
       success: true,
-      message: 'BuildAt reset successfully',
+      message: 'Build_at reset successfully',
       modifiedCount: result.modifiedCount
     });
   } catch (error: any) {
-    console.error('❌ Error resetting buildAt:', error);
+    console.error('❌ Error resetting build_at:', error);
     return NextResponse.json(
       { success: false, error: error.message },
       { status: 500 }

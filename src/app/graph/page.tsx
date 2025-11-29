@@ -328,44 +328,31 @@ export default function HomePage() {
   };
 
   const buildNewGraph = async () => {
-    setIsBuilding(true); // 빌드 시작
+    setIsBuilding(true);
     try {
-      const user_id = userName;
-
-      if (!user_id) {
-        console.error('❌ user_id is required for building graph');
+      if (!userName) {
+        console.error('❌ userName is required for building graph');
         return;
       }
 
-      console.log('Building graph for user_id:', user_id);
+      console.log('Building graph for user:', userName);
 
-      // ✅ Incremental build: buildAt이 없는 메모리만 가져옴
-      const response = await fetch(`/api?endpoint=memoriesDocument&user_id=${user_id}`, { method: 'GET' });
-      const document = await response.text();
-
-      // 빌드할 새로운 메모리가 없으면 스킵
-      if (!document || document.trim() === '') {
-        console.log('📊 No new memories to build');
-        createGraph();
-        return;
-      }
-
-      console.log('📄 Document to build:', document);
-      const temp = JSON.stringify({ document, user_id });
-      console.log('📄 Payload being sent:', temp);
-
-      await fetch('/api?endpoint=buildFols', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: temp
+      const response = await fetch(`/api/users/${encodeURIComponent(userName)}/graph/build`, {
+        method: 'POST'
       });
+      const result = await response.json();
 
+      if (!result.success) {
+        console.error('❌ Build failed:', result.error);
+        return;
+      }
+
+      console.log('📊 Graph built successfully!', result);
       createGraph();
-      console.log('📊 New graph built successfully!');
     } catch (error) {
       console.error('Error building new graph:', error);
     } finally {
-      setIsBuilding(false); // 빌드 완료 (성공/실패 상관없이)
+      setIsBuilding(false);
     }
   };
 
@@ -374,44 +361,25 @@ export default function HomePage() {
     setShowFullBuildConfirm(false);
     setIsBuilding(true);
     try {
-      const user_id = userName;
-
-      if (!user_id) {
-        console.error('❌ user_id is required for building graph');
+      if (!userName) {
+        console.error('❌ userName is required for full rebuild');
         return;
       }
 
-      console.log('🔄 Full rebuild for user_id:', user_id);
+      console.log('🔄 Full rebuild for user:', userName);
 
-      // 기존 FOL 데이터 삭제
-      await fetch(`/api/users/${encodeURIComponent(user_id)}/facts`, { method: 'DELETE' });
-      await fetch(`/api/users/${encodeURIComponent(user_id)}/constants`, { method: 'DELETE' });
-      await fetch(`/api/users/${encodeURIComponent(user_id)}/predicates`, { method: 'DELETE' });
-
-      // 모든 메모리의 buildAt 초기화
-      await fetch(`/api/users/${encodeURIComponent(user_id)}/memories/resetBuildAt`, { method: 'POST' });
-
-      // 전체 메모리 가져오기 (buildAt 초기화 후이므로 모든 메모리 반환)
-      const response = await fetch(`/api?endpoint=memoriesDocument&user_id=${user_id}`, { method: 'GET' });
-      const document = await response.text();
-
-      if (!document || document.trim() === '') {
-        console.log('📊 No memories to build');
-        createGraph();
-        return;
-      }
-
-      console.log('📄 Full document to build:', document);
-      const temp = JSON.stringify({ document, user_id });
-
-      await fetch('/api?endpoint=buildFols', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: temp
+      const response = await fetch(`/api/users/${encodeURIComponent(userName)}/graph/full-build`, {
+        method: 'POST'
       });
+      const result = await response.json();
 
+      if (!result.success) {
+        console.error('❌ Full rebuild failed:', result.error);
+        return;
+      }
+
+      console.log('📊 Full rebuild completed!', result);
       createGraph();
-      console.log('📊 Full rebuild completed!');
     } catch (error) {
       console.error('Error in full rebuild:', error);
     } finally {
