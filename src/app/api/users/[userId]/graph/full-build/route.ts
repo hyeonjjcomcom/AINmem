@@ -14,13 +14,21 @@ import ChatLog from '@/models/chatLogs';
  *
  * Full rebuild: 모든 FOL 데이터 삭제 후 전체 메모리 재빌드
  *
- * 이 스텝들이 원자적으로 실행됨:
+ * 청크 기반 빌드 전략:
  * 1. 기존 FOL 데이터(facts, constants, predicates) 삭제
  * 2. 모든 메모리의 build_at 초기화
- * 3. 전체 메모리 가져오기
- * 4. FOL build하고 저장
- * 5. build_at 업데이트
+ * 3. 전체 메모리를 메시지 10개 또는 10000 토큰 단위로 청크를 만든다
+ * 4. 각 청크를 FOL build하고 저장
+ * 5. 성공한 청크의 메모리들만 build_at 업데이트 (_id 기반)
+ * 6. 실패한 청크는 build_at이 없어서 incremental build에서 자동 재처리됨
  */
+
+// 토큰 수 추정 함수 (token_count 필드가 없을 경우 사용)
+function estimateTokens(text: string): number {
+  // 간단한 추정: 평균적으로 1 토큰 ≈ 4 글자
+  return Math.ceil(text.length / 4);
+}
+
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ userId: string }> }
@@ -54,30 +62,26 @@ export async function POST(
     );
     console.log(`🔄 Reset build_at for ${resetResult.modifiedCount} memories`);
 
-    // Step 3: 빌드 시작 시점 기록 & 전체 메모리 가져오기
-    const buildStartTime = new Date();
-
-    const allMemories = await ChatLog.find({ user_id: userId });
+    // Step 3: 전체 메모리 가져오기
+    const allMemories = await ChatLog.find({ user_id: userId }).sort({ createdAt: 1 }); // 시간순 정렬
 
     if (allMemories.length === 0) {
       console.log('📊 No memories to build');
       return NextResponse.json({
         success: true,
         message: 'No memories to build',
-        builtMemories: 0
+        builtMemories: 0,
+        deletedData: {
+          facts: factsResult.deletedCount,
+          constants: constantsResult.deletedCount,
+          predicates: predicatesResult.deletedCount
+        }
       });
     }
 
-    // 문서 생성
-    let document = "";
-    for (const item of allMemories) {
-      document += item.input_text + " ";
-    }
-    document = document.trim();
+    console.log(`📦 Found ${allMemories.length} memories for full rebuild`);
 
-    console.log('📄 Full document to build:', document.substring(0, 100) + '...');
-
-    // Step 4: FOL 빌드 및 저장
+    // Step 4: FOL 빌드 설정
     const geminiApiKey = process.env.GEMINI_API_KEY;
     if (!geminiApiKey) {
       return NextResponse.json(
@@ -91,23 +95,72 @@ export async function POST(
     const builder = new FolBuilder({ llm: llmAdapter });
     const client = createFolClient(builder, store);
 
-    await client.buildAndSave(document, userId);
-    console.log('✅ Document built and saved successfully.');
+    // Step 5: 청크 기반 빌드
+    const CHUNK_SIZE = 10; // 메시지 개수 권장치
+    const PREFERRED_MAX_TOKENS = 10000; // 선호하는 토큰 상한
 
-    // Step 5: build_at 타임스탬프 업데이트
-    const updateResult = await ChatLog.updateMany(
-      {
-        user_id: userId,
-        createdAt: { $lt: buildStartTime }
-      },
-      { $set: { build_at: new Date() } }
-    );
-    console.log(`✅ Updated build_at for ${updateResult.modifiedCount} memories`);
+    let totalBuiltMemories = 0;
+    let chunkIndex = 0;
+
+    for (let i = 0; i < allMemories.length; ) {
+      chunkIndex++;
+      let chunkMemories = [];
+      let totalTokens = 0;
+
+      // 최소 1개 메시지는 무조건 포함
+      const firstMemory = allMemories[i];
+      const firstTokens = firstMemory.token_count || estimateTokens(firstMemory.input_text);
+
+      chunkMemories.push(firstMemory);
+      totalTokens += firstTokens;
+      i++;
+
+      // 추가 메시지들을 청크에 추가
+      while (i < allMemories.length && chunkMemories.length < CHUNK_SIZE) {
+        const memory = allMemories[i];
+        const memoryTokens = memory.token_count || estimateTokens(memory.input_text);
+
+        // 다음 메시지를 추가하면 선호 토큰을 초과하는 경우
+        if (totalTokens + memoryTokens > PREFERRED_MAX_TOKENS) {
+          break;
+        }
+
+        chunkMemories.push(memory);
+        totalTokens += memoryTokens;
+        i++;
+      }
+
+      console.log(`📦 Processing chunk ${chunkIndex}: ${chunkMemories.length} messages, ~${totalTokens} tokens`);
+
+      try {
+        // 청크 문서 생성
+        const document = chunkMemories.map(m => m.input_text).join(' ').trim();
+
+        // FOL 빌드 및 저장
+        await client.buildAndSave(document, userId);
+        console.log(`✅ Chunk ${chunkIndex} built successfully`);
+
+        // 성공한 청크의 메모리들만 build_at 업데이트 (_id 기반)
+        const chunkIds = chunkMemories.map(m => m._id);
+        const updateResult = await ChatLog.updateMany(
+          { _id: { $in: chunkIds } },
+          { $set: { build_at: new Date() } }
+        );
+
+        totalBuiltMemories += updateResult.modifiedCount;
+        console.log(`✅ Updated build_at for ${updateResult.modifiedCount} memories in chunk ${chunkIndex}`);
+      } catch (chunkError: any) {
+        console.error(`❌ Error building chunk ${chunkIndex}:`, chunkError.message);
+        // 실패한 청크는 build_at이 없으므로 incremental build에서 자동 재처리됨
+        console.log(`⚠️ Chunk ${chunkIndex} will be retried in incremental build`);
+      }
+    }
 
     return NextResponse.json({
       success: true,
       message: 'Full rebuild completed successfully',
-      builtMemories: updateResult.modifiedCount,
+      builtMemories: totalBuiltMemories,
+      totalChunks: chunkIndex,
       deletedData: {
         facts: factsResult.deletedCount,
         constants: constantsResult.deletedCount,

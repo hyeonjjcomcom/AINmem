@@ -52,7 +52,8 @@ Main API routes follow the pattern `/api?endpoint=<name>`:
 
 Dedicated routes:
 - `/api/memories` - GET memories by userName
-- `/api/fols` - POST to build FOL from document
+- `/api/users/[userId]/graph/build` - POST incremental FOL build (chunked, 10 messages/10K tokens)
+- `/api/users/[userId]/graph/full-build` - POST full FOL rebuild (deletes all FOL data first)
 
 ### Important Patterns
 - MongoDB connections are cached globally for reuse in development
