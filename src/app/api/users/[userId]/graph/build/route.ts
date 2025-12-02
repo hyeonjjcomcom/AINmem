@@ -4,9 +4,11 @@ import {
   GeminiAdapter,
   createFolClient
 } from 'fol-sdk';
+import mongoose from 'mongoose';
 import connectDB from '@/lib/mongodb';
 import { getFolStore } from '@/lib/folStore';
 import ChatLog from '@/models/chatLogs';
+import BuildHistory from '@/models/buildHistory';
 
 /**
  * POST /api/users/[userId]/graph/build
@@ -113,16 +115,66 @@ export async function POST(
 
       console.log(`📦 Processing chunk ${chunkIndex}: ${chunkMemories.length} messages, ~${totalTokens} tokens`);
 
+      const chunkIds = chunkMemories.map(m => m._id);
+      const document = chunkMemories.map(m => m.input_text).join(' ').trim();
+      const buildStartTime = Date.now();
+
       try {
-        // 청크 문서 생성
-        const document = chunkMemories.map(m => m.input_text).join(' ').trim();
+        // 빌드 전 FOL ID 목록 가져오기
+        const [constantsBeforeList, factsBeforeList, predicatesBeforeList] = await Promise.all([
+          mongoose.connection.collection('constants').find({ user_id: userId }).project({ _id: 1 }).toArray(),
+          mongoose.connection.collection('facts').find({ user_id: userId }).project({ _id: 1 }).toArray(),
+          mongoose.connection.collection('predicates').find({ user_id: userId }).project({ _id: 1 }).toArray()
+        ]);
+
+        const constantIdsBefore = new Set(constantsBeforeList.map(c => c._id.toString()));
+        const factIdsBefore = new Set(factsBeforeList.map(f => f._id.toString()));
+        const predicateIdsBefore = new Set(predicatesBeforeList.map(p => p._id.toString()));
 
         // FOL 빌드 및 저장
         await client.buildAndSave(document, userId);
         console.log(`✅ Chunk ${chunkIndex} built successfully`);
 
+        // 빌드 후 FOL ID 목록 가져오기
+        const [constantsAfterList, factsAfterList, predicatesAfterList] = await Promise.all([
+          mongoose.connection.collection('constants').find({ user_id: userId }).project({ _id: 1 }).toArray(),
+          mongoose.connection.collection('facts').find({ user_id: userId }).project({ _id: 1 }).toArray(),
+          mongoose.connection.collection('predicates').find({ user_id: userId }).project({ _id: 1 }).toArray()
+        ]);
+
+        // 새로 생성된 FOL ID 필터링
+        const newConstantIds = constantsAfterList
+          .filter(c => !constantIdsBefore.has(c._id.toString()))
+          .map(c => c._id);
+        const newFactIds = factsAfterList
+          .filter(f => !factIdsBefore.has(f._id.toString()))
+          .map(f => f._id);
+        const newPredicateIds = predicatesAfterList
+          .filter(p => !predicateIdsBefore.has(p._id.toString()))
+          .map(p => p._id);
+
+        const buildDuration = Date.now() - buildStartTime;
+
+        // BuildHistory 저장
+        await BuildHistory.create({
+          user_id: userId,
+          chunk_index: chunkIndex,
+          document,
+          memory_ids: chunkIds,
+          token_count: totalTokens,
+          message_count: chunkMemories.length,
+          build_type: 'incremental',
+          status: 'success',
+          generated_constants_count: newConstantIds.length,
+          generated_facts_count: newFactIds.length,
+          generated_predicates_count: newPredicateIds.length,
+          generated_constant_ids: newConstantIds,
+          generated_fact_ids: newFactIds,
+          generated_predicate_ids: newPredicateIds,
+          build_duration_ms: buildDuration
+        });
+
         // 성공한 청크의 메모리들만 build_at 업데이트 (_id 기반)
-        const chunkIds = chunkMemories.map(m => m._id);
         const updateResult = await ChatLog.updateMany(
           { _id: { $in: chunkIds } },
           { $set: { build_at: new Date() } }
@@ -132,6 +184,31 @@ export async function POST(
         console.log(`✅ Updated build_at for ${updateResult.modifiedCount} memories in chunk ${chunkIndex}`);
       } catch (chunkError: any) {
         console.error(`❌ Error building chunk ${chunkIndex}:`, chunkError.message);
+
+        // 실패한 청크도 BuildHistory에 기록
+        try {
+          await BuildHistory.create({
+            user_id: userId,
+            chunk_index: chunkIndex,
+            document,
+            memory_ids: chunkIds,
+            token_count: totalTokens,
+            message_count: chunkMemories.length,
+            build_type: 'incremental',
+            status: 'failed',
+            error_message: chunkError.message,
+            generated_constants_count: 0,
+            generated_facts_count: 0,
+            generated_predicates_count: 0,
+            generated_constant_ids: [],
+            generated_fact_ids: [],
+            generated_predicate_ids: [],
+            build_duration_ms: Date.now() - buildStartTime
+          });
+        } catch (historyError) {
+          console.error(`❌ Error saving build history for chunk ${chunkIndex}:`, historyError);
+        }
+
         // 실패한 청크는 build_at이 없으므로 다음 빌드에서 자동 재처리됨
         console.log(`⚠️ Chunk ${chunkIndex} will be retried in next build`);
       }
