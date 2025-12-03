@@ -160,13 +160,10 @@ const Sidebar = () => {
         </div>
       ) : (
         <div className={styles['user-section']} id="login-section">
-          <div className={styles['user-avatar']} id="default-profile-avatar">?</div>
-          <div className={styles['user-info']}>
+          <div className={styles['user-avatar']} id="default-profile-avatar" onClick={handleLoginModal}>?</div>
+          <div className={styles['user-info']} onClick={handleLoginModal}>
             <div style={{ fontSize: '14px', fontWeight: '500' }}>Hello</div>
-            <div
-              style={{ fontSize: '12px', color: '#888', cursor: 'pointer' }}
-              onClick={handleLoginModal}
-            >
+            <div style={{ fontSize: '12px', color: '#888' }}>
               Please Login
             </div>
           </div>
