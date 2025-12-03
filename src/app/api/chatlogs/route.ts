@@ -3,6 +3,7 @@ import connectDB from '@/lib/mongodb';
 import { encode } from 'gpt-tokenizer';
 import ChatLog from '@/models/chatLogs';
 import { classifyAndUpdateTags } from '@/lib/classifyTags';
+import { saveMemoryToWeb3Async } from '@/lib/web3';
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",  // 또는 특정 도메인
@@ -49,6 +50,11 @@ export async function POST(request: NextRequest) {
     const options = { upsert: true, new: true, setDefaultsOnInsert: true };
 
     const log = await ChatLog.findOneAndUpdate(filter, update, options);
+
+    // Fire-and-forget: Web3에 memory_id 저장 (응답 지연 없음)
+    saveMemoryToWeb3Async(user_id, log._id.toString()).catch((error) => {
+      console.error(`❌ Web3 저장 실패: user=${user_id}, id=${log._id}`, error);
+    });
 
     // Fire-and-forget: 태그 분류를 백그라운드에서 실행 (응답 지연 없음)
     classifyAndUpdateTags(log._id.toString(), safeInputText);

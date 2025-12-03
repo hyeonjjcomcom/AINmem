@@ -6,13 +6,35 @@ import connectDB from '@/lib/mongodb';
 
 async function getMemoriesData(request: NextRequest) {
   try {
-    // 쿼리 파라미터에서 userName 추출
+    // 쿼리 파라미터에서 userName, ids 추출
     const { searchParams } = new URL(request.url);
     const userName = searchParams.get("userName");
-    console.log(userName);
+    const idsParam = searchParams.get("ids"); // Comma-separated ObjectIds
+    console.log("Fetching memories - userName:", userName, "ids:", idsParam);
 
-    // userName이 있으면 user_id 기준으로 필터링, 없으면 전체
-    const query = userName ? { user_id: userName } : {};
+    // 쿼리 구성
+    let query: any = {};
+
+    // ids 파라미터가 있으면 특정 ObjectIds로 필터링
+    if (idsParam) {
+      const ids = idsParam.split(',').map(id => id.trim()).filter(id => id);
+      // ObjectId 형식으로 변환
+      const objectIds = ids.map(id => {
+        try {
+          return new mongoose.Types.ObjectId(id);
+        } catch (e) {
+          console.warn(`Invalid ObjectId: ${id}`);
+          return null;
+        }
+      }).filter(id => id !== null);
+
+      query._id = { $in: objectIds };
+    }
+
+    // userName이 있으면 user_id 기준으로도 필터링
+    if (userName) {
+      query.user_id = userName;
+    }
 
     const data = await mongoose.connection
       .collection("chatlogs")
