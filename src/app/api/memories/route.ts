@@ -27,7 +27,7 @@ async function getMemoriesData(
     const data = await mongoose.connection
       .collection("chatlogs")
       .find(query)
-      .sort({ createdAt: 1 })
+      .sort({ createdAt: -1 })
       .toArray();
 
     const memories = data.map((item, index) => {
@@ -46,7 +46,7 @@ async function getMemoriesData(
     });
 
     //console.log("📊 Fetched memories data:", memories);
-    return memories.reverse();
+    return memories;
   } catch (error) {
     console.error("❌ Error fetching memories data:", error);
     throw error;
