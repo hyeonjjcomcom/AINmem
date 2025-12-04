@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Sidebar from "@/components/Sidebar";
+import AuthOverlay from "@/components/AuthOverlay";
 import { useAuth } from "@/contexts/AuthContext";
 
 // Memory 타입 정의
@@ -16,7 +17,7 @@ interface Memory {
 }
 
 export default function AnalyticsPage() {
-  const { userName, isHydrated } = useAuth();
+  const { userName, isHydrated, isLoggedIn } = useAuth();
   const [memories, setMemories] = useState<Memory[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -90,10 +91,30 @@ export default function AnalyticsPage() {
     <>
       <Sidebar />
       <main className="main-content">
+        {isHydrated && !isLoggedIn && <AuthOverlay />}
         <div className="graph-wrapper">
-          <div className="analytics-section">
-            <h2>Memory Analytics</h2>
+          <header className="header">
+            <div className="header-left">
+              <h1 className="page-title">Memory Analytics</h1>
+              <p className="page-subtitle">
+                AIN Blockchain Memories • {web3Count} memories
+              </p>
+            </div>
+            <div className="header-right">
+              <button
+                onClick={fetchMemories}
+                disabled={loading || !userName}
+                className="refresh-btn"
+              >
+                <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+                </svg>
+                {loading ? 'Loading...' : 'Refresh'}
+              </button>
+            </div>
+          </header>
 
+          <div className="content">
             {/* 사용자 정보 */}
             {userName && (
               <div className="user-info">
@@ -101,15 +122,6 @@ export default function AnalyticsPage() {
                 <p><strong>Web3 Memories:</strong> {web3Count}</p>
               </div>
             )}
-
-            {/* 새로고침 버튼 */}
-            <button
-              onClick={fetchMemories}
-              disabled={loading || !userName}
-              className="refresh-btn"
-            >
-              {loading ? 'Loading...' : 'Refresh Data'}
-            </button>
 
             {/* 로딩 상태 */}
             {loading && (
@@ -176,10 +188,55 @@ export default function AnalyticsPage() {
 
         {/* 스타일링 */}
         <style jsx>{`
-          .analytics-section {
-            padding: 20px;
-            max-width: 1200px;
-            margin: 0 auto;
+          .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+          }
+
+          .graph-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+          }
+
+          .header {
+            padding: 20px 30px;
+            border-bottom: 1px solid #2a2a2a;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+          }
+
+          .header-left {
+            flex: 1;
+          }
+
+          .page-title {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 8px;
+          }
+
+          .page-subtitle {
+            color: #888;
+            font-size: 14px;
+          }
+
+          .header-right {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+          }
+
+          .content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 30px;
           }
 
           .user-info {
@@ -197,23 +254,25 @@ export default function AnalyticsPage() {
           }
 
           .refresh-btn {
-            background-color: #007bff;
-            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
             border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
             cursor: pointer;
-            margin-bottom: 20px;
             font-size: 14px;
-            transition: background-color 0.3s;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #6366f1;
+            color: white;
           }
 
           .refresh-btn:hover:not(:disabled) {
-            background-color: #0056b3;
+            background: #5855eb;
           }
 
           .refresh-btn:disabled {
-            background-color: #6c757d;
+            opacity: 0.5;
             cursor: not-allowed;
           }
 
@@ -313,11 +372,6 @@ export default function AnalyticsPage() {
             border-radius: 12px;
             font-size: 12px;
             border: 1px solid #636e72;
-          }
-
-          h2 {
-            color: #ffffff;
-            margin-bottom: 15px;
           }
         `}</style>
       </main>
