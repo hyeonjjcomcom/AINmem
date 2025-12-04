@@ -8,49 +8,43 @@ async function getMemoriesData(
   userName?: string,
   validIds?: mongoose.Types.ObjectId[]
 ) {
-  try {
-    console.log("Fetching memories - userName:", userName, "ids:", validIds);
+  console.log("Fetching memories - userName:", userName, "ids:", validIds);
 
-    // 쿼리 구성
-    let query: any = {};
+  // 쿼리 구성
+  let query: any = {};
 
-    // validIds가 있으면 특정 ObjectIds로 필터링
-    if (validIds && validIds.length > 0) {
-      query._id = { $in: validIds };
-    }
-
-    // userName이 있으면 user_id 기준으로도 필터링
-    if (userName) {
-      query.user_id = userName;
-    }
-
-    const data = await mongoose.connection
-      .collection("chatlogs")
-      .find(query)
-      .sort({ createdAt: -1 })
-      .toArray();
-
-    const memories = data.map((item, index) => {
-      const doc = item.toObject ? item.toObject() : item;
-      return {
-        id: doc._id || index,
-        title: doc.title || `Memory ${index + 1}`,
-        content: doc.content || doc.message || JSON.stringify(doc, null, 2),
-        tags: doc.tags || ["general"],
-        category: doc.category || "notes",
-        date: doc.createdAt
-          ? new Date(doc.createdAt).toISOString().split("T")[0]
-          : new Date().toISOString().split("T")[0],
-        createdAt: doc.createdAt || new Date(),
-      };
-    });
-
-    //console.log("📊 Fetched memories data:", memories);
-    return memories;
-  } catch (error) {
-    console.error("❌ Error fetching memories data:", error);
-    throw error;
+  // validIds가 있으면 특정 ObjectIds로 필터링
+  if (validIds && validIds.length > 0) {
+    query._id = { $in: validIds };
   }
+
+  // userName이 있으면 user_id 기준으로도 필터링
+  if (userName) {
+    query.user_id = userName;
+  }
+
+  const data = await mongoose.connection
+    .collection("chatlogs")
+    .find(query)
+    .sort({ createdAt: -1 })
+    .toArray();
+
+  const memories = data.map((item, index) => {
+    const doc = item.toObject ? item.toObject() : item;
+    return {
+      id: doc._id || index,
+      title: doc.title || `Memory ${index + 1}`,
+      content: doc.content || doc.message || JSON.stringify(doc, null, 2),
+      tags: doc.tags || ["general"],
+      category: doc.category || "notes",
+      date: doc.createdAt
+        ? new Date(doc.createdAt).toISOString().split("T")[0]
+        : new Date().toISOString().split("T")[0],
+      createdAt: doc.createdAt || new Date(),
+    };
+  });
+
+  return memories;
 }
 
 // ✅ /api/memories 경로의 GET 요청 처리
