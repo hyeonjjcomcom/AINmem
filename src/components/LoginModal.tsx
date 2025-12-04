@@ -75,7 +75,7 @@ const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
       }
 
       // signMessage 해서 암호화된걸(시그니쳐) 서버로 보내고
-      const testMessage = "hello, we are ainmem"
+      const testMessage = "hello, we are ainmem" //수정 필요
       const signature = await ain.signer.signMessage(testMessage);
       console.log('signature:', signature);
 
@@ -166,7 +166,7 @@ const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
             </div>
 
             {/* Title */}
-            <h4 className={styles["modal-title"]}>Connect with AINmem</h4>
+            <h4 className={styles["modal-title"]}>Connect with AINMem</h4>
 
             {/* Wallet Options */}
             <div className={styles["wallet-options"]}>
@@ -232,13 +232,35 @@ const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
 
               {/* Terms Text */}
               <p className={styles["terms-text"]}>
-                By connecting your wallet and using AINmem, you agree to our{' '}
-                <a href="" target="_blank" rel="noopener noreferrer">
+                By connecting your wallet and using AINMem, you agree to our{' '}
+                <a href="/terms" target="_blank" rel="noopener noreferrer" className={styles["terms-link"]}>
                   Terms of Service
+                  <svg
+                    className={styles["external-link-icon"]}
+                    width="12"
+                    height="12"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/>
+                  </svg>
                 </a>{' '}
                 and{' '}
-                <a href="" target="_blank" rel="noopener noreferrer">
+                <a href="/privacy" target="_blank" rel="noopener noreferrer" className={styles["terms-link"]}>
                   Privacy Policy
+                  <svg
+                    className={styles["external-link-icon"]}
+                    width="12"
+                    height="12"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/>
+                  </svg>
                 </a>.
               </p>
             </div>

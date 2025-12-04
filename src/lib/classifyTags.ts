@@ -1,5 +1,7 @@
 import ChatLog from '@/models/chatLogs';
+import ClassificationLog from '@/models/classificationLog';
 import connectDB from '@/lib/mongodb';
+import type { ClassificationAttempt } from '@/models/classificationLog';
 
 const PROMPT_TEMPLATE = `
 Given a user input, identify the single category that best matches the input from the list below.
@@ -41,21 +43,31 @@ const VALID_CATEGORIES = [
 ];
 
 /**
- * LLM API를 호출하여 입력 텍스트의 카테고리를 분류합니다.
- * Fire-and-forget 패턴으로 사용됩니다.
+ * LLM API를 호출하여 카테고리를 분류합니다.
+ * @returns ClassificationAttempt 객체
  */
-export async function classifyAndUpdateTags(documentId: string, inputText: string): Promise<void> {
+async function callLLMForClassification(
+  prompt: string,
+  attemptNumber: number
+): Promise<ClassificationAttempt> {
+  const llmApiUrl = process.env.LLM_API_URL;
+  const llmModel = process.env.LLM_MODEL || 'unknown';
+  const maxTokens = 32;
+
+  const attempt: ClassificationAttempt = {
+    attemptNumber,
+    llmRequest: {
+      model: llmModel,
+      prompt,
+      maxTokens
+    },
+    isValid: false,
+    timestamp: new Date()
+  };
+
   try {
-    await connectDB();
-
-    const prompt = PROMPT_TEMPLATE.replace('{userInput}', inputText);
-
-    const llmApiUrl = process.env.LLM_API_URL;
-    const llmModel = process.env.LLM_MODEL;
-
-    if (!llmApiUrl || !llmModel) {
-      console.error('❌ LLM_API_URL or LLM_MODEL not configured in .env');
-      return;
+    if (!llmApiUrl) {
+      throw new Error('LLM_API_URL not configured in .env');
     }
 
     const response = await fetch(llmApiUrl, {
@@ -71,21 +83,23 @@ export async function classifyAndUpdateTags(documentId: string, inputText: strin
             content: prompt
           }
         ],
-        max_tokens: 32
+        max_tokens: maxTokens
       })
     });
 
     if (!response.ok) {
-      console.error('❌ LLM API error:', response.status, response.statusText);
-      return;
+      throw new Error(`LLM API error: ${response.status} ${response.statusText}`);
     }
 
     const result = await response.json();
+    attempt.llmResponse = result;
+
     const category = result.choices?.[0]?.message?.content?.trim();
+    attempt.extractedCategory = category;
 
     if (!category) {
-      console.error('❌ No category returned from LLM');
-      return;
+      attempt.error = 'No category returned from LLM';
+      return attempt;
     }
 
     // 유효한 카테고리인지 확인
@@ -93,19 +107,96 @@ export async function classifyAndUpdateTags(documentId: string, inputText: strin
       c => c.toLowerCase() === category.toLowerCase()
     );
 
-    if (!validCategory) {
-      console.warn('⚠️ Invalid category from LLM:', category);
-      return;
+    if (validCategory) {
+      attempt.isValid = true;
+      attempt.extractedCategory = validCategory;
+    } else {
+      attempt.error = `Invalid category: ${category}`;
     }
 
-    // tags 배열에 카테고리 추가 (중복 방지)
-    await ChatLog.findByIdAndUpdate(
-      documentId,
-      { $addToSet: { tags: validCategory } }
-    );
+    return attempt;
+  } catch (error) {
+    attempt.error = error instanceof Error ? error.message : String(error);
+    return attempt;
+  }
+}
 
-    console.log(`✅ Tag "${validCategory}" added to document ${documentId}`);
+/**
+ * LLM API를 호출하여 입력 텍스트의 카테고리를 분류합니다.
+ * Fire-and-forget 패턴으로 사용됩니다.
+ * 실패 시 1회 재시도하며, 모든 과정을 ClassificationLog에 기록합니다.
+ */
+export async function classifyAndUpdateTags(documentId: string, inputText: string): Promise<void> {
+  const attempts: ClassificationAttempt[] = [];
+  let finalCategory: string | undefined;
+  let status: 'success' | 'failed' | 'partial' = 'failed';
+
+  try {
+    await connectDB();
+
+    const prompt = PROMPT_TEMPLATE.replace('{userInput}', inputText);
+
+    // 1차 시도
+    const attempt1 = await callLLMForClassification(prompt, 1);
+    attempts.push(attempt1);
+
+    if (attempt1.isValid && attempt1.extractedCategory) {
+      finalCategory = attempt1.extractedCategory;
+      status = 'success';
+    } else {
+      // 실패 시 1회 재시도
+      console.log('🔄 Retrying LLM classification...');
+      const attempt2 = await callLLMForClassification(prompt, 2);
+      attempts.push(attempt2);
+
+      if (attempt2.isValid && attempt2.extractedCategory) {
+        finalCategory = attempt2.extractedCategory;
+        status = 'partial'; // 재시도 후 성공
+      }
+    }
+
+    // ClassificationLog에 기록
+    await ClassificationLog.create({
+      documentId,
+      inputText,
+      attempts,
+      finalCategory,
+      status
+    });
+
+    // 성공한 경우 tags 배열에 카테고리 추가
+    if (finalCategory) {
+      await ChatLog.findByIdAndUpdate(
+        documentId,
+        { $addToSet: { tags: finalCategory } }
+      );
+      console.log(`✅ Tag "${finalCategory}" added to document ${documentId}`);
+    } else {
+      console.error(`❌ Failed to classify document ${documentId} after ${attempts.length} attempts`);
+    }
   } catch (error) {
     console.error('❌ Error classifying tags:', error);
+
+    // 에러 발생 시에도 로그 기록 시도
+    try {
+      await ClassificationLog.create({
+        documentId,
+        inputText,
+        attempts: attempts.length > 0 ? attempts : [{
+          attemptNumber: 1,
+          llmRequest: {
+            model: 'unknown',
+            prompt: '',
+            maxTokens: 32
+          },
+          isValid: false,
+          error: error instanceof Error ? error.message : String(error),
+          timestamp: new Date()
+        }],
+        status: 'failed'
+      });
+    } catch (logError) {
+      console.error('❌ Failed to save classification log:', logError);
+    }
   }
 }

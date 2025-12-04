@@ -66,10 +66,6 @@ export default function HomePage() {
   const [showFullBuildConfirm, setShowFullBuildConfirm] = useState(false);
   const { isLoggedIn, userName, isHydrated } = useAuth();
 
-  const color = d3.scaleOrdinal()
-    .domain(['predicate', 'entity'])
-    .range(['#4F46E5', '#5B21B6']);
-
   const filterData = (data: FactItem[]) => {
     return data;
   };
@@ -190,9 +186,17 @@ export default function HomePage() {
     console.log('링크 배열:', graphData.links);
 
     const maxCount = Math.max(...nodeArray.map(n => n.count));
-    const radiusScale = d3.scaleLinear()
-      .domain([1, maxCount])
-      .range([15, 30]);
+    const minCount = Math.min(...nodeArray.map(n => n.count));
+
+    // 로그 스케일 사용: 많이 등장한 상수에 집중
+    const radiusScale = d3.scaleSqrt()
+      .domain([minCount, maxCount])
+      .range([12, 35]);
+
+    // count 기반 색상 그라데이션: 적게 등장 (중간 보라) → 많이 등장 (진한 보라)
+    const colorScale = d3.scaleLinear<string>()
+      .domain([minCount, maxCount])
+      .range(['#8b5cf6', '#5B21B6']); // 중간 보라 → 진한 보라
 
     const newSimulation = d3.forceSimulation(nodeArray)
       .force("link", d3.forceLink(graphData.links).id((d: any) => d.id).distance(150))
@@ -269,7 +273,7 @@ export default function HomePage() {
 
     node.append("circle")
       .attr("r", (d: NodeData) => radiusScale(d.count))
-      .attr("fill", (d: NodeData) => color(d.type) as string)
+      .attr("fill", (d: NodeData) => colorScale(d.count))
       .attr("stroke", "#fff")
       .attr("stroke-width", 1.5);
 

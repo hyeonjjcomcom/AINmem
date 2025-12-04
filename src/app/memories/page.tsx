@@ -23,7 +23,7 @@ interface Memory {
 const Memories = () => {
 
   // 기존 state들...
-  const [currentFilter, setCurrentFilter] = useState<string>('all');
+  const [currentFilter, setCurrentFilter] = useState<string>('All');
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [selectedMemory, setSelectedMemory] = useState<Memory | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -108,7 +108,7 @@ const Memories = () => {
     let filtered = memoriesData;
 
     // 태그 필터: All이 아닌 경우 해당 태그가 있는 메모리만 표시
-    if (currentFilter !== 'all') {
+    if (currentFilter !== 'All') {
       filtered = filtered.filter(memory =>
         memory.tags && memory.tags.includes(currentFilter)
       );
