@@ -233,12 +233,34 @@ const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
               {/* Terms Text */}
               <p className={styles["terms-text"]}>
                 By connecting your wallet and using AINMem, you agree to our{' '}
-                <a href="" target="_blank" rel="noopener noreferrer">
+                <a href="/terms" target="_blank" rel="noopener noreferrer" className={styles["terms-link"]}>
                   Terms of Service
+                  <svg
+                    className={styles["external-link-icon"]}
+                    width="12"
+                    height="12"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/>
+                  </svg>
                 </a>{' '}
                 and{' '}
-                <a href="" target="_blank" rel="noopener noreferrer">
+                <a href="/privacy" target="_blank" rel="noopener noreferrer" className={styles["terms-link"]}>
                   Privacy Policy
+                  <svg
+                    className={styles["external-link-icon"]}
+                    width="12"
+                    height="12"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/>
+                  </svg>
                 </a>.
               </p>
             </div>
