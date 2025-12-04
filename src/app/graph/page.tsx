@@ -455,8 +455,10 @@ export default function HomePage() {
         <div className={styles['graph-wrapper']}>
           <header className={styles.header}>
             <div className={styles['header-left']}>
-              <h1 className={styles['page-title']}>AIN MEM GRAPH</h1>
-              <p className={styles['page-subtitle']}>Visualizing relationships between logical propositions</p>
+              <h1 className={styles['page-title']}>Knowledge Graph</h1>
+              <p className={styles['page-subtitle']}>
+                Navigate your knowledge graph and discover meaningful patterns
+              </p>
             </div>
             <div className={styles['header-right']}>
               <button
@@ -465,7 +467,7 @@ export default function HomePage() {
               >
                 <span>⟲</span> Restart
               </button>
-              <button 
+              <button
                 className={`${styles.btn} ${styles['btn-secondary']}`}
                 onClick={toggleLabels}
               >
@@ -483,7 +485,7 @@ export default function HomePage() {
               >
                 <span>🔄</span> Full Build
               </button>
-              <button 
+              <button
                 className={`${styles.btn} ${styles['btn-primary']}`}
                 onClick={centerGraph}
               >
@@ -492,40 +494,39 @@ export default function HomePage() {
             </div>
           </header>
 
-          <div className={styles.filters}>
-            <span className={styles['filter-label']}>Filters:</span>
-            <div className={`${styles['filter-tag']} ${styles.active}`}>All</div>
-            <div className={styles['filter-tag']}>Life</div>
-            <div className={styles['filter-tag']}>Work</div>
-            <div className={styles['filter-tag']}>Note</div>
-          </div>
-
           <div className={styles.content}>
+            <div className={styles['filters-wrapper']}>
+              <div className={styles.filters}>
+                <div className={`${styles['filter-tag']} ${styles.active}`}>All</div>
+                <div className={styles['filter-tag']}>Life</div>
+                <div className={styles['filter-tag']}>Work</div>
+                <div className={styles['filter-tag']}>Note</div>
+              </div>
+              <div className={styles.legend}>
+                <div className={styles['legend-item']}>
+                  <div className={`${styles['legend-circle']} ${styles.constant}`}></div>
+                  <span>Constants</span>
+                </div>
+                <div className={styles['legend-item']}>
+                  <div className={`${styles['legend-circle']} ${styles.predicate}`}></div>
+                  <span>Predicates</span>
+                </div>
+              </div>
+            </div>
             <div className={styles['graph-container']}>
-              <svg 
+              <svg
                 ref={svgRef}
-                id="graph" 
-                width="100%" 
+                id="graph"
+                width="100%"
                 height="100%"
               />
-            </div>
-          </div>
-
-          <div className={styles.stats}>
-            <div className={styles['stat-item']}>
-              <span>Nodes:</span> <span className={styles['stat-value']}>{nodeCount}</span>
-            </div>
-            <div className={styles['stat-item']}>
-              <span>Links:</span> <span className={styles['stat-value']}>{linkCount}</span>
-            </div>
-            <div className={styles.legend}>
-              <div className={styles['legend-item']}>
-                <div className={`${styles['legend-circle']} ${styles.constant}`}></div>
-                <span>Constants</span>
-              </div>
-              <div className={styles['legend-item']}>
-                <div className={`${styles['legend-circle']} ${styles.predicate}`}></div>
-                <span>Predicates</span>
+              <div className={styles['graph-stats']}>
+                <div className={styles['stat-item']}>
+                  <span>Nodes:</span> <span className={styles['stat-value']}>{nodeCount}</span>
+                </div>
+                <div className={styles['stat-item']}>
+                  <span>Links:</span> <span className={styles['stat-value']}>{linkCount}</span>
+                </div>
               </div>
             </div>
           </div>
