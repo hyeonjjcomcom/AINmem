@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Sidebar from "@/components/Sidebar";
 import AuthOverlay from "@/components/AuthOverlay";
+import MemoryTag from "@/components/MemoryTag";
 import { useAuth } from "@/contexts/AuthContext";
 
 // Memory 타입 정의
@@ -157,9 +158,7 @@ export default function AnalyticsPage() {
                       {memory.tags && memory.tags.length > 0 && (
                         <div className="memory-tags">
                           {memory.tags.map((tag, index) => (
-                            <span key={index} className="tag">
-                              {tag}
-                            </span>
+                            <MemoryTag key={index} tag={tag} />
                           ))}
                         </div>
                       )}
@@ -361,17 +360,8 @@ export default function AnalyticsPage() {
           .memory-tags {
             display: flex;
             flex-wrap: wrap;
-            gap: 5px;
+            gap: 8px;
             margin-top: 10px;
-          }
-
-          .tag {
-            background-color: #2d3436;
-            color: #74b9ff;
-            padding: 3px 8px;
-            border-radius: 12px;
-            font-size: 12px;
-            border: 1px solid #636e72;
           }
         `}</style>
       </main>
