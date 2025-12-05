@@ -6,4 +6,21 @@
   border-radius: 12px;
   font-size: 12px;
   border: 1px solid #636e72;
+  white-space: nowrap;
+  flex-shrink: 0;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* +N 뱃지 스타일 */
+.memory-tag-more {
+  background-color: #2d3436;
+  color: #888;
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  border: 1px solid #636e72;
+  white-space: nowrap;
+  flex-shrink: 0;
 }

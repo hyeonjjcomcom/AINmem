@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Sidebar from "@/components/Sidebar";
 import AuthOverlay from "@/components/AuthOverlay";
-import MemoryTag from "@/components/ui/MemoryTag";
+import { MemoryTagList } from "@/components/ui/MemoryTag";
 import { useAuth } from "@/contexts/AuthContext";
 
 // Memory 타입 정의
@@ -156,11 +156,7 @@ export default function AnalyticsPage() {
                       </div>
 
                       {memory.tags && memory.tags.length > 0 && (
-                        <div className="memory-tags">
-                          {memory.tags.map((tag, index) => (
-                            <MemoryTag key={index} tag={tag} />
-                          ))}
-                        </div>
+                        <MemoryTagList tags={memory.tags} className="memory-tags" />
                       )}
                     </div>
                   ))}
@@ -321,6 +317,9 @@ export default function AnalyticsPage() {
             border-radius: 8px;
             padding: 15px;
             transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
           }
 
           .memory-card:hover {
@@ -359,9 +358,10 @@ export default function AnalyticsPage() {
 
           .memory-tags {
             display: flex;
-            flex-wrap: wrap;
+            flex-wrap: nowrap;
             gap: 8px;
-            margin-top: 10px;
+            margin-top: auto;
+            overflow: hidden;
           }
         `}</style>
       </main>

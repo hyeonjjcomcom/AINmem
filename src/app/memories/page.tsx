@@ -3,7 +3,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import Sidebar from '@/components/Sidebar';
 import MemoryDetailModal from '@/components/MemoryDetailModal';
 import MemoryHeader from './_components/MemoryHeader';
-import MemoryTag from '@/components/ui/MemoryTag';
+import { MemoryTagList } from '@/components/ui/MemoryTag';
 import styles from './Memories.module.css';
 import AuthOverlay from '@/components/AuthOverlay';
 
@@ -303,11 +303,10 @@ const Memories = () => {
                     <p className={styles['memory-content']}>
                       {truncateText(displayText, 150)}
                     </p>
-                    <div className={styles['memory-tags']}>
-                      {(memory.tags || []).map((tag, index) => (
-                        <MemoryTag key={index} tag={tag} />
-                      ))}
-                    </div>
+                    <MemoryTagList
+                      tags={memory.tags || []}
+                      className={styles['memory-tags']}
+                    />
                   </div>
                 );
               })}
