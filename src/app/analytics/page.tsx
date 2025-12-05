@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Sidebar from "@/components/Sidebar";
 import AuthOverlay from "@/components/AuthOverlay";
-import MemoryTag from "@/components/MemoryTag";
+import MemoryTag from "@/components/ui/MemoryTag";
 import { useAuth } from "@/contexts/AuthContext";
 
 // Memory 타입 정의

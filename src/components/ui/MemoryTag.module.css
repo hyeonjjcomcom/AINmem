@@ -1,7 +1,7 @@
-/* Memory Tag - 보라색 통일 (Analytics 기존 스타일 유지) */
+/* Memory Tag - Active 필터 버튼 색상 통일 */
 .memory-tag {
   background-color: #2d3436;
-  color: #a78bfa;
+  color: #6366f1;
   padding: 3px 8px;
   border-radius: 12px;
   font-size: 12px;
