@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styles from './MemoryHeader.module.css';
 
 interface Memory {
@@ -17,9 +17,10 @@ interface Memory {
 interface MemoryHeaderProps {
     filteredMemories: Memory[];
     handleRefresh: () => void;
+    searchTerm: string;
+    setSearchTerm: (value: string) => void;
 }
-const MemoryHeader = ({ filteredMemories, handleRefresh }: MemoryHeaderProps) => {
-    const [searchTerm, setSearchTerm] = useState<string>('');
+const MemoryHeader = ({ filteredMemories, handleRefresh, searchTerm, setSearchTerm }: MemoryHeaderProps) => {
     const dbName = "sample_db";
     const collectionName = "memories_collection";
 

@@ -106,6 +106,8 @@ const Memories = () => {
 
   // 필터링된 메모리
   const filteredMemories = useMemo(() => {
+    console.log('🔍 Filtering - searchTerm:', searchTerm, 'currentFilter:', currentFilter, 'total memories:', memoriesData.length);
+
     let filtered = memoriesData;
 
     // 태그 필터: All이 아닌 경우 해당 태그가 있는 메모리만 표시
@@ -113,6 +115,7 @@ const Memories = () => {
       filtered = filtered.filter(memory =>
         memory.tags && memory.tags.includes(currentFilter)
       );
+      console.log('📌 After tag filter:', filtered.length);
     }
 
     // 검색 필터
@@ -121,19 +124,25 @@ const Memories = () => {
       filtered = filtered.filter(memory => {
         const displayText = getDisplayText(memory);
         const displayTitle = getDisplayTitle(memory);
-        
-        return displayTitle.toLowerCase().includes(searchLower) ||
-               displayText.toLowerCase().includes(searchLower) ||
-               (memory.tags && memory.tags.some(tag => tag.toLowerCase().includes(searchLower)));
+
+        const titleMatch = displayTitle.toLowerCase().includes(searchLower);
+        const textMatch = displayText.toLowerCase().includes(searchLower);
+        const tagMatch = memory.tags && memory.tags.some(tag => tag.toLowerCase().includes(searchLower));
+
+        return titleMatch || textMatch || tagMatch;
       });
+      console.log('🔎 After search filter:', filtered.length);
     }
 
     // 날짜순 정렬 (최신순)
-    return filtered.sort((a, b) => {
+    const sorted = filtered.sort((a, b) => {
       const dateA = new Date(a.createdAt || 0);
       const dateB = new Date(b.createdAt || 0);
       return dateB.getTime() - dateA.getTime();
     });
+
+    console.log('✅ Final filtered count:', sorted.length);
+    return sorted;
   }, [memoriesData, currentFilter, searchTerm]);
 
   // 메모리 카드 클릭
@@ -254,6 +263,8 @@ const Memories = () => {
         <MemoryHeader
           filteredMemories={filteredMemories}
           handleRefresh={handleRefresh}
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
         />
 
         <div className={styles['content']}>
