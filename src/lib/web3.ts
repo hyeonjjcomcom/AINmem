@@ -204,8 +204,12 @@ export async function saveMemoryToWeb3Async(
   userAddress: string,
   memoryId: string
 ): Promise<void> {
+  console.log(`🔵 [Async] saveMemoryToWeb3Async CALLED: user=${userAddress}, id=${memoryId}`);
+
   try {
+    console.log(`🔵 [Async] Calling saveMemoryId...`);
     const result = await saveMemoryId(userAddress, memoryId);
+    console.log(`🔵 [Async] saveMemoryId returned:`, result);
 
     if (result.success) {
       console.log(`✅ [Async] Memory saved to Web3: user=${userAddress}, id=${memoryId}, txHash=${result.txHash}`);
@@ -214,6 +218,9 @@ export async function saveMemoryToWeb3Async(
     }
   } catch (error: any) {
     console.error(`❌ [Async] Unexpected error in Web3 save: user=${userAddress}, id=${memoryId}`, error);
+    console.error(`❌ [Async] Error stack:`, error.stack);
     // Don't throw - this is fire-and-forget
   }
+
+  console.log(`🔵 [Async] saveMemoryToWeb3Async COMPLETED`);
 }
