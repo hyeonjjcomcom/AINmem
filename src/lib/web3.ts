@@ -106,13 +106,10 @@ export async function saveMemoryId(
     const appName = 'ain_mem_1';
     const path = `/apps/${appName}/messages/${userAddress}/${key}`;
 
-    // Store only the MongoDB _id
-    const value = {
-      mongodb_id: memoryId,
-      timestamp: new Date().toISOString()
-    };
+    // Store only the MongoDB _id (timestamp available in MongoDB's createdAt)
+    const value = memoryId;
 
-    console.log(`📝 Saving memory to Web3: ${path}`, value);
+    console.log(`📝 Saving memory to Web3: ${path} = ${value}`);
 
     // Write to AIN Network
     const result = await ain.db.ref(path).setValue({
@@ -174,12 +171,15 @@ export async function getMemoryIds(userAddress: string): Promise<string[]> {
       return [];
     }
 
-    // Extract mongodb_id values from all message objects
+    // Extract mongodb_id values (stored directly as strings)
     const memoryIds: string[] = [];
     for (const key in data) {
-      const msg = data[key];
-      if (msg && msg.mongodb_id) {
-        memoryIds.push(msg.mongodb_id);
+      const memoryId = data[key];
+      // Handle both old format (object with mongodb_id) and new format (string)
+      if (typeof memoryId === 'string') {
+        memoryIds.push(memoryId);
+      } else if (memoryId && memoryId.mongodb_id) {
+        memoryIds.push(memoryId.mongodb_id);
       }
     }
 
