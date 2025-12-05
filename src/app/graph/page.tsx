@@ -404,17 +404,29 @@ export default function HomePage() {
   };
 
   const centerGraph = () => {
-    // Zoom을 초기 상태로 리셋
+    // Zoom을 초기 상태로 리셋 + Breathing 효과
     if (svgRef.current && zoomRef.current) {
       const svg = d3.select(svgRef.current);
-      svg.transition()
-        .duration(750)
-        .call(zoomRef.current.transform, d3.zoomIdentity);
-    }
 
-    // 시뮬레이션도 재시작
-    if (simulation) {
-      simulation.alpha(0.3).restart();
+      // SVG 중심점 계산
+      const width = svgRef.current.clientWidth || 800;
+      const height = 600;
+      const cx = width / 2;
+      const cy = height / 2;
+      const scale = 1.03;
+
+      // 중앙 기준으로 확대: translate((1-k) * cx, (1-k) * cy).scale(k)
+      const zoomIn = d3.zoomIdentity
+        .translate((1 - scale) * cx, (1 - scale) * cy)
+        .scale(scale);
+
+      // 살짝 확대했다가 원래대로 (시각적 피드백)
+      svg.transition()
+        .duration(200)
+        .call(zoomRef.current.transform, zoomIn)
+        .transition()
+        .duration(200)
+        .call(zoomRef.current.transform, d3.zoomIdentity);
     }
   };
 
