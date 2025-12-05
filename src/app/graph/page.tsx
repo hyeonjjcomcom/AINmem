@@ -64,7 +64,19 @@ export default function HomePage() {
   const [linkCount, setLinkCount] = useState(0);
   const [isBuilding, setIsBuilding] = useState(false);
   const [showFullBuildConfirm, setShowFullBuildConfirm] = useState(false);
+  const [currentFilter, setCurrentFilter] = useState<string>('All');
   const { isLoggedIn, userName, isHydrated } = useAuth();
+
+  const filterTags = [
+    { id: 'All', label: 'All' },
+    { id: 'Exploration', label: 'Exploration' },
+    { id: 'Inspiration', label: 'Inspiration' },
+    { id: 'Refinement', label: 'Refinement' },
+    { id: 'Solution', label: 'Solution' },
+    { id: 'Empathy', label: 'Empathy' },
+    { id: 'Play', label: 'Play' },
+    { id: 'Others', label: 'Others' }
+  ];
 
   const filterData = (data: FactItem[]) => {
     return data;
@@ -497,10 +509,15 @@ export default function HomePage() {
           <div className={styles.content}>
             <div className={styles['filters-wrapper']}>
               <div className={styles.filters}>
-                <div className={`${styles['filter-tag']} ${styles.active}`}>All</div>
-                <div className={styles['filter-tag']}>Life</div>
-                <div className={styles['filter-tag']}>Work</div>
-                <div className={styles['filter-tag']}>Note</div>
+                {filterTags.map((tag) => (
+                  <div
+                    key={tag.id}
+                    className={`${styles['filter-tag']} ${currentFilter === tag.id ? styles['active'] : ''}`}
+                    onClick={() => setCurrentFilter(tag.id)}
+                  >
+                    {tag.label}
+                  </div>
+                ))}
               </div>
               <div className={styles.legend}>
                 <div className={styles['legend-item']}>

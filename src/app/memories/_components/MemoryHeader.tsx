@@ -21,15 +21,12 @@ interface MemoryHeaderProps {
     setSearchTerm: (value: string) => void;
 }
 const MemoryHeader = ({ filteredMemories, handleRefresh, searchTerm, setSearchTerm }: MemoryHeaderProps) => {
-    const dbName = "sample_db";
-    const collectionName = "memories_collection";
-
     return (
         <header className={styles['header']}>
           <div className={styles['header-left']}>
             <h1 className={styles['page-title']}>Memories</h1>
             <p className={styles['page-subtitle']}>
-              Database: {dbName} / Collection: {collectionName} • {filteredMemories.length} memories
+              Store and explore your personal knowledge • {filteredMemories.length} memories
             </p>
           </div>
           <div className={styles['header-right']}>
