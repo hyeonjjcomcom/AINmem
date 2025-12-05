@@ -493,12 +493,6 @@ export default function HomePage() {
               </button>
               <button
                 className={`${styles.btn} ${styles['btn-secondary']}`}
-                onClick={toggleLabels}
-              >
-                <span>🏷️</span> Labels
-              </button>
-              <button
-                className={`${styles.btn} ${styles['btn-secondary']}`}
                 onClick={buildNewGraph}
               >
                 <span>📊</span> Build
@@ -539,6 +533,18 @@ export default function HomePage() {
                 <div className={styles['legend-item']}>
                   <div className={`${styles['legend-circle']} ${styles.predicate}`}></div>
                   <span>Predicates</span>
+                </div>
+                <div className={styles['legend-divider']}></div>
+                <div className={styles['toggle-container']}>
+                  <span className={styles['toggle-label']}>Labels</span>
+                  <button
+                    className={`${styles['toggle-switch']} ${showLabels ? styles.active : ''}`}
+                    onClick={toggleLabels}
+                    role="switch"
+                    aria-checked={showLabels}
+                  >
+                    <span className={styles['toggle-slider']}></span>
+                  </button>
                 </div>
               </div>
             </div>
