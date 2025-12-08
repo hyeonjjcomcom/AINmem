@@ -12,15 +12,15 @@
   left: 0;
   width: 100%;
   height: 100%;
-  
+
   /* 어두운 반투명 배경 */
-  background-color: rgba(0, 0, 0, 0.6); 
+  background-color: rgba(0, 0, 0, 0.6);
   /* 뒤의 콘텐츠를 흐리게 합니다 */
-  backdrop-filter: blur(8px); 
+  backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  
+
   z-index: 10;
-  
+
   /* 내부 프롬프트 중앙 정렬 */
   display: flex;
   justify-content: center;

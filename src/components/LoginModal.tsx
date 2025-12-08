@@ -14,6 +14,7 @@ import { useAuth } from '@/contexts/AuthContext';
 interface LoginModalProps {
   isOpen: boolean;
   onClose: (loginSuccess?: boolean) => void;
+  showCloseButton?: boolean;
 }
 
 interface VerifyPayload {
@@ -23,8 +24,7 @@ interface VerifyPayload {
   chainID: number
 }
 
-const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
-  const [email, setEmail] = useState('');
+const LoginModal = ({ isOpen, onClose, showCloseButton = true }: LoginModalProps) => {
   const [showInstallConfirm, setShowInstallConfirm] = useState(false);
   const { updateLoginState, setAuthUser } = useAuth();
   const ain = new Ain('https://testnet-api.ainetwork.ai', 'wss://testnet-event.ainetwork.ai', 0);
@@ -120,15 +120,8 @@ const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
     }
   };
 
-  const handleComingSoon = () => {
-    toast.info('Coming soon. Please stay tuned!');
-  };
-
   const walletOptions = [
     { name: 'AINwallet', icon: 'AINwallet_logo.svg', onclick: handleAINwalletClick },
-    { name: 'MetaMask', icon: '/metamask-icon.png', onclick: handleComingSoon },
-    { name: 'Coinbase Wallet', icon: '/coinbase-icon.svg', onclick: handleComingSoon },
-    { name: 'WalletConnect', icon: '/walletconnect-icon.png', onclick: handleComingSoon },
   ];
 
   if (!isOpen) return null;
@@ -138,17 +131,19 @@ const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
       <div className={styles["modal-container"]}>
         <div className={styles["modal-content"]}>
           {/* Close Button */}
-          <button className={styles["close-button"]} onClick={() => onClose(false)}>
-            <svg 
-              aria-label="Close" 
-              fill="currentColor" 
-              height="24" 
-              viewBox="0 -960 960 960" 
-              width="24"
-            >
-              <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/>
-            </svg>
-          </button>
+          {showCloseButton && (
+            <button className={styles["close-button"]} onClick={() => onClose(false)}>
+              <svg
+                aria-label="Close"
+                fill="currentColor"
+                height="24"
+                viewBox="0 -960 960 960"
+                width="24"
+              >
+                <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/>
+              </svg>
+            </button>
+          )}
 
           <div className={styles["modal-body"]}>
             {/* Logo Section */}
@@ -166,7 +161,8 @@ const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
             </div>
 
             {/* Title */}
-            <h4 className={styles["modal-title"]}>Connect with AINMem</h4>
+            <h4 className={styles["modal-title"]}>Manage Your Data with AINmem</h4>
+            <p className={styles["modal-subtitle"]}>Log in to build and explore your Ontology</p>
 
             {/* Wallet Options */}
             <div className={styles["wallet-options"]}>
@@ -174,11 +170,11 @@ const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
                 {walletOptions.map((wallet, index) => (
                   <li key={index}>
                     <button className={styles["wallet-button"]} onClick={wallet.onclick}>
-                      <img 
-                        src={wallet.icon} 
+                      <img
+                        src={wallet.icon}
                         alt={wallet.name}
                         className={styles["wallet-icon"]}
-                        width="24" 
+                        width="24"
                         height="24"
                       />
                       <div className={styles["wallet-content"]}>
@@ -187,48 +183,7 @@ const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
                     </button>
                   </li>
                 ))}
-                <li>
-                  <button className={styles["wallet-button"]} onClick={handleComingSoon}>
-                    <div className={styles["wallet-content"]}>
-                      <span className={styles["wallet-title"]}>More wallet options</span>
-                    </div>
-                  </button>
-                </li>
               </ul>
-
-              <div className={styles["divider"]}>
-                <div className={styles["divider-line"]}></div>
-                <span className={styles["divider-text"]}>Or continue with email</span>
-                <div className={styles["divider-line"]}></div>
-              </div>
-
-              <form className={styles["email-form"]} onSubmit={(e) => { e.preventDefault(); handleComingSoon(); }}>
-                <div className={styles["email-input-container"]}>
-                  <input
-                    type="email"
-                    placeholder="Continue with email"
-                    value={email}
-                    onFocus={handleComingSoon}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className={styles["email-input"]}
-                  />
-                  <button
-                    type="submit"
-                    disabled={!email}
-                    className={styles["email-submit-button"]}
-                  >
-                    <svg
-                      aria-label="Arrow Forward"
-                      fill="currentColor"
-                      height="20"
-                      viewBox="0 -960 960 960"
-                      width="20"
-                    >
-                      <path d="M647-440H160v-80h487L423-744l57-56 320 320-320 320-57-56 224-224Z"/>
-                    </svg>
-                  </button>
-                </div>
-              </form>
 
               {/* Terms Text */}
               <p className={styles["terms-text"]}>
