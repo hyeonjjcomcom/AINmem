@@ -1,6 +1,6 @@
 import React from 'react';
 import type { FilterTag } from '../types';
-import styles from '../GraphPage.module.css';
+import styles from './GraphFilters.module.css';
 
 interface GraphFiltersProps {
   filterTags: FilterTag[];

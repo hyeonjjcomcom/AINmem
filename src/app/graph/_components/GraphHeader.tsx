@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from '../GraphPage.module.css';
+import styles from './GraphHeader.module.css';
 
 interface GraphHeaderProps {
   onRestart: () => void;

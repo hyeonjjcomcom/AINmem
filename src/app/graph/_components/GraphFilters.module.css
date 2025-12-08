@@ -1,0 +1,137 @@
+.filters-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 30px;
+    border-bottom: 1px solid #2a2a2a;
+}
+
+.filters {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.filter-tag {
+    padding: 6px 12px;
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    border-radius: 20px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: #ccc;
+}
+
+.filter-tag:hover {
+    border-color: #6366f1;
+    color: #ffffff;
+}
+
+.filter-tag.active {
+    background: #6366f1;
+    border-color: #6366f1;
+    color: #ffffff;
+}
+
+.legend {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: #888;
+}
+
+.legend-circle {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid #2a2a2a;
+}
+
+.legend-circle.constant {
+    background: #8b5cf6;
+}
+
+.legend-circle.predicate {
+    background: #8b5cf6;
+}
+
+.legend-divider {
+    width: 1px;
+    height: 20px;
+    background: #2a2a2a;
+    margin: 0 10px;
+}
+
+.toggle-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.toggle-label {
+    font-size: 12px;
+    color: #888;
+    font-weight: 500;
+    user-select: none;
+}
+
+.toggle-switch {
+    position: relative;
+    width: 36px;
+    height: 20px;
+    background: #2a2a2a;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    padding: 0;
+}
+
+.toggle-switch:hover {
+    background: #333333;
+}
+
+.toggle-switch.active {
+    background: #6366f1;
+}
+
+.toggle-switch.active:hover {
+    background: #5855eb;
+}
+
+.toggle-slider {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 16px;
+    height: 16px;
+    background: #ffffff;
+    border-radius: 50%;
+    transition: transform 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.toggle-switch.active .toggle-slider {
+    transform: translateX(16px);
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .filters {
+        margin: 15px 20px;
+        justify-content: center;
+    }
+
+    .legend {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+}

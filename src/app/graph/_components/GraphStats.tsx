@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from '../GraphPage.module.css';
+import styles from './GraphStats.module.css';
 
 interface GraphStatsProps {
   nodeCount: number;
