@@ -19,7 +19,7 @@
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
 
-  z-index: 10;
+  z-index: 11;
 
   /* 내부 프롬프트 중앙 정렬 */
   display: flex;
