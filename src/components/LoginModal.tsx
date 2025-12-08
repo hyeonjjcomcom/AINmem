@@ -94,7 +94,7 @@ const LoginModal = ({ isOpen, onClose, showCloseButton = true }: LoginModalProps
         updateLoginState(true);
         setAuthUser(address);
 
-        //검증 완료 후 유저 database에 등록
+        //검증 완료 후 유저 database에 등록/업데이트
         try {
           const response = await fetch('/api/users', {
             method: 'POST',
@@ -107,8 +107,13 @@ const LoginModal = ({ isOpen, onClose, showCloseButton = true }: LoginModalProps
               nickname: null
             })
           });
+
+          if (!response.ok) {
+            const data = await response.json();
+            console.error('유저 처리 실패:', data.error);
+          }
         } catch (error: any) {
-          console.log('database users table 유저 등록 시 에러 발생',error);
+          console.error('유저 API 요청 실패:', error);
         }
         onClose(true);
       }else {
