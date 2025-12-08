@@ -6,8 +6,10 @@ import { useRouter, usePathname } from 'next/navigation';
 
 import UserDropdown from '@/components/UserDropdown';
 import LoginModal from '@/components/LoginModal';
+import ConfirmModal from '@/components/ConfirmModal';
 
 import { useAuth } from '@/contexts/AuthContext';
+import { getRandomLogoutMessage } from '@/constants/messages';
 
 interface SvgIconProps {
   path: string;
@@ -63,6 +65,8 @@ const Sidebar = () => {
   const { isLoggedIn, updateLoginState, userName, setAuthUser, isHydrated } = useAuth();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false); // 드롭다운 상태 추가
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [isLogoutConfirmOpen, setIsLogoutConfirmOpen] = useState(false);
+  const [logoutMessage, setLogoutMessage] = useState({ title: 'Logout', message: 'Are you sure you want to logout?' });
   const [isClient, setIsClient] = useState(false);
 
   const handleNavigation = (path: string) => {
@@ -82,8 +86,15 @@ const Sidebar = () => {
   };
 
   const handleLogout = () => {
+    const randomMessage = getRandomLogoutMessage();
+    setLogoutMessage(randomMessage);
+    setIsLogoutConfirmOpen(true);
+  };
+
+  const confirmLogout = () => {
     updateLoginState(false);
     setAuthUser(null);
+    setIsLogoutConfirmOpen(false);
     console.log('User logged out');
   };
 
@@ -174,11 +185,22 @@ const Sidebar = () => {
         </div>
       )}
       {isLoginModalOpen && (
-        <LoginModal 
-          isOpen={isLoginModalOpen} 
+        <LoginModal
+          isOpen={isLoginModalOpen}
           onClose={handleLoginModalClose} // 이제 loginSuccess 매개변수를 받음
         />
       )}
+
+      <ConfirmModal
+        isOpen={isLogoutConfirmOpen}
+        title={logoutMessage.title}
+        message={logoutMessage.message}
+        confirmText="Logout"
+        cancelText="Cancel"
+        onConfirm={confirmLogout}
+        onCancel={() => setIsLogoutConfirmOpen(false)}
+        danger={true}
+      />
     </aside>
   );
 };
