@@ -66,31 +66,8 @@
 
 /* Mobile Responsive */
 @media (max-width: 768px) {
-    .sidebar {
-        position: fixed;
-        left: -250px;
-        z-index: 999;
-        height: 100vh;
-    }
-
-    .sidebar.open {
-        transform: translateX(250px);
-    }
-
-    .main-content {
-        width: 100%;
-    }
-
     .header {
         padding: 15px 20px;
-    }
-
-    .content {
-        padding: 15px 20px;
-    }
-
-    .memories-grid {
-        grid-template-columns: 1fr;
     }
 
     .search-box {
