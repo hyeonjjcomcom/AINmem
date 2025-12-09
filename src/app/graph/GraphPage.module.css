@@ -36,30 +36,46 @@
 }
 
 .node circle {
-    stroke: #2a2a2a;
-    stroke-width: 2px;
-    filter: drop-shadow(0 2px 8px rgba(0,0,0,0.5));
+    filter: drop-shadow(0 0 16px #864DFF);
     transition: all 0.3s ease;
 }
 
+.node.large circle {
+    fill: #7D41FF;
+}
+
+.node.small circle {
+    fill: #AE8AFB;
+}
+
 .node:hover circle {
-    stroke: #a78bfa;
-    stroke-width: 3px;
+    stroke-width: 2px;
+    stroke: #DDD5FF;
+    filter: drop-shadow(0 0 16px #864DFF);
 }
 
 .node text {
-    font-size: 11px;
-    font-weight: 500;
     text-anchor: middle;
     dominant-baseline: middle;
-    fill: #ffffff;
-    text-shadow: 0 1px 3px rgba(0,0,0,0.8);
     pointer-events: none;
 }
 
+.node.large text {
+    fill: #FFF;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.node.small text {
+    fill: rgba(255, 255, 255, 0.60);
+    font-size: 10px;
+    font-weight: 500;
+}
+
 .link {
-    stroke: #555555;
-    stroke-opacity: 0.8;
+    stroke-width: 2px;
+    stroke: #61637A;
+    opacity: 0.5;
     transition: all 0.3s ease;
     cursor: pointer;
 }
@@ -70,18 +86,20 @@
 
 .link:hover {
     stroke: #6366f1;
-    stroke-opacity: 1;
+    opacity: 0.8;
 }
 
 .link.highlighted {
     stroke: #6366f1;
     stroke-width: 3;
-    stroke-opacity: 1;
+    opacity: 1;
 }
 
 .link-label {
-    font-size: 10px;
-    fill: #cccccc;
+    fill: #E0C0FF;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 700;
     text-anchor: middle;
     dominant-baseline: middle;
     pointer-events: none;
@@ -91,7 +109,6 @@
 
 .link-label:hover {
     fill: #ffffff;
-    font-weight: bold;
 }
 
 .tooltip {

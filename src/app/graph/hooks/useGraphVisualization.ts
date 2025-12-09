@@ -1,4 +1,4 @@
-import { useRef, useCallback, useState, Dispatch, SetStateAction } from 'react';
+import { useRef, useCallback, useState } from 'react';
 import * as d3 from 'd3';
 import type { NodeData, LinkData, GraphData } from '../types';
 import { D3_CONFIG } from '../constants';
@@ -67,26 +67,14 @@ export const useGraphVisualization = ({
     svg.call(zoom);
     zoomRef.current = zoom;
 
-    const maxLinkCount = Math.max(...graphData.links.map(l => l.count));
-    const strokeWidthScale = d3.scaleLinear()
-      .domain([1, maxLinkCount])
-      .range([D3_CONFIG.LINK_STROKE.MIN, D3_CONFIG.LINK_STROKE.MAX]);
-
     // Links
     const link = g.append("g")
       .selectAll("line")
       .data(graphData.links)
       .enter().append("line")
       .attr("class", styles.link)
-      .attr("stroke", "#999")
-      .attr("stroke-opacity", 0.6)
-      .attr("stroke-width", (d: LinkData) => strokeWidthScale(d.count))
       .style("cursor", "pointer")
-      .each(function(d) {
-          this.style.setProperty('--dynamic-stroke-width', strokeWidthScale(d.count) + 'px');
-          d3.select(this).classed('dynamic-width', true);
-      })
-      .on("click", function(event, d) {
+      .on("click", function(_, d) {
         onLinkClick(d);
       });
 
@@ -96,13 +84,10 @@ export const useGraphVisualization = ({
       .data(graphData.links)
       .enter().append("text")
       .attr("class", styles["link-label"])
-      .attr("text-anchor", "middle")
-      .attr("font-size", "10px")
-      .attr("fill", "#666")
       .text((d: LinkData) => d.count > 1 ? `${d.count} relations` : d.predicates[0])
       .style("opacity", showLabels ? 1 : 0)
       .style("cursor", "pointer")
-      .on("click", function(event, d) {
+      .on("click", function(_, d) {
         onLinkClick(d);
       });
 
@@ -125,33 +110,40 @@ export const useGraphVisualization = ({
     }
 
     // Nodes
+    const medianCount = (minCount + maxCount) / 2;
+
     const node = g.append("g")
       .selectAll("g")
       .data(nodeArray)
       .enter().append("g")
-      .attr("class", styles.node)
+      .attr("class", (d: NodeData) => {
+        const isLarge = d.count >= medianCount;
+        return `${styles.node} ${isLarge ? styles.large : styles.small}`;
+      })
       .call(d3.drag<any, NodeData>()
         .on("start", dragstarted)
         .on("drag", dragged)
         .on("end", dragended))
-      .on("click", function(event, d) {
+      .on("click", function(_, d) {
         onNodeClick(d.name);
       });
 
     node.append("circle")
       .attr("r", (d: NodeData) => radiusScale(d.count))
-      .attr("fill", (d: NodeData) => colorScale(d.count))
-      .attr("stroke", "#fff")
-      .attr("stroke-width", 1.5);
+      .attr("fill", (d: NodeData) => colorScale(d.count));
 
-    const nodeText = node.append("text")
-      .attr("text-anchor", "middle")
-      .attr("dy", ".35em")
-      .attr("font-size", "12px")
-      .attr("fill", "#333")
+    node.append("text")
+      .attr("dy", (d: NodeData) => {
+        const isLarge = d.count >= medianCount;
+        if (isLarge) {
+          return ".35em"; // 큰 노드: 중앙
+        } else {
+          return `${radiusScale(d.count) + 12}px`; // 작은 노드: 아래
+        }
+      })
       .text((d: NodeData) => d.name)
       .style("opacity", showLabels ? 1 : 0)
-      .on("click", function(event, d) {
+      .on("click", function(_, d) {
         onNodeClick(d.name);
       });
 

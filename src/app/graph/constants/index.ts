@@ -20,14 +20,14 @@ export const D3_CONFIG = {
 
   // Node radius scale
   NODE_RADIUS: {
-    MIN: 12,
-    MAX: 35,
+    MIN: 16, // 작은 노드 (32px / 2)
+    MAX: 40, // 큰 노드 (80px / 2)
   },
 
   // Node colors (count-based gradient)
   NODE_COLORS: {
-    MIN: '#8b5cf6', // 중간 보라
-    MAX: '#5B21B6', // 진한 보라
+    MIN: '#AE8AFB', // 작은 노드 색상
+    MAX: '#7D41FF', // 큰 노드 색상
   },
 
   // Force simulation
