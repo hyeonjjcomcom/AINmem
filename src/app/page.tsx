@@ -3,7 +3,6 @@
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import { toast } from 'sonner';
 import './styles.css';
 
 /**
@@ -18,11 +17,6 @@ const Home = () => {
   // 페이지 네비게이션 핸들러
   const handleNavigation = (path: string) => {
     router.push(path);
-  };
-
-  // Pricing 버튼 클릭 핸들러
-  const handlePricingClick = () => {
-    toast.info('AINMem is currently free! Various pricing plans are coming soon.');
   };
 
   return (
@@ -52,7 +46,6 @@ const Home = () => {
           {/* 주요 액션 버튼 */}
           <div className="landing-ctas">
             <button onClick={() => handleNavigation('/memories')} className="landing-cta primary-cta">Get Started</button>
-            <button onClick={handlePricingClick} className="landing-cta secondary-cta">View Pricing</button>
           </div>
           {/* 제품 시연 영역 */}
           <div className="landing-visual">
