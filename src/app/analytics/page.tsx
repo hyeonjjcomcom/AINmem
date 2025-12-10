@@ -28,7 +28,7 @@ export default function AnalyticsPage() {
   // Web3에서 memory IDs를 가져와서 MongoDB에서 실제 데이터 조회
   const fetchMemories = async () => {
     if (!userName) {
-      setError('로그인이 필요합니다');
+      setError('Login required');
       return;
     }
 
@@ -85,7 +85,7 @@ export default function AnalyticsPage() {
     if (isHydrated && userName) {
       fetchMemories();
     } else if (isHydrated && !userName) {
-      setError('로그인이 필요합니다. AIN 지갑으로 로그인해주세요.');
+      setError('Login required. Please log in with your AIN wallet.');
     }
   }, [userName, isHydrated]);
 
@@ -168,15 +168,15 @@ export default function AnalyticsPage() {
             {/* 데이터가 없을 때 */}
             {!loading && !error && memories.length === 0 && userName && (
               <div className={styles.noData}>
-                <p>저장된 메모리가 없습니다</p>
-                <p>메모리를 추가하려면 대화를 시작하세요</p>
+                <p>No memories saved</p>
+                <p>Start a conversation to add memories</p>
               </div>
             )}
 
             {/* 로그인 안 했을 때 */}
             {!loading && !userName && isHydrated && (
               <div className={styles.noAuth}>
-                <p>AIN 지갑으로 로그인하여 메모리를 확인하세요</p>
+                <p>Log in with your AIN wallet to view memories</p>
               </div>
             )}
           </div>
