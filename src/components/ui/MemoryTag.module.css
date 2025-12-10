@@ -1,5 +1,5 @@
 /* Memory Tag - Active 필터 버튼 색상 통일 */
-.memory-tag {
+.memoryTag {
   background-color: #2d3436;
   color: #6366f1;
   padding: 3px 8px;
@@ -14,7 +14,7 @@
 }
 
 /* +N 뱃지 스타일 */
-.memory-tag-more {
+.memoryTagMore {
   background-color: #2d3436;
   color: #888;
   padding: 3px 8px;

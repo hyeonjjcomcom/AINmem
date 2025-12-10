@@ -92,53 +92,53 @@ const MemoryDetailModal = ({ isOpen, memory, onClose, onDelete }: MemoryDetailMo
   };
 
   return (
-    <div className={`${styles['modal']} ${styles['show']}`} onClick={onClose}>
+    <div className={`${styles.modal} ${styles.show}`} onClick={onClose}>
       <div
-        className={styles['modal-content']}
+        className={styles.modalContent}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className={styles['modal-header']}>
-          <h2 className={styles['modal-title']}>
+        <div className={styles.modalHeader}>
+          <h2 className={styles.modalTitle}>
             {getDisplayTitle(memory)}
           </h2>
-          <div className={styles['header-buttons']}>
-            <button className={styles['delete-btn']} onClick={handleDeleteClick} title="Delete memory">
+          <div className={styles.headerButtons}>
+            <button className={styles.deleteBtn} onClick={handleDeleteClick} title="Delete memory">
               <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="currentColor">
                 <path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z"/>
               </svg>
             </button>
-            <button className={styles['close-btn']} onClick={onClose}>
+            <button className={styles.closeBtn} onClick={onClose}>
               &times;
             </button>
           </div>
         </div>
 
-        <div className={styles['modal-body']}>
-          <div className={styles['detail-section']}>
-            <div className={styles['detail-label']}>Content</div>
-            <div className={styles['detail-content']}>
+        <div className={styles.modalBody}>
+          <div className={styles.detailSection}>
+            <div className={styles.detailLabel}>Content</div>
+            <div className={styles.detailContent}>
               {getDisplayText(memory)}
             </div>
           </div>
 
-          <div className={styles['detail-section']}>
-            <div className={styles['detail-label']}>Document ID</div>
-            <div className={styles['detail-content']}>
+          <div className={styles.detailSection}>
+            <div className={styles.detailLabel}>Document ID</div>
+            <div className={styles.detailContent}>
               {memory.id || 'N/A'}
             </div>
           </div>
 
-          <div className={styles['detail-section']}>
-            <div className={styles['detail-label']}>Timestamp</div>
-            <div className={styles['detail-content']}>
+          <div className={styles.detailSection}>
+            <div className={styles.detailLabel}>Timestamp</div>
+            <div className={styles.detailContent}>
               {new Date(memory.createdAt || new Date()).toLocaleString()}
             </div>
           </div>
 
           {memory.tags && memory.tags.length > 0 && (
-            <div className={styles['detail-section']}>
-              <div className={styles['detail-label']}>Tags</div>
-              <div className={styles['detail-content']}>
+            <div className={styles.detailSection}>
+              <div className={styles.detailLabel}>Tags</div>
+              <div className={styles.detailContent}>
                 {memory.tags.join(', ')}
               </div>
             </div>

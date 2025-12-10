@@ -11,7 +11,7 @@
     backdrop-filter: blur(4px);
 }
 
-.modal-content {
+.modalContent {
     background-color: #1a1a1a;
     border: 1px solid #2a2a2a;
     margin: 5% auto;
@@ -25,20 +25,20 @@
     color: #ffffff;
 }
 
-.modal-content::-webkit-scrollbar {
+.modalContent::-webkit-scrollbar {
     width: 8px;
 }
 
-.modal-content::-webkit-scrollbar-track {
+.modalContent::-webkit-scrollbar-track {
     background: #0a0a0a;
 }
 
-.modal-content::-webkit-scrollbar-thumb {
+.modalContent::-webkit-scrollbar-thumb {
     background: #2a2a2a;
     border-radius: 4px;
 }
 
-.modal-content::-webkit-scrollbar-thumb:hover {
+.modalContent::-webkit-scrollbar-thumb:hover {
     background: #6366f1;
 }
 
@@ -57,7 +57,7 @@
     text-decoration: none;
 }
 
-.modal-content h3 {
+.modalContent h3 {
     margin-bottom: 20px;
     color: #ffffff;
     font-size: 20px;
@@ -66,19 +66,19 @@
     padding-bottom: 10px;
 }
 
-.modal-content > p {
+.modalContent > p {
     color: #cccccc;
     margin-bottom: 15px;
     font-size: 14px;
 }
 
-.relations-list {
+.relationsList {
     margin-top: 20px;
     max-height: 50vh;
     overflow-y: auto;
 }
 
-.relation-item {
+.relationItem {
     border: 1px solid #2a2a2a;
     border-radius: 8px;
     padding: 20px;
@@ -87,25 +87,25 @@
     transition: border-color 0.2s ease;
 }
 
-.relation-item:hover {
+.relationItem:hover {
     border-color: #6366f1;
 }
 
-.relation-item h4 {
+.relationItem h4 {
     margin: 0 0 12px 0;
     color: #6366f1;
     font-size: 16px;
     font-weight: 600;
 }
 
-.relation-item p {
+.relationItem p {
     margin: 8px 0;
     line-height: 1.6;
     color: #cccccc;
     font-size: 14px;
 }
 
-.relation-item p strong {
+.relationItem p strong {
     color: #ffffff;
     font-weight: 500;
 }

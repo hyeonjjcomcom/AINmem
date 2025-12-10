@@ -22,24 +22,24 @@ interface MemoryHeaderProps {
 }
 const MemoryHeader = ({ filteredMemories, handleRefresh, searchTerm, setSearchTerm }: MemoryHeaderProps) => {
     return (
-        <header className={styles['header']}>
-          <div className={styles['header-left']}>
-            <h1 className={styles['page-title']}>Memories</h1>
-            <p className={styles['page-subtitle']}>
+        <header className={styles.header}>
+          <div className={styles.headerLeft}>
+            <h1 className={styles.pageTitle}>Memories</h1>
+            <p className={styles.pageSubtitle}>
               Store and explore your personal knowledge • {filteredMemories.length} memories
             </p>
           </div>
-          <div className={styles['header-right']}>
+          <div className={styles.headerRight}>
             <input
               type="text"
-              className={styles['search-box']}
+              className={styles.searchBox}
               placeholder="Search memories..."
               id="searchInput"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
-            <button 
-              className={`${styles['btn']} ${styles['btn-primary']}`}
+            <button
+              className={`${styles.btn} ${styles.btnPrimary}`}
               onClick={handleRefresh}
             >
               <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">

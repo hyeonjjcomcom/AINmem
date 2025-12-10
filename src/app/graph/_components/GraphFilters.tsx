@@ -18,12 +18,12 @@ const GraphFilters: React.FC<GraphFiltersProps> = ({
   onToggleLabels,
 }) => {
   return (
-    <div className={styles['filters-wrapper']}>
+    <div className={styles.filtersWrapper}>
       <div className={styles.filters}>
         {filterTags.map((tag) => (
           <div
             key={tag.id}
-            className={`${styles['filter-tag']} ${currentFilter === tag.id ? styles['active'] : ''}`}
+            className={`${styles.filterTag} ${currentFilter === tag.id ? styles.active : ''}`}
             onClick={() => onFilterChange(tag.id)}
           >
             {tag.label}
@@ -31,24 +31,24 @@ const GraphFilters: React.FC<GraphFiltersProps> = ({
         ))}
       </div>
       <div className={styles.legend}>
-        <div className={styles['legend-item']}>
-          <div className={`${styles['legend-circle']} ${styles.constant}`}></div>
+        <div className={styles.legendItem}>
+          <div className={`${styles.legendCircle} ${styles.constant}`}></div>
           <span>Constants</span>
         </div>
-        <div className={styles['legend-item']}>
-          <div className={`${styles['legend-circle']} ${styles.predicate}`}></div>
+        <div className={styles.legendItem}>
+          <div className={`${styles.legendCircle} ${styles.predicate}`}></div>
           <span>Predicates</span>
         </div>
-        <div className={styles['legend-divider']}></div>
-        <div className={styles['toggle-container']}>
-          <span className={styles['toggle-label']}>Labels</span>
+        <div className={styles.legendDivider}></div>
+        <div className={styles.toggleContainer}>
+          <span className={styles.toggleLabel}>Labels</span>
           <button
-            className={`${styles['toggle-switch']} ${showLabels ? styles.active : ''}`}
+            className={`${styles.toggleSwitch} ${showLabels ? styles.active : ''}`}
             onClick={onToggleLabels}
             role="switch"
             aria-checked={showLabels}
           >
-            <span className={styles['toggle-slider']}></span>
+            <span className={styles.toggleSlider}></span>
           </button>
         </div>
       </div>

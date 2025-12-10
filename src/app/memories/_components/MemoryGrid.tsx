@@ -12,7 +12,7 @@ const MemoryGrid: React.FC<MemoryGridProps> = ({ memories, onMemoryClick }) => {
   if (memories.length === 0) return null;
 
   return (
-    <div className={styles['memories-grid']}>
+    <div className={styles.memoriesGrid}>
       {memories.map((memory) => (
         <MemoryCard
           key={memory.id}

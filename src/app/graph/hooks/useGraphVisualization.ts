@@ -83,7 +83,7 @@ export const useGraphVisualization = ({
       .selectAll("text")
       .data(graphData.links)
       .enter().append("text")
-      .attr("class", styles["link-label"])
+      .attr("class", styles.linkLabel)
       .text((d: LinkData) => d.count > 1 ? `${d.count} relations` : d.predicates[0])
       .style("opacity", showLabels ? 1 : 0)
       .style("cursor", "pointer")

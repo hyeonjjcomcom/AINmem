@@ -7,23 +7,23 @@
     gap: 20px;
 }
 
-.header-left {
+.headerLeft {
     flex: 1;
 }
 
-.page-title {
+.pageTitle {
     font-size: 28px;
     font-weight: 600;
     margin-bottom: 8px;
     color: #ffffff;
 }
 
-.page-subtitle {
+.pageSubtitle {
     color: #888;
     font-size: 14px;
 }
 
-.header-right {
+.headerRight {
     display: flex;
     gap: 12px;
     align-items: center;
@@ -42,22 +42,22 @@
     font-family: inherit;
 }
 
-.btn-primary {
+.btnPrimary {
     background: #6366f1;
     color: white;
 }
 
-.btn-primary:hover {
+.btnPrimary:hover {
     background: #5855eb;
 }
 
-.btn-secondary {
+.btnSecondary {
     background: #1a1a1a;
     color: #ffffff;
     border: 1px solid #2a2a2a;
 }
 
-.btn-secondary:hover {
+.btnSecondary:hover {
     background: #2a2a2a;
     border-color: #6366f1;
 }
@@ -71,11 +71,11 @@
         gap: 15px;
     }
 
-    .header-right {
+    .headerRight {
         justify-content: center;
     }
 
-    .page-title {
+    .pageTitle {
         font-size: 24px;
         text-align: center;
     }

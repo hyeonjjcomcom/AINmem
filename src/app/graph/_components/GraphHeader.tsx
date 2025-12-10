@@ -18,15 +18,15 @@ const GraphHeader: React.FC<GraphHeaderProps> = ({
 }) => {
   return (
     <header className={styles.header}>
-      <div className={styles['header-left']}>
-        <h1 className={styles['page-title']}>Knowledge Graph</h1>
-        <p className={styles['page-subtitle']}>
+      <div className={styles.headerLeft}>
+        <h1 className={styles.pageTitle}>Knowledge Graph</h1>
+        <p className={styles.pageSubtitle}>
           Navigate your knowledge graph and discover meaningful patterns
         </p>
       </div>
-      <div className={styles['header-right']}>
+      <div className={styles.headerRight}>
         <button
-          className={`${styles.btn} ${styles['btn-secondary']}`}
+          className={`${styles.btn} ${styles.btnSecondary}`}
           onClick={onRestart}
           disabled={isBuilding}
         >
@@ -34,7 +34,7 @@ const GraphHeader: React.FC<GraphHeaderProps> = ({
           Restart
         </button>
         <button
-          className={`${styles.btn} ${styles['btn-secondary']}`}
+          className={`${styles.btn} ${styles.btnSecondary}`}
           onClick={onBuild}
           disabled={isBuilding}
         >
@@ -42,7 +42,7 @@ const GraphHeader: React.FC<GraphHeaderProps> = ({
           Build
         </button>
         <button
-          className={`${styles.btn} ${styles['btn-secondary']}`}
+          className={`${styles.btn} ${styles.btnSecondary}`}
           onClick={onFullBuild}
           disabled={isBuilding}
         >
@@ -50,7 +50,7 @@ const GraphHeader: React.FC<GraphHeaderProps> = ({
           Full Build
         </button>
         <button
-          className={`${styles.btn} ${styles['btn-primary']}`}
+          className={`${styles.btn} ${styles.btnPrimary}`}
           onClick={onCenter}
         >
           <span>⊙</span> Center

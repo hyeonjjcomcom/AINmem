@@ -13,7 +13,7 @@ export default function AuthOverlay() {
   };
 
   return (
-    <div className={styles['auth-overlay']}>
+    <div className={styles.authOverlay}>
       <LoginModal
         isOpen={true}
         onClose={handleLoginModalClose}

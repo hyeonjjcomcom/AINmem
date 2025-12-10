@@ -1,5 +1,5 @@
 /* Page Layout */
-.main-content {
+.mainContent {
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -7,7 +7,7 @@
     position: relative;
 }
 
-.graph-wrapper {
+.graphWrapper {
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -21,7 +21,7 @@
     overflow: hidden;
 }
 
-.graph-container {
+.graphContainer {
     flex: 1;
     position: relative;
     overflow: hidden;
@@ -80,7 +80,7 @@
     cursor: pointer;
 }
 
-.link.dynamic-width {
+.link.dynamicWidth {
     stroke-width: var(--dynamic-stroke-width) !important;
 }
 
@@ -95,7 +95,7 @@
     opacity: 1;
 }
 
-.link-label {
+.linkLabel {
     fill: #E0C0FF;
     text-align: center;
     font-size: 12px;
@@ -107,7 +107,7 @@
     transition: fill 0.2s ease;
 }
 
-.link-label:hover {
+.linkLabel:hover {
     fill: #ffffff;
 }
 
@@ -126,13 +126,13 @@
     line-height: 1.4;
 }
 
-.tooltip-title {
+.tooltipTitle {
     font-weight: 600;
     margin-bottom: 4px;
     color: #6366f1;
 }
 
-.tooltip-type {
+.tooltipType {
     color: #888;
     font-size: 11px;
     text-transform: uppercase;
@@ -140,11 +140,11 @@
 
 /* Mobile Responsive */
 @media (max-width: 768px) {
-    .main-content {
+    .mainContent {
         width: 100%;
     }
 
-    .graph-wrapper {
+    .graphWrapper {
         margin: 10px;
     }
 }

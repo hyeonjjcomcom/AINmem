@@ -48,16 +48,16 @@ const ConstantModal = ({
   if (!isOpen) return null;
 
   return (
-    <div 
+    <div
       ref={modalRef}
-      id="constant-modal" 
-      className={styles['modal']}
+      id="constant-modal"
+      className={styles.modal}
       style={{ display: 'block' }}
       onClick={handleBackdropClick}
     >
-      <div className={styles['modal-content']}>
-        <span 
-          className={styles['close']} 
+      <div className={styles.modalContent}>
+        <span
+          className={styles.close}
           onClick={onClose}
           role="button"
           tabIndex={0}

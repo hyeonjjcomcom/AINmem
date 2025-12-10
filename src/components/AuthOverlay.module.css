@@ -1,12 +1,12 @@
 /*auth-overlay*/
 /* [필수] main-content는 이전과 동일하게 position: relative가 필요합니다. */
-.main-content {
+.mainContent {
   /* ... 기존 스타일 ... */
   position: relative;
 }
 
 /* [추가] 전체를 덮는 어둡고 흐릿한 오버레이 */
-.auth-overlay {
+.authOverlay {
   position: absolute;
   top: 0;
   left: 0;
@@ -28,7 +28,7 @@
 }
 
 /* [추가] 오버레이 위의 어두운 로그인 안내창 */
-.auth-prompt {
+.authPrompt {
   background-color: #2c2c2e; /* 다크 모드 카드 배경색 (진한 차콜) */
   color: #f0f0f0; /* 기본 텍스트 색상 (밝은 회색) */
   padding: 2rem 3rem;
@@ -39,14 +39,14 @@
   max-width: 400px;
 }
 
-.auth-prompt h3 {
+.authPrompt h3 {
   margin-top: 0;
   margin-bottom: 0.5rem;
   font-size: 1.5rem;
   color: #ffffff; /* 제목 텍스트 (흰색) */
 }
 
-.auth-prompt p {
+.authPrompt p {
   margin-bottom: 1.5rem;
   color: #b0b0b0; /* 부가 설명 텍스트 (연한 회색) */
   font-size: 1rem;
@@ -54,7 +54,7 @@
 
 
 /* [추가] 로그인 버튼 스타일 (파란색은 다크 모드에서도 잘 어울립니다) */
-.auth-button {
+.authButton {
   background-color: #6366f1; /* 메인 액션 색상 (사이드바와 동일) */
   color: white;
   border: none;
@@ -66,7 +66,7 @@
   transition: background-color 0.2s ease, opacity 0.2s ease;
 }
 
-.auth-button:hover {
+.authButton:hover {
   background-color: #5855eb; /* 호버 시 더 어두운 파랑 */
   opacity: 0.9;
 }

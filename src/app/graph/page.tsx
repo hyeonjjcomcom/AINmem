@@ -132,10 +132,10 @@ export default function GraphPage() {
   return (
     <>
       <Sidebar />
-      <main className={styles['main-content']}>
+      <main className={styles.mainContent}>
         {isHydrated && !isLoggedIn && <AuthOverlay />}
 
-        <div className={styles['graph-wrapper']}>
+        <div className={styles.graphWrapper}>
           <GraphHeader
             onRestart={handleRestart}
             onBuild={handleBuild}
@@ -153,7 +153,7 @@ export default function GraphPage() {
               onToggleLabels={handleToggleLabels}
             />
 
-            <div className={styles['graph-container']}>
+            <div className={styles.graphContainer}>
               <svg
                 ref={svgRef}
                 id="graph"

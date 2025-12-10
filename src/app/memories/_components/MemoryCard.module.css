@@ -1,4 +1,4 @@
-.memory-card {
+.memoryCard {
     background: #111111;
     border: 1px solid #2a2a2a;
     border-radius: 12px;
@@ -10,32 +10,32 @@
     height: 100%;
 }
 
-.memory-card:hover {
+.memoryCard:hover {
     border-color: #6366f1;
     transform: translateY(-2px);
 }
 
-.memory-header {
+.memoryHeader {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
     margin-bottom: 12px;
 }
 
-.memory-title {
+.memoryTitle {
     font-size: 16px;
     font-weight: 600;
     color: #ffffff;
     line-height: 1.4;
 }
 
-.memory-date {
+.memoryDate {
     font-size: 12px;
     color: #888;
     white-space: nowrap;
 }
 
-.memory-content {
+.memoryContent {
     color: #ccc;
     font-size: 14px;
     line-height: 1.5;
@@ -52,7 +52,7 @@
     overflow: hidden;
 }
 
-.memory-tags {
+.memoryTags {
     display: flex;
     gap: 8px;
     flex-wrap: nowrap;

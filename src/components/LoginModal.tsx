@@ -132,12 +132,12 @@ const LoginModal = ({ isOpen, onClose, showCloseButton = true }: LoginModalProps
   if (!isOpen) return null;
 
   return (
-    <div className={styles["modal-overlay"]}> 
-      <div className={styles["modal-container"]}>
-        <div className={styles["modal-content"]}>
+    <div className={styles.modalOverlay}> 
+      <div className={styles.modalContainer}>
+        <div className={styles.modalContent}>
           {/* Close Button */}
           {showCloseButton && (
-            <button className={styles["close-button"]} onClick={() => onClose(false)}>
+            <button className={styles.closeButton} onClick={() => onClose(false)}>
               <svg
                 aria-label="Close"
                 fill="currentColor"
@@ -150,40 +150,40 @@ const LoginModal = ({ isOpen, onClose, showCloseButton = true }: LoginModalProps
             </button>
           )}
 
-          <div className={styles["modal-body"]}>
+          <div className={styles.modalBody}>
             {/* Logo Section */}
-            <div className={styles["logo-section"]}>
-              <div className={styles["logo-container"]}>
+            <div className={styles.logoSection}>
+              <div className={styles.logoContainer}>
                 <video
                   src="/Ainmem_V0.mp4"
                   autoPlay
                   loop
                   muted
                   playsInline
-                  className={styles["logo-video"]}
+                  className={styles.logoVideo}
                 />
               </div>
             </div>
 
             {/* Title */}
-            <h4 className={styles["modal-title"]}>Manage Your Data with AINmem</h4>
-            <p className={styles["modal-subtitle"]}>Log in to build and explore your Ontology</p>
+            <h4 className={styles.modalTitle}>Manage Your Data with AINmem</h4>
+            <p className={styles.modalSubtitle}>Log in to build and explore your Ontology</p>
 
             {/* Wallet Options */}
-            <div className={styles["wallet-options"]}>
-              <ul className={styles["wallet-list"]}>
+            <div className={styles.walletOptions}>
+              <ul className={styles.walletList}>
                 {walletOptions.map((wallet, index) => (
                   <li key={index}>
-                    <button className={styles["wallet-button"]} onClick={wallet.onclick}>
+                    <button className={styles.walletButton} onClick={wallet.onclick}>
                       <img
                         src={wallet.icon}
                         alt={wallet.name}
-                        className={styles["wallet-icon"]}
+                        className={styles.walletIcon}
                         width="24"
                         height="24"
                       />
-                      <div className={styles["wallet-content"]}>
-                        <span className={styles["wallet-title"]}>{wallet.name}</span>
+                      <div className={styles.walletContent}>
+                        <span className={styles.walletTitle}>{wallet.name}</span>
                       </div>
                     </button>
                   </li>
@@ -191,12 +191,12 @@ const LoginModal = ({ isOpen, onClose, showCloseButton = true }: LoginModalProps
               </ul>
 
               {/* Terms Text */}
-              <p className={styles["terms-text"]}>
+              <p className={styles.termsText}>
                 By connecting your wallet and using AINMem, you agree to our{' '}
-                <a href="/terms" target="_blank" rel="noopener noreferrer" className={styles["terms-link"]}>
+                <a href="/terms" target="_blank" rel="noopener noreferrer" className={styles.termsLink}>
                   Terms of Service
                   <svg
-                    className={styles["external-link-icon"]}
+                    className={styles.externalLinkIcon}
                     width="12"
                     height="12"
                     viewBox="0 0 24 24"
@@ -208,10 +208,10 @@ const LoginModal = ({ isOpen, onClose, showCloseButton = true }: LoginModalProps
                   </svg>
                 </a>{' '}
                 and{' '}
-                <a href="/privacy" target="_blank" rel="noopener noreferrer" className={styles["terms-link"]}>
+                <a href="/privacy" target="_blank" rel="noopener noreferrer" className={styles.termsLink}>
                   Privacy Policy
                   <svg
-                    className={styles["external-link-icon"]}
+                    className={styles.externalLinkIcon}
                     width="12"
                     height="12"
                     viewBox="0 0 24 24"

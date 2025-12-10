@@ -16,21 +16,21 @@ const MemoryCard: React.FC<MemoryCardProps> = ({ memory, onClick }) => {
 
   return (
     <div
-      className={styles['memory-card']}
+      className={styles.memoryCard}
       onClick={() => onClick(memory)}
     >
-      <div className={styles['memory-header']}>
-        <h3 className={styles['memory-title']}>{displayTitle}</h3>
-        <span className={styles['memory-date']}>
+      <div className={styles.memoryHeader}>
+        <h3 className={styles.memoryTitle}>{displayTitle}</h3>
+        <span className={styles.memoryDate}>
           {formatDate(new Date(dateValue))}
         </span>
       </div>
-      <p className={styles['memory-content']}>
+      <p className={styles.memoryContent}>
         {truncateText(displayText, 150)}
       </p>
       <MemoryTagList
         tags={memory.tags || []}
-        className={styles['memory-tags']}
+        className={styles.memoryTags}
       />
     </div>
   );

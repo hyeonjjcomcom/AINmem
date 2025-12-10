@@ -16,7 +16,7 @@ interface SvgIconProps {
 }
 
 const SvgIcon = ({ path }: SvgIconProps) => (
-  <svg className={styles['nav-icon']} fill="currentColor" viewBox="0 -960 960 960">
+  <svg className={styles.navIcon} fill="currentColor" viewBox="0 -960 960 960">
     <path d={path} />
   </svg>
 );
@@ -136,11 +136,11 @@ const Sidebar = () => {
         AIN Mem
       </div>
       
-      <nav className={styles['nav-menu']}>
+      <nav className={styles.navMenu}>
         {navItems.map((item) => (
           <div
             key={item.id}
-            className={`${styles['nav-item']} ${pathname === item.path ? styles.active : ''}`}
+            className={`${styles.navItem} ${pathname === item.path ? styles.active : ''}`}
             onClick={() => handleNavigation(item.path)}
           >
             <SvgIcon path={item.iconPath} />
@@ -150,15 +150,15 @@ const Sidebar = () => {
       </nav>
 
       {!isHydrated || isLoggedIn ? (
-        <div className={styles['user-section']} id="logged-in-section">
+        <div className={styles.userSection} id="logged-in-section">
           <div
-            className={styles['user-avatar']}
+            className={styles.userAvatar}
             id="profile-avatar"
             onClick={toggleDropdown}
           >
             U
           </div>
-          <div className={styles['user-info']} onClick={toggleDropdown}>
+          <div className={styles.userInfo} onClick={toggleDropdown}>
             <div style={{ fontSize: '14px', fontWeight: '500' }}>{isHydrated ? formatUserName(userName) : 'Loading...'}</div>
             <div style={{ fontSize: '12px', color: '#888' }}>Free Plan</div>
           </div>
@@ -174,9 +174,9 @@ const Sidebar = () => {
           )}
         </div>
       ) : (
-        <div className={styles['user-section']} id="login-section">
-          <div className={styles['user-avatar']} id="default-profile-avatar" onClick={handleLoginModal}>?</div>
-          <div className={styles['user-info']} onClick={handleLoginModal}>
+        <div className={styles.userSection} id="login-section">
+          <div className={styles.userAvatar} id="default-profile-avatar" onClick={handleLoginModal}>?</div>
+          <div className={styles.userInfo} onClick={handleLoginModal}>
             <div style={{ fontSize: '14px', fontWeight: '500' }}>Hello</div>
             <div style={{ fontSize: '12px', color: '#888' }}>
               Please Login

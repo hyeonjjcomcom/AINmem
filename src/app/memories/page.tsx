@@ -70,7 +70,7 @@ const MemoriesPage = () => {
   return (
     <>
       <Sidebar />
-      <main className={styles['main-content']}>
+      <main className={styles.mainContent}>
         {isHydrated && !isLoggedIn && <AuthOverlay />}
 
         <MemoryHeader

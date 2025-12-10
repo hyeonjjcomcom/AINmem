@@ -8,12 +8,12 @@ interface GraphStatsProps {
 
 const GraphStats: React.FC<GraphStatsProps> = ({ nodeCount, linkCount }) => {
   return (
-    <div className={styles['graph-stats']}>
-      <div className={styles['stat-item']}>
-        <span>Nodes:</span> <span className={styles['stat-value']}>{nodeCount}</span>
+    <div className={styles.graphStats}>
+      <div className={styles.statItem}>
+        <span>Nodes:</span> <span className={styles.statValue}>{nodeCount}</span>
       </div>
-      <div className={styles['stat-item']}>
-        <span>Links:</span> <span className={styles['stat-value']}>{linkCount}</span>
+      <div className={styles.statItem}>
+        <span>Links:</span> <span className={styles.statValue}>{linkCount}</span>
       </div>
     </div>
   );

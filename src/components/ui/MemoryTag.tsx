@@ -11,10 +11,10 @@ interface MemoryTagProps {
 
 export const MemoryTag: React.FC<MemoryTagProps> = ({ tag, variant = 'default', onClick }) => {
   const className = variant === 'filter'
-    ? styles['memory-tag-filter']
+    ? styles.memoryTagFilter
     : variant === 'more'
-    ? styles['memory-tag-more']
-    : styles['memory-tag'];
+    ? styles.memoryTagMore
+    : styles.memoryTag;
 
   return (
     <span className={className} onClick={onClick}>
@@ -55,7 +55,7 @@ export const MemoryTagList: React.FC<MemoryTagListProps> = ({ tags, className })
       for (let i = 0; i < tags.length; i++) {
         // Create temporary tag element with actual CSS class
         const tempTag = document.createElement('span');
-        tempTag.className = styles['memory-tag'];
+        tempTag.className = styles.memoryTag;
         tempTag.textContent = tags[i];
         tempContainer.appendChild(tempTag);
 

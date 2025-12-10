@@ -1,16 +1,16 @@
-.empty-state {
+.emptyState {
     text-align: center;
     padding: 60px 20px;
     color: #888;
 }
 
-.empty-icon {
+.emptyIcon {
     width: 64px;
     height: 64px;
     margin: 0 auto 20px;
     opacity: 0.3;
 }
 
-.loading-spinner {
+.loadingSpinner {
     color: #888;
 }

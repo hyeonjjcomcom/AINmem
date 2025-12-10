@@ -18,7 +18,7 @@ const MemoryFilters: React.FC<MemoryFiltersProps> = ({
       {filterTags.map((tag) => (
         <div
           key={tag.id}
-          className={`${styles['filter-tag']} ${currentFilter === tag.id ? styles['active'] : ''}`}
+          className={`${styles.filterTag} ${currentFilter === tag.id ? styles.active : ''}`}
           onClick={() => onFilterChange(tag.id)}
         >
           {tag.label}
