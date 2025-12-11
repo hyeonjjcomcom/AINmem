@@ -71,9 +71,16 @@ export const useGraphVisualization = ({
     const maxLinkCount = Math.max(...graphData.links.map(l => l.count), 1);
     const minLinkCount = Math.min(...graphData.links.map(l => l.count), 1);
 
+    console.log('Link count range:', { minLinkCount, maxLinkCount });
+    console.log('Sample links with counts:', graphData.links.slice(0, 5).map(l => ({
+      source: typeof l.source === 'string' ? l.source : l.source.id,
+      target: typeof l.target === 'string' ? l.target : l.target.id,
+      count: l.count
+    })));
+
     const linkWidthScale = d3.scaleLinear()
       .domain([minLinkCount, maxLinkCount])
-      .range([3, 8]); // 최소 3px, 최대 8px
+      .range([3, 12]); // 최소 3px, 최대 12px
 
     // Links - 실제 보이는 선
     const link = g.append("g")
@@ -81,7 +88,10 @@ export const useGraphVisualization = ({
       .data(graphData.links)
       .enter().append("line")
       .attr("class", styles.link)
-      .attr("stroke-width", (d: LinkData) => linkWidthScale(d.count))
+      .style("stroke-width", (d: LinkData) => {
+        const width = linkWidthScale(d.count);
+        return `${width}px`;
+      })
       .style("pointer-events", "none");
 
     // Links - 투명한 클릭 영역 (두꺼운 선)
