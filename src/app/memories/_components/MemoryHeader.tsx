@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styles from './MemoryHeader.module.css';
 
 interface Memory {
@@ -17,31 +17,29 @@ interface Memory {
 interface MemoryHeaderProps {
     filteredMemories: Memory[];
     handleRefresh: () => void;
+    searchTerm: string;
+    setSearchTerm: (value: string) => void;
 }
-const MemoryHeader = ({ filteredMemories, handleRefresh }: MemoryHeaderProps) => {
-    const [searchTerm, setSearchTerm] = useState<string>('');
-    const dbName = "sample_db";
-    const collectionName = "memories_collection";
-
+const MemoryHeader = ({ filteredMemories, handleRefresh, searchTerm, setSearchTerm }: MemoryHeaderProps) => {
     return (
-        <header className={styles['header']}>
-          <div className={styles['header-left']}>
-            <h1 className={styles['page-title']}>Memories</h1>
-            <p className={styles['page-subtitle']}>
-              Database: {dbName} / Collection: {collectionName} • {filteredMemories.length} memories
+        <header className={styles.header}>
+          <div className={styles.headerLeft}>
+            <h1 className={styles.pageTitle}>Memories</h1>
+            <p className={styles.pageSubtitle}>
+              Store and explore your personal knowledge • {filteredMemories.length} memories
             </p>
           </div>
-          <div className={styles['header-right']}>
+          <div className={styles.headerRight}>
             <input
               type="text"
-              className={styles['search-box']}
+              className={styles.searchBox}
               placeholder="Search memories..."
               id="searchInput"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
-            <button 
-              className={`${styles['btn']} ${styles['btn-primary']}`}
+            <button
+              className={`${styles.btn} ${styles.btnPrimary}`}
               onClick={handleRefresh}
             >
               <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">

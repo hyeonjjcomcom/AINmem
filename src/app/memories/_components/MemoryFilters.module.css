@@ -1,0 +1,25 @@
+.filters {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+}
+
+.filterTag {
+    padding: 6px 12px;
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    border-radius: 20px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.filterTag:hover {
+    border-color: #6366f1;
+}
+
+.filterTag.active {
+    background: #6366f1;
+    border-color: #6366f1;
+}

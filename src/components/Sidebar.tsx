@@ -6,15 +6,17 @@ import { useRouter, usePathname } from 'next/navigation';
 
 import UserDropdown from '@/components/UserDropdown';
 import LoginModal from '@/components/LoginModal';
+import ConfirmModal from '@/components/ConfirmModal';
 
 import { useAuth } from '@/contexts/AuthContext';
+import { getRandomLogoutMessage } from '@/constants/messages';
 
 interface SvgIconProps {
   path: string;
 }
 
 const SvgIcon = ({ path }: SvgIconProps) => (
-  <svg className={styles['nav-icon']} fill="currentColor" viewBox="0 0 24 24">
+  <svg className={styles.navIcon} fill="currentColor" viewBox="0 -960 960 960">
     <path d={path} />
   </svg>
 );
@@ -27,16 +29,16 @@ const navItems = [
     iconPath: 'M2.01 21L23 12 2.01 3 2 10l15 2-15 2z',
     path: '/requests' 
   },*/
-  { 
-    id: 'memories', 
-    label: 'Memories', 
-    iconPath: 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z',
-    path: '/memories' 
+  {
+    id: 'memories',
+    label: 'Memories',
+    iconPath: 'M309-389q29 29 71 29t71-29l160-160q29-29 29-71t-29-71q-29-29-71-29t-71 29q-37-13-73-6t-61 32q-25 25-32 61t6 73q-29 29-29 71t29 71ZM240-80v-172q-57-52-88.5-121.5T120-520q0-150 105-255t255-105q125 0 221.5 73.5T827-615l52 205q5 19-7 34.5T840-360h-80v120q0 33-23.5 56.5T680-160h-80v80h-80v-160h160v-200h108l-38-155q-23-91-98-148t-172-57q-116 0-198 81t-82 197q0 60 24.5 114t69.5 96l26 24v208h-80Zm254-360Z',
+    path: '/memories'
   },
   {
     id: 'graph',
     label: 'Graph',
-    iconPath: 'M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z',
+    iconPath: 'M480-80q-50 0-85-35t-35-85q0-5 .5-11t1.5-11l-83-47q-16 14-36 21.5t-43 7.5q-50 0-85-35t-35-85q0-50 35-85t85-35q24 0 45 9t38 25l119-60q-3-23 2.5-45t19.5-41l-34-52q-7 2-14.5 3t-15.5 1q-50 0-85-35t-35-85q0-50 35-85t85-35q50 0 85 35t35 85q0 20-6.5 38.5T456-688l35 52q8-2 15-3t15-1q17 0 32 4t29 12l66-54q-4-10-6-20.5t-2-21.5q0-50 35-85t85-35q50 0 85 35t35 85q0 50-35 85t-85 35q-17 0-32-4.5T699-617l-66 55q4 10 6 20.5t2 21.5q0 50-35 85t-85 35q-24 0-45.5-9T437-434l-118 59q2 9 1.5 18t-2.5 18l84 48q16-14 35.5-21.5T480-320q50 0 85 35t35 85q0 50-35 85t-85 35ZM200-320q17 0 28.5-11.5T240-360q0-17-11.5-28.5T200-400q-17 0-28.5 11.5T160-360q0 17 11.5 28.5T200-320Zm160-400q17 0 28.5-11.5T400-760q0-17-11.5-28.5T360-800q-17 0-28.5 11.5T320-760q0 17 11.5 28.5T360-720Zm120 560q17 0 28.5-11.5T520-200q0-17-11.5-28.5T480-240q-17 0-28.5 11.5T440-200q0 17 11.5 28.5T480-160Zm40-320q17 0 28.5-11.5T560-520q0-17-11.5-28.5T520-560q-17 0-28.5 11.5T480-520q0 17 11.5 28.5T520-480Zm240-200q17 0 28.5-11.5T800-720q0-17-11.5-28.5T760-760q-17 0-28.5 11.5T720-720q0 17 11.5 28.5T760-680Z',
     path: '/graph'
   },
   /* hide analytics page from sidebar - page still accessible via direct URL
@@ -63,6 +65,8 @@ const Sidebar = () => {
   const { isLoggedIn, updateLoginState, userName, setAuthUser, isHydrated } = useAuth();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false); // 드롭다운 상태 추가
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [isLogoutConfirmOpen, setIsLogoutConfirmOpen] = useState(false);
+  const [logoutMessage, setLogoutMessage] = useState({ title: 'Logout', message: 'Are you sure you want to logout?' });
   const [isClient, setIsClient] = useState(false);
 
   const handleNavigation = (path: string) => {
@@ -82,8 +86,15 @@ const Sidebar = () => {
   };
 
   const handleLogout = () => {
+    const randomMessage = getRandomLogoutMessage();
+    setLogoutMessage(randomMessage);
+    setIsLogoutConfirmOpen(true);
+  };
+
+  const confirmLogout = () => {
     updateLoginState(false);
     setAuthUser(null);
+    setIsLogoutConfirmOpen(false);
     console.log('User logged out');
   };
 
@@ -125,11 +136,11 @@ const Sidebar = () => {
         AIN Mem
       </div>
       
-      <nav className={styles['nav-menu']}>
+      <nav className={styles.navMenu}>
         {navItems.map((item) => (
           <div
             key={item.id}
-            className={`${styles['nav-item']} ${pathname === item.path ? styles.active : ''}`}
+            className={`${styles.navItem} ${pathname === item.path ? styles.active : ''}`}
             onClick={() => handleNavigation(item.path)}
           >
             <SvgIcon path={item.iconPath} />
@@ -139,15 +150,15 @@ const Sidebar = () => {
       </nav>
 
       {!isHydrated || isLoggedIn ? (
-        <div className={styles['user-section']} id="logged-in-section">
+        <div className={styles.userSection} id="logged-in-section">
           <div
-            className={styles['user-avatar']}
+            className={styles.userAvatar}
             id="profile-avatar"
             onClick={toggleDropdown}
           >
             U
           </div>
-          <div className={styles['user-info']} onClick={toggleDropdown}>
+          <div className={styles.userInfo} onClick={toggleDropdown}>
             <div style={{ fontSize: '14px', fontWeight: '500' }}>{isHydrated ? formatUserName(userName) : 'Loading...'}</div>
             <div style={{ fontSize: '12px', color: '#888' }}>Free Plan</div>
           </div>
@@ -163,9 +174,9 @@ const Sidebar = () => {
           )}
         </div>
       ) : (
-        <div className={styles['user-section']} id="login-section">
-          <div className={styles['user-avatar']} id="default-profile-avatar" onClick={handleLoginModal}>?</div>
-          <div className={styles['user-info']} onClick={handleLoginModal}>
+        <div className={styles.userSection} id="login-section">
+          <div className={styles.userAvatar} id="default-profile-avatar" onClick={handleLoginModal}>?</div>
+          <div className={styles.userInfo} onClick={handleLoginModal}>
             <div style={{ fontSize: '14px', fontWeight: '500' }}>Hello</div>
             <div style={{ fontSize: '12px', color: '#888' }}>
               Please Login
@@ -174,11 +185,22 @@ const Sidebar = () => {
         </div>
       )}
       {isLoginModalOpen && (
-        <LoginModal 
-          isOpen={isLoginModalOpen} 
+        <LoginModal
+          isOpen={isLoginModalOpen}
           onClose={handleLoginModalClose} // 이제 loginSuccess 매개변수를 받음
         />
       )}
+
+      <ConfirmModal
+        isOpen={isLogoutConfirmOpen}
+        title={logoutMessage.title}
+        message={logoutMessage.message}
+        confirmText="Logout"
+        cancelText="Cancel"
+        onConfirm={confirmLogout}
+        onCancel={() => setIsLogoutConfirmOpen(false)}
+        danger={true}
+      />
     </aside>
   );
 };

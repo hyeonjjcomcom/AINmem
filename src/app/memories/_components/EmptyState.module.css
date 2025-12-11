@@ -1,0 +1,16 @@
+.emptyState {
+    text-align: center;
+    padding: 60px 20px;
+    color: #888;
+}
+
+.emptyIcon {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 20px;
+    opacity: 0.3;
+}
+
+.loadingSpinner {
+    color: #888;
+}

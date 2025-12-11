@@ -75,13 +75,55 @@ src/
 │   │   ├── fol/build/          # FOL build endpoint
 │   │   └── users/[userId]/     # User-specific endpoints
 │   ├── graph/                  # Knowledge graph page
+│   │   ├── _components/        # Graph-specific UI components
+│   │   ├── hooks/              # Custom React hooks for graph logic
+│   │   ├── types/              # TypeScript type definitions
+│   │   ├── utils/              # Helper functions
+│   │   ├── constants/          # Configuration constants
+│   │   └── page.tsx            # Main graph page component
 │   ├── memories/               # Memories list page
+│   │   ├── _components/        # Memory-specific UI components
+│   │   ├── hooks/              # Custom React hooks for memory logic
+│   │   ├── types/              # TypeScript type definitions
+│   │   ├── utils/              # Helper functions
+│   │   ├── constants/          # Configuration constants
+│   │   └── page.tsx            # Main memories page component
 │   └── page.tsx                # Landing page
-├── components/                 # Reusable UI components
+├── components/                 # Shared UI components
 ├── contexts/                   # React contexts (Auth)
 ├── lib/                        # Utilities (MongoDB, FOL store)
 └── models/                     # Mongoose models
 ```
+
+### Page Architecture
+
+Both **Graph** and **Memories** pages follow a modular architecture:
+
+**Component Structure:**
+- `_components/` - Page-specific components with co-located CSS modules
+  - Each `.tsx` component has a matching `.module.css` in the same directory
+  - Example: `MemoryCard.tsx` imports `MemoryCard.module.css`
+
+**Business Logic:**
+- `hooks/` - Custom React hooks for separating concerns
+  - Data fetching and state management
+  - UI interactions and side effects
+  - Example: `useMemoriesData.ts`, `useGraphVisualization.ts`
+
+**Type Safety:**
+- `types/` - Centralized TypeScript interfaces
+  - Shared types across the page
+  - Example: `Memory`, `GraphData`, `FilterTag`
+
+**Utilities:**
+- `utils/` - Pure functions for data transformation
+  - No side effects or state dependencies
+  - Example: `formatDate()`, `truncateText()`, `filterValidConstants()`
+
+**Configuration:**
+- `constants/` - Static values and configurations
+  - D3.js settings, filter options, etc.
+  - Example: `D3_CONFIG`, `FILTER_TAGS`
 
 ## Core Concepts
 

@@ -3,7 +3,6 @@
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import { toast } from 'sonner';
 import './styles.css';
 
 /**
@@ -20,54 +19,48 @@ const Home = () => {
     router.push(path);
   };
 
-  // Pricing 버튼 클릭 핸들러
-  const handlePricingClick = () => {
-    toast.info('AINMem is currently free! Various pricing plans are coming soon.');
-  };
-
   return (
     <div className="landing">
 
       {/* 1. 네비게이션 바 */}
-      <header className="landing-navbar">
-        <div className="landing-logo">AINMem</div>
+      <header className="landingNavbar">
+        <div className="landingLogo">AINMem</div>
         <nav>
           {/* 섹션 앵커 링크 */}
-          <a href="#about" className="landing-nav-link">About</a>
-          <a href="#how-it-works" className="landing-nav-link">How It Works</a>
+          <a href="#about" className="landingNavLink">About</a>
+          <a href="#how-it-works" className="landingNavLink">How It Works</a>
           {/* 메인 CTA 버튼 */}
-          <button onClick={() => handleNavigation('/memories')} className="landing-cta primary-cta">Get Started</button>
+          <button onClick={() => handleNavigation('/memories')} className="landingCta primaryCta">Get Started</button>
         </nav>
       </header>
 
       {/* 2. 히어로 섹션 - 메인 메시지 및 CTA */}
-      <section id="hero" className="landing-section hero">
-        <div className="landing-content">
-          <h1 className="landing-title">Own Your Memory, Own Your Data</h1>
+      <section id="hero" className="landingSection hero">
+        <div className="landingContent">
+          <h1 className="landingTitle">Own Your Memory, Own Your Data</h1>
           {/*Give Your AI Agents Infinite Memory*/}
-          <p className="landing-subtitle">
+          <p className="landingSubtitle">
             Platform-independent memory solution that puts you in control
           </p>
           {/*The ultimate memory solution that enhances AI performance*/}
           {/* 주요 액션 버튼 */}
-          <div className="landing-ctas">
-            <button onClick={() => handleNavigation('/memories')} className="landing-cta primary-cta">Get Started</button>
-            <button onClick={handlePricingClick} className="landing-cta secondary-cta">View Pricing</button>
+          <div className="landingCtas">
+            <button onClick={() => handleNavigation('/memories')} className="landingCta primaryCta">Get Started</button>
           </div>
           {/* 제품 시연 영역 */}
-          <div className="landing-visual">
-            <img src="/AINMem.png" alt="AINMem Knowledge Graph Visualization" className="landing-hero-image" />
+          <div className="landingVisual">
+            <img src="/AINMem.png" alt="AINMem Knowledge Graph Visualization" className="landingHeroImage" />
           </div>
         </div>
       </section>
 
       {/* About 섹션 */}
-      <section id="about" className="landing-section">
-        <div className="landing-content-container">
-          <h2 className="landing-content-title">About AINMem</h2>
-          <p className="landing-content-subtitle">Platform-Independent Memory Solution That You Control</p>
+      <section id="about" className="landingSection">
+        <div className="landingContentContainer">
+          <h2 className="landingContentTitle">About AINMem</h2>
+          <p className="landingContentSubtitle">Platform-Independent Memory Solution That You Control</p>
 
-          <div className="landing-content-text">
+          <div className="landingContentText">
             <p>
               AINMem is an innovative knowledge graph platform that provides AI agents with permanent, structured memory while ensuring complete data sovereignty. By transforming conversation logs and user data into a First-Order Logic (FOL) based semantic structure, AI can go beyond simply storing conversations to understanding relationships and context, enabling true learning—all while keeping your data firmly under your control.
             </p>
@@ -88,44 +81,44 @@ const Home = () => {
       </section>
 
       {/* How It Works 섹션 */}
-      <section id="how-it-works" className="landing-section">
-        <div className="landing-content-container">
-          <h2 className="landing-content-title">How It Works</h2>
-          <p className="landing-content-subtitle">Get started with AINMem in 4 simple steps</p>
+      <section id="how-it-works" className="landingSection">
+        <div className="landingContentContainer">
+          <h2 className="landingContentTitle">How It Works</h2>
+          <p className="landingContentSubtitle">Get started with AINMem in 4 simple steps</p>
 
-          <div className="landing-steps">
+          <div className="landingSteps">
             {/* Step 1 */}
-            <div className="landing-step">
-              <div className="landing-step-number">1</div>
-              <h3 className="landing-step-title">Enable AINMem Extension</h3>
-              <p className="landing-step-description">
+            <div className="landingStep">
+              <div className="landingStepNumber">1</div>
+              <h3 className="landingStepTitle">Enable AINMem Extension</h3>
+              <p className="landingStepDescription">
                 Install the AIN wallet extension and enable AINMem in the settings panel. This grants permission for AINMem to access your wallet for secure authentication.
               </p>
             </div>
 
             {/* Step 2 */}
-            <div className="landing-step">
-              <div className="landing-step-number">2</div>
-              <h3 className="landing-step-title">Connect Your AIN Wallet</h3>
-              <p className="landing-step-description">
+            <div className="landingStep">
+              <div className="landingStepNumber">2</div>
+              <h3 className="landingStepTitle">Connect Your AIN Wallet</h3>
+              <p className="landingStepDescription">
                 Log in securely using your AINwallet. Your wallet address becomes your unique identity, ensuring complete data ownership and decentralized authentication.
               </p>
             </div>
 
             {/* Step 3 */}
-            <div className="landing-step">
-              <div className="landing-step-number">3</div>
-              <h3 className="landing-step-title">Configure & Converse</h3>
-              <p className="landing-step-description">
+            <div className="landingStep">
+              <div className="landingStepNumber">3</div>
+              <h3 className="landingStepTitle">Configure & Converse</h3>
+              <p className="landingStepDescription">
                 Set your preferred domain in the wallet extension settings. Then simply have conversations as usual—the extension automatically captures your inputs and stores them as memories. No manual entry needed.
               </p>
             </div>
 
             {/* Step 4 */}
-            <div className="landing-step">
-              <div className="landing-step-number">4</div>
-              <h3 className="landing-step-title">Build & Visualize Graph</h3>
-              <p className="landing-step-description">
+            <div className="landingStep">
+              <div className="landingStepNumber">4</div>
+              <h3 className="landingStepTitle">Build & Visualize Graph</h3>
+              <p className="landingStepDescription">
                 Our FOL-SDK automatically transforms your memories into structured Constants, Facts, and Predicates. Navigate your knowledge graph with an intuitive visualization to see connections and discover patterns.
               </p>
             </div>
@@ -133,12 +126,12 @@ const Home = () => {
         </div>
       </section>
 
-      <div className="landing-spacer"></div>
+      <div className="landingSpacer"></div>
 
-      <hr className="landing-divider"/>
+      <hr className="landingDivider"/>
 
       {/* 3. 푸터 */}
-      <footer className="landing-footer">
+      <footer className="landingFooter">
         <p>© 2025 AINMem. All rights reserved.</p>
       </footer>
     </div>

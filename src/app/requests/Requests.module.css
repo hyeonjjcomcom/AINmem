@@ -1,7 +1,7 @@
 /* CSS 변수 정의 */
 
 /* 6. 메인 컨테이너 */
-.main-container {
+.mainContainer {
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -23,19 +23,19 @@
     z-index: 50;
 }
 
-.header-left {
+.headerLeft {
     display: flex;
     align-items: center;
     gap: 24px;
 }
 
-.header-right {
+.headerRight {
     display: flex;
     align-items: center;
     gap: 16px;
 }
 
-.upgrade-section a {
+.upgradeSection a {
     background: var(--primary-color);
     color: white;
     padding: 8px 16px;
@@ -48,7 +48,7 @@
     align-items: center;
 }
 
-.upgrade-section a:hover {
+.upgradeSection a:hover {
     background: #5855eb;
     transform: translateY(-1px);
 }
@@ -60,7 +60,7 @@
     gap: 8px;
 }
 
-.org-selector, .project-selector {
+.orgSelector, .projectSelector {
     background: var(--surface-secondary);
     border: 1px solid var(--border-color);
     color: var(--text-primary);
@@ -75,12 +75,12 @@
     transition: all 0.2s ease;
 }
 
-.org-selector:hover, .project-selector:hover {
+.orgSelector:hover, .projectSelector:hover {
     background: var(--hover-color);
     border-color: var(--primary-color);
 }
 
-.dropdown-arrow {
+.dropdownArrow {
     width: 16px;
     height: 16px;
     opacity: 0.6;
@@ -92,7 +92,7 @@
     font-size: 14px;
 }
 
-.header-right a {
+.headerRight a {
     color: var(--text-secondary);
     text-decoration: none;
     font-size: 14px;
@@ -102,12 +102,12 @@
     transition: all 0.2s ease;
 }
 
-.header-right a:hover {
+.headerRight a:hover {
     color: var(--text-primary);
     background: var(--hover-color);
 }
 
-.notifications-btn {
+.notificationsBtn {
     background: var(--surface-secondary);
     border: 1px solid var(--border-color);
     color: var(--text-secondary);
@@ -117,19 +117,19 @@
     transition: all 0.2s ease;
 }
 
-.notifications-btn:hover {
+.notificationsBtn:hover {
     background: var(--hover-color);
     border-color: var(--primary-color);
     color: var(--text-primary);
 }
 
-.notifications-btn svg {
+.notificationsBtn svg {
     width: 20px;
     height: 20px;
 }
 
 /* 9. 사용자 아바타 */
-.user-avatar {
+.userAvatar {
     position: relative;
 }
 
@@ -140,7 +140,7 @@
     object-fit: cover;
 }
 
-.avatar-circle {
+.avatarCircle {
     width: 32px;
     height: 32px;
     border-radius: 50%;
@@ -155,24 +155,24 @@
     transition: transform 0.2s ease;
 }
 
-.avatar-circle:hover {
+.avatarCircle:hover {
     transform: scale(1.05);
 }
 
 /* 10. 메인 컨텐츠 */
-.main-content {
+.mainContent {
     flex: 1;
     overflow-y: auto;
     background: var(--background-color);
 }
 
-.page-header {
+.pageHeader {
     padding: 24px;
     border-bottom: 1px solid var(--border-color);
     background: var(--surface-color);
 }
 
-.page-title h3 {
+.pageTitle h3 {
     font-size: 28px;
     font-weight: 600;
     color: var(--text-primary);
@@ -180,32 +180,32 @@
 }
 
 /* 11. 대시보드 컨텐츠 */
-.dashboard-content {
+.dashboardContent {
     padding: 24px;
 }
 
-.content-header {
+.contentHeader {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
     margin-bottom: 32px;
 }
 
-.content-title h2 {
+.contentTitle h2 {
     font-size: 32px;
     font-weight: 600;
     color: var(--text-primary);
     margin: 0 0 8px 0;
 }
 
-.content-title p {
+.contentTitle p {
     color: var(--text-muted);
     font-size: 16px;
     margin: 0;
     line-height: 1.5;
 }
 
-.refresh-btn {
+.refreshBtn {
     background: var(--surface-secondary);
     border: 1px solid var(--border-color);
     color: var(--text-secondary);
@@ -218,27 +218,27 @@
     justify-content: center;
 }
 
-.refresh-btn:hover {
+.refreshBtn:hover {
     background: var(--hover-color);
     border-color: var(--primary-color);
     color: var(--text-primary);
     transform: rotate(45deg);
 }
 
-.refresh-btn svg {
+.refreshBtn svg {
     width: 20px;
     height: 20px;
 }
 
 /* 12. 통계 카드 */
-.stats-cards {
+.statsCards {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 24px;
     margin-bottom: 32px;
 }
 
-.stats-card {
+.statsCard {
     background: var(--surface-color);
     border: 1px solid var(--border-color);
     border-radius: var(--border-radius-lg);
@@ -247,19 +247,19 @@
     box-shadow: var(--shadow);
 }
 
-.stats-card:hover {
+.statsCard:hover {
     border-color: var(--primary-color);
     transform: translateY(-2px);
     box-shadow: var(--shadow-lg);
 }
 
-.stats-card-content {
+.statsCardContent {
     display: flex;
     flex-direction: column;
     gap: 12px;
 }
 
-.stats-icon {
+.statsIcon {
     width: 48px;
     height: 48px;
     background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
@@ -270,12 +270,12 @@
     color: white;
 }
 
-.stats-icon svg {
+.statsIcon svg {
     width: 24px;
     height: 24px;
 }
 
-.stats-label {
+.statsLabel {
     font-size: 14px;
     color: var(--text-muted);
     font-weight: 500;
@@ -284,21 +284,21 @@
     margin: 0;
 }
 
-.stats-value {
+.statsValue {
     font-size: 32px;
     font-weight: 700;
     color: var(--text-primary);
     line-height: 1;
 }
 
-.stats-percentage {
+.statsPercentage {
     font-size: 28px;
     font-weight: 700;
     color: var(--success-color);
     line-height: 1;
 }
 
-.stats-description {
+.statsDescription {
     font-size: 14px;
     color: var(--text-muted);
     margin: 0;
@@ -306,16 +306,16 @@
 }
 
 /* 13. 검색 영역 */
-.search-section {
+.searchSection {
     margin-bottom: 32px;
 }
 
-.search-container {
+.searchContainer {
     position: relative;
     max-width: 400px;
 }
 
-.search-input {
+.searchInput {
     width: 100%;
     padding: 12px 16px 12px 48px;
     border: 1px solid var(--border-color);
@@ -327,18 +327,18 @@
     transition: all 0.2s ease;
 }
 
-.search-input::placeholder {
+.searchInput::placeholder {
     color: var(--text-muted);
 }
 
-.search-input:focus {
+.searchInput:focus {
     outline: none;
     border-color: var(--primary-color);
     box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
     background: var(--surface-secondary);
 }
 
-.search-icon {
+.searchIcon {
     position: absolute;
     left: 16px;
     top: 50%;
@@ -350,17 +350,17 @@
 }
 
 /* 14. 추가 통계 섹션 */
-.additional-stats {
+.additionalStats {
     margin-bottom: 32px;
 }
 
-.stats-grid {
+.statsGrid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 24px;
 }
 
-.stats-item {
+.statsItem {
     background: var(--surface-color);
     border: 1px solid var(--border-color);
     border-radius: var(--border-radius-lg);
@@ -371,18 +371,18 @@
     transition: all 0.2s ease;
 }
 
-.stats-item:hover {
+.statsItem:hover {
     border-color: var(--primary-color);
     transform: translateY(-1px);
 }
 
-.stats-item-header {
+.statsItemHeader {
     display: flex;
     align-items: center;
     gap: 16px;
 }
 
-.stats-item-icon {
+.statsItemIcon {
     width: 40px;
     height: 40px;
     background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
@@ -394,49 +394,49 @@
     flex-shrink: 0;
 }
 
-.stats-item-icon svg {
+.statsItemIcon svg {
     width: 20px;
     height: 20px;
 }
 
-.stats-item-labels {
+.statsItemLabels {
     display: flex;
     flex-direction: column;
     gap: 4px;
 }
 
-.stats-primary-label span {
+.statsPrimaryLabel span {
     font-size: 16px;
     color: var(--text-primary);
     font-weight: 600;
     line-height: 1.2;
 }
 
-.stats-secondary-label span {
+.statsSecondaryLabel span {
     font-size: 14px;
     color: var(--text-muted);
     line-height: 1.2;
 }
 
-.stats-item-values {
+.statsItemValues {
     text-align: right;
 }
 
-.stats-values-container {
+.statsValuesContainer {
     display: flex;
     flex-direction: column;
     gap: 4px;
     align-items: flex-end;
 }
 
-.stats-primary-value span {
+.statsPrimaryValue span {
     font-size: 28px;
     font-weight: 700;
     color: var(--text-primary);
     line-height: 1;
 }
 
-.stats-secondary-value span {
+.statsSecondaryValue span {
     font-size: 20px;
     font-weight: 600;
     color: var(--primary-color);
@@ -444,7 +444,7 @@
 }
 
 /* 15. 데이터 테이블 */
-.data-table-container {
+.dataTableContainer {
     margin: 24px;
     background: var(--surface-color);
     border: 1px solid var(--border-color);
@@ -453,18 +453,18 @@
     box-shadow: var(--shadow);
 }
 
-.data-table {
+.dataTable {
     width: 100%;
     border-collapse: collapse;
     font-size: 14px;
 }
 
-.table-header {
+.tableHeader {
     background: var(--surface-secondary);
     border-bottom: 1px solid var(--border-color);
 }
 
-.table-header th {
+.tableHeader th {
     padding: 16px;
     text-align: left;
     font-weight: 600;
@@ -478,46 +478,46 @@
     border-right: 1px solid var(--border-color);
 }
 
-.table-header th:last-child {
+.tableHeader th:last-child {
     border-right: none;
 }
 
-.table-header th:hover {
+.tableHeader th:hover {
     background: var(--hover-color);
     color: var(--primary-color);
 }
 
-.table-body {
+.tableBody {
     background: var(--surface-color);
 }
 
-.table-row {
+.tableRow {
     border-bottom: 1px solid var(--border-color);
     cursor: pointer;
     transition: all 0.2s ease;
 }
 
-.table-row:last-child {
+.tableRow:last-child {
     border-bottom: none;
 }
 
-.table-row:hover {
+.tableRow:hover {
     background: var(--hover-color);
     transform: scale(1.01);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.table-cell {
+.tableCell {
     padding: 16px;
     vertical-align: middle;
     color: var(--text-secondary);
     border-right: 1px solid var(--border-color);
 }
 
-.table-cell:last-child {
+.tableCell:last-child {
     border-right: none;
 }/* 16. 테이블 내 요소들 */
-.time-badge, .duration-badge {
+.timeBadge, .durationBadge {
     background: var(--surface-secondary);
     color: var(--text-primary);
     padding: 6px 12px;
@@ -532,14 +532,14 @@
     overflow: hidden;
 }
 
-.time-badge:hover, .duration-badge:hover {
+.timeBadge:hover, .durationBadge:hover {
     border-color: var(--primary-color);
     background: var(--hover-color);
     box-shadow: 0 2px 8px rgba(99, 102, 241, 0.2);
     transform: translateY(-1px);
 }
 
-.action-badge {
+.actionBadge {
     background: rgba(16, 185, 129, 0.2);
     color: var(--success-color);
     border: 1px solid rgba(16, 185, 129, 0.3);
@@ -553,12 +553,12 @@
     align-items: center;
 }
 
-.user-info {
+.userInfo {
     display: flex;
     align-items: center;
 }
 
-.user-link {
+.userLink {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -572,20 +572,20 @@
     font-size: 14px;
 }
 
-.user-link:hover {
+.userLink:hover {
     background: var(--hover-color);
     border-color: var(--primary-color);
     color: var(--text-primary);
     transform: translateY(-1px);
 }
 
-.user-icon {
+.userIcon {
     width: 16px;
     height: 16px;
     opacity: 0.7;
 }
 
-.payload-preview {
+.payloadPreview {
     font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
     font-size: 12px;
     color: var(--text-muted);
@@ -601,13 +601,13 @@
     transition: all 0.2s ease;
 }
 
-.payload-preview:hover {
+.payloadPreview:hover {
     color: var(--text-secondary);
     border-color: var(--primary-color);
     background: var(--surface-secondary);
 }
 
-.status-indicator, .success-indicator {
+.statusIndicator, .successIndicator {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -619,18 +619,18 @@
     transition: all 0.2s ease;
 }
 
-.status-indicator svg, .success-indicator svg {
+.statusIndicator svg, .successIndicator svg {
     width: 16px;
     height: 16px;
 }
 
-.result-badge {
+.resultBadge {
     display: flex;
     justify-content: center;
     gap: 4px;
 }
 
-.add-result {
+.addResult {
     display: flex;
     align-items: center;
     gap: 6px;
@@ -644,40 +644,40 @@
     transition: all 0.2s ease;
 }
 
-.add-result:hover {
+.addResult:hover {
     background: rgba(16, 185, 129, 0.3);
     transform: translateY(-1px);
 }
 
-.add-result svg {
+.addResult svg {
     width: 14px;
     height: 14px;
 }
 
-.empty-cell {
+.emptyCell {
     height: 20px;
     background: transparent;
 }
 
 /* 17. 반응형 디자인 */
 @media (max-width: 1024px) {
-    .stats-cards {
+    .statsCards {
         grid-template-columns: repeat(2, 1fr);
     }
     
-    .stats-grid {
+    .statsGrid {
         grid-template-columns: repeat(2, 1fr);
     }
     
-    .sidebar-container {
+    .sidebarContainer {
         transform: translateX(-100%);
     }
     
-    .main-container {
+    .mainContainer {
         margin-left: 0;
     }
     
-    .content-header {
+    .contentHeader {
         flex-direction: column;
         align-items: stretch;
         gap: 16px;
@@ -692,33 +692,33 @@
         min-height: var(--header-height);
     }
     
-    .header-left, .header-right {
+    .headerLeft, .headerRight {
         flex-wrap: wrap;
         gap: 12px;
     }
     
-    .stats-cards {
+    .statsCards {
         grid-template-columns: 1fr;
         gap: 16px;
     }
     
-    .stats-grid {
+    .statsGrid {
         grid-template-columns: 1fr;
     }
     
-    .dashboard-content {
+    .dashboardContent {
         padding: 16px;
     }
     
-    .data-table-container {
+    .dataTableContainer {
         overflow-x: auto;
     }
     
-    .data-table {
+    .dataTable {
         min-width: 800px;
     }
     
-    .search-container {
+    .searchContainer {
         max-width: 100%;
     }
     
@@ -728,38 +728,38 @@
         gap: 8px;
     }
     
-    .org-selector, .project-selector {
+    .orgSelector, .projectSelector {
         width: 100%;
         justify-content: center;
     }
 }
 
 @media (max-width: 480px) {
-    .dashboard-content {
+    .dashboardContent {
         padding: 12px;
     }
     
-    .stats-card {
+    .statsCard {
         padding: 16px;
     }
     
-    .stats-item {
+    .statsItem {
         padding: 16px;
         flex-direction: column;
         text-align: center;
         gap: 16px;
     }
     
-    .stats-item-values {
+    .statsItemValues {
         text-align: center;
     }
     
-    .table-cell {
+    .tableCell {
         padding: 12px 8px;
         font-size: 13px;
     }
     
-    .table-header th {
+    .tableHeader th {
         padding: 12px 8px;
         font-size: 13px;
     }

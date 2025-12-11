@@ -16,7 +16,7 @@
     display: flex;
 }
 
-.modal-content {
+.modalContent {
     background: #111111;
     border: 1px solid #2a2a2a;
     border-radius: 12px;
@@ -26,7 +26,7 @@
     overflow-y: auto;
 }
 
-.modal-header {
+.modalHeader {
     padding: 20px;
     border-bottom: 1px solid #2a2a2a;
     display: flex;
@@ -34,18 +34,18 @@
     align-items: center;
 }
 
-.modal-title {
+.modalTitle {
     font-size: 18px;
     font-weight: 600;
 }
 
-.header-buttons {
+.headerButtons {
     display: flex;
     align-items: center;
     gap: 12px;
 }
 
-.delete-btn {
+.deleteBtn {
     background: none;
     border: none;
     color: #888;
@@ -59,16 +59,16 @@
     transition: color 0.2s ease;
 }
 
-.delete-btn:hover {
+.deleteBtn:hover {
     color: #ef4444;
 }
 
-.delete-btn svg {
+.deleteBtn svg {
     width: 20px;
     height: 20px;
 }
 
-.close-btn {
+.closeBtn {
     background: none;
     border: none;
     color: #888;
@@ -82,7 +82,7 @@
     justify-content: center;
 }
 
-.modal-body {
+.modalBody {
     padding: 20px;
     max-height: 60vh;
     overflow-y: auto;
@@ -91,18 +91,18 @@
     scrollbar-color: #444 #1a1a1a;
 }
 
-.detail-section {
+.detailSection {
     margin-bottom: 20px;
 }
 
-.detail-label {
+.detailLabel {
     font-size: 12px;
     color: #888;
     text-transform: uppercase;
     margin-bottom: 8px;
 }
 
-.detail-content {
+.detailContent {
     color: #ccc;
     line-height: 1.6;
     white-space: pre-wrap;
@@ -124,7 +124,7 @@
         transform: translateX(250px);
     }
 
-    .main-content {
+    .mainContent {
         width: 100%;
     }
 
@@ -136,11 +136,11 @@
         padding: 15px 20px;
     }
 
-    .memories-grid {
+    .memoriesGrid {
         grid-template-columns: 1fr;
     }
 
-    .search-box {
+    .searchBox {
         width: 200px;
     }
 }

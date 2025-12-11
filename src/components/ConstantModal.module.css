@@ -11,7 +11,7 @@
     backdrop-filter: blur(4px);
 }
 
-.modal-content {
+.modalContent {
     background-color: #1a1a1a;
     border: 1px solid #2a2a2a;
     margin: 5% auto;
@@ -25,20 +25,20 @@
     color: #ffffff;
 }
 
-.modal-content::-webkit-scrollbar {
+.modalContent::-webkit-scrollbar {
     width: 8px;
 }
 
-.modal-content::-webkit-scrollbar-track {
+.modalContent::-webkit-scrollbar-track {
     background: #0a0a0a;
 }
 
-.modal-content::-webkit-scrollbar-thumb {
+.modalContent::-webkit-scrollbar-thumb {
     background: #2a2a2a;
     border-radius: 4px;
 }
 
-.modal-content::-webkit-scrollbar-thumb:hover {
+.modalContent::-webkit-scrollbar-thumb:hover {
     background: #6366f1;
 }
 
@@ -57,7 +57,7 @@
     text-decoration: none;
 }
 
-.modal-content h3 {
+.modalContent h3 {
     margin-bottom: 20px;
     color: #ffffff;
     font-size: 20px;
@@ -66,7 +66,7 @@
     padding-bottom: 10px;
 }
 
-.modal-content > p {
+.modalContent > p {
     color: #cccccc;
     margin-bottom: 15px;
     font-size: 14px;
