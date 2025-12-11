@@ -1,7 +1,7 @@
 // components/MemoryDetailModal.jsx
 import React, { useState } from 'react';
 import { toast } from 'sonner';
-import styles from './MemoryDetailModal.module.css'; // 스타일 분리 or 기존 스타일 재사용
+import styles from './MemoryDetailModal.module.css';
 import ConfirmModal from './ConfirmModal';
 
 interface Memory {
@@ -25,8 +25,6 @@ type MemoryDetailModalProps = {
 
 const MemoryDetailModal = ({ isOpen, memory, onClose, onDelete }: MemoryDetailModalProps) => {
   const [showConfirm, setShowConfirm] = useState(false);
-
-  if (!isOpen || !memory) return null;
 
   // 삭제 버튼 클릭 시 확인 모달 열기
   const handleDeleteClick = () => {
@@ -91,6 +89,11 @@ const MemoryDetailModal = ({ isOpen, memory, onClose, onDelete }: MemoryDetailMo
     return text.substring(0, maxLength) + '...';
   };
 
+
+  if (!isOpen || !memory) return null;
+
+  const displayText = getDisplayText(memory);
+
   return (
     <div className={`${styles.modal} ${styles.show}`} onClick={onClose}>
       <div
@@ -114,35 +117,46 @@ const MemoryDetailModal = ({ isOpen, memory, onClose, onDelete }: MemoryDetailMo
         </div>
 
         <div className={styles.modalBody}>
-          <div className={styles.detailSection}>
-            <div className={styles.detailLabel}>Content</div>
-            <div className={styles.detailContent}>
-              {getDisplayText(memory)}
-            </div>
+          {/* 상단: 메타 정보 요약 */}
+          <div className={`${styles.sectionHeader} ${styles.firstSection}`}>
+            <span className={styles.sectionTitle}>Memory Info</span>
           </div>
-
-          <div className={styles.detailSection}>
-            <div className={styles.detailLabel}>Document ID</div>
-            <div className={styles.detailContent}>
-              {memory.id || 'N/A'}
+          <div className={styles.metaSummary}>
+            <div className={styles.metaItem}>
+              <span className={styles.metaLabel}>Created:</span>
+              <span className={styles.metaValue}>
+                {new Date(memory.createdAt || new Date()).toLocaleString()}
+              </span>
             </div>
-          </div>
-
-          <div className={styles.detailSection}>
-            <div className={styles.detailLabel}>Timestamp</div>
-            <div className={styles.detailContent}>
-              {new Date(memory.createdAt || new Date()).toLocaleString()}
+            <div className={styles.metaItem}>
+              <span className={styles.metaLabel}>ID:</span>
+              <span className={styles.metaValue} style={{ fontFamily: 'monospace', fontSize: '0.85em' }}>
+                {memory.id ? `${memory.id.substring(0, 12)}...` : 'N/A'}
+              </span>
             </div>
+            {memory.tags && memory.tags.length > 0 && (
+              <div className={styles.metaItem}>
+                <span className={styles.metaLabel}>Tags:</span>
+                <div className={styles.tagsWrapper}>
+                  {memory.tags.map((tag, idx) => (
+                    <span key={idx} className={styles.tagBadge}>#{tag}</span>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
+          <div className={styles.contentSection}>
+            <div className={styles.sectionHeader}>
+              <span className={styles.sectionTitle}>Main Content</span>
+            </div>
 
-          {memory.tags && memory.tags.length > 0 && (
-            <div className={styles.detailSection}>
-              <div className={styles.detailLabel}>Tags</div>
-              <div className={styles.detailContent}>
-                {memory.tags.join(', ')}
+            <div className={styles.contentWrapper}>
+              <div className={styles.contentCard}>
+                {displayText}
               </div>
             </div>
-          )}
+          </div>
+
         </div>
       </div>
 
