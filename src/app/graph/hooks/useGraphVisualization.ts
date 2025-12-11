@@ -67,15 +67,45 @@ export const useGraphVisualization = ({
     svg.call(zoom);
     zoomRef.current = zoom;
 
-    // Links
+    // 링크 두께 스케일 (count 기반)
+    const maxLinkCount = Math.max(...graphData.links.map(l => l.count), 1);
+    const minLinkCount = Math.min(...graphData.links.map(l => l.count), 1);
+
+    const linkWidthScale = d3.scaleLinear()
+      .domain([minLinkCount, maxLinkCount])
+      .range([3, 8]); // 최소 3px, 최대 8px
+
+    // Links - 실제 보이는 선
     const link = g.append("g")
       .selectAll("line")
       .data(graphData.links)
       .enter().append("line")
       .attr("class", styles.link)
+      .attr("stroke-width", (d: LinkData) => linkWidthScale(d.count))
+      .style("pointer-events", "none");
+
+    // Links - 투명한 클릭 영역 (두꺼운 선)
+    const linkHitArea = g.append("g")
+      .selectAll("line")
+      .data(graphData.links)
+      .enter().append("line")
+      .attr("stroke", "transparent")
+      .attr("stroke-width", 14)
       .style("cursor", "pointer")
       .on("click", function(_, d) {
         onLinkClick(d);
+      })
+      .on("mouseenter", function(_, d) {
+        const index = graphData.links.indexOf(d);
+        d3.select(link.nodes()[index])
+          .style("stroke", "#6366f1")
+          .style("opacity", "0.8");
+      })
+      .on("mouseleave", function(_, d) {
+        const index = graphData.links.indexOf(d);
+        d3.select(link.nodes()[index])
+          .style("stroke", null)
+          .style("opacity", null);
       });
 
     // Link labels
@@ -149,6 +179,12 @@ export const useGraphVisualization = ({
 
     // Tick handler
     newSimulation.on("tick", () => {
+      linkHitArea
+        .attr("x1", (d: any) => d.source.x)
+        .attr("y1", (d: any) => d.source.y)
+        .attr("x2", (d: any) => d.target.x)
+        .attr("y2", (d: any) => d.target.y);
+
       link
         .attr("x1", (d: any) => d.source.x)
         .attr("y1", (d: any) => d.source.y)
