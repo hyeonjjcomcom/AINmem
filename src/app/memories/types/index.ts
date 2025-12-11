@@ -8,6 +8,9 @@ export interface Memory {
   tags?: string[];
   category?: string;
   user_id?: string;
+  session_id?: string;
+  model_version?: string;
+  tokens_input?: number;
 }
 
 export interface FilterTag {

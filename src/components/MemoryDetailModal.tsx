@@ -14,6 +14,9 @@ interface Memory {
   tags?: string[];
   category?: string;
   user_id?: string;
+  session_id?: string;
+  model_version?: string;
+  tokens_input?: number;
 }
 
 type MemoryDetailModalProps = {
@@ -25,6 +28,7 @@ type MemoryDetailModalProps = {
 
 const MemoryDetailModal = ({ isOpen, memory, onClose, onDelete }: MemoryDetailModalProps) => {
   const [showConfirm, setShowConfirm] = useState(false);
+  const [showMoreTags, setShowMoreTags] = useState(false);
 
   // 삭제 버튼 클릭 시 확인 모달 열기
   const handleDeleteClick = () => {
@@ -94,6 +98,12 @@ const MemoryDetailModal = ({ isOpen, memory, onClose, onDelete }: MemoryDetailMo
 
   const displayText = getDisplayText(memory);
 
+  // 태그 오버플로우 처리
+  const MAX_VISIBLE_TAGS = 3;
+  const visibleTags = memory.tags?.slice(0, MAX_VISIBLE_TAGS) || [];
+  const hiddenTags = memory.tags?.slice(MAX_VISIBLE_TAGS) || [];
+  const hasMoreTags = hiddenTags.length > 0;
+
   return (
     <div className={`${styles.modal} ${styles.show}`} onClick={onClose}>
       <div
@@ -104,6 +114,29 @@ const MemoryDetailModal = ({ isOpen, memory, onClose, onDelete }: MemoryDetailMo
           <h2 className={styles.modalTitle}>
             {getDisplayTitle(memory)}
           </h2>
+          {memory.tags && memory.tags.length > 0 && (
+            <div className={styles.headerTags}>
+              <div className={styles.tagsWrapper}>
+                {visibleTags.map((tag, idx) => (
+                  <span key={idx} className={styles.tagBadge}>#{tag}</span>
+                ))}
+              </div>
+              {hasMoreTags && (
+                <div className={styles.moreTagsBtn}
+                     onMouseEnter={() => setShowMoreTags(true)}
+                     onMouseLeave={() => setShowMoreTags(false)}>
+                  +{hiddenTags.length}
+                  {showMoreTags && (
+                    <div className={styles.moreTagsTooltip}>
+                      {hiddenTags.map((tag, idx) => (
+                        <span key={idx} className={styles.tagBadge}>#{tag}</span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
           <div className={styles.headerButtons}>
             <button className={styles.deleteBtn} onClick={handleDeleteClick} title="Delete memory">
               <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="currentColor">
@@ -128,20 +161,34 @@ const MemoryDetailModal = ({ isOpen, memory, onClose, onDelete }: MemoryDetailMo
                 {new Date(memory.createdAt || new Date()).toLocaleString()}
               </span>
             </div>
+            {memory.session_id && (
+              <div className={styles.metaItem}>
+                <span className={styles.metaLabel}>Session:</span>
+                <span className={styles.metaValue}>
+                  {memory.session_id}
+                </span>
+              </div>
+            )}
+            {memory.model_version && (
+              <div className={styles.metaItem}>
+                <span className={styles.metaLabel}>Model:</span>
+                <span className={styles.metaValue}>
+                  {memory.model_version}
+                </span>
+              </div>
+            )}
             <div className={styles.metaItem}>
               <span className={styles.metaLabel}>ID:</span>
               <span className={styles.metaValue} style={{ fontFamily: 'monospace', fontSize: '0.85em' }}>
                 {memory.id ? `${memory.id.substring(0, 12)}...` : 'N/A'}
               </span>
             </div>
-            {memory.tags && memory.tags.length > 0 && (
+            {memory.tokens_input !== undefined && memory.tokens_input !== null && (
               <div className={styles.metaItem}>
-                <span className={styles.metaLabel}>Tags:</span>
-                <div className={styles.tagsWrapper}>
-                  {memory.tags.map((tag, idx) => (
-                    <span key={idx} className={styles.tagBadge}>#{tag}</span>
-                  ))}
-                </div>
+                <span className={styles.metaLabel}>Tokens:</span>
+                <span className={styles.metaValue}>
+                  {memory.tokens_input}
+                </span>
               </div>
             )}
           </div>
