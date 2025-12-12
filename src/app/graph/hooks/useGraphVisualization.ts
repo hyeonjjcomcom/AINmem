@@ -31,9 +31,6 @@ export const useGraphVisualization = ({
 
     const nodeArray = Array.from(graphData.nodes.values());
 
-    console.log('노드 배열:', nodeArray);
-    console.log('링크 배열:', graphData.links);
-
     const maxCount = Math.max(...nodeArray.map(n => n.count));
     const minCount = Math.min(...nodeArray.map(n => n.count));
 
@@ -71,18 +68,31 @@ export const useGraphVisualization = ({
     const maxLinkCount = Math.max(...graphData.links.map(l => l.count), 1);
     const minLinkCount = Math.min(...graphData.links.map(l => l.count), 1);
 
-    console.log('Link count range:', { minLinkCount, maxLinkCount });
-    console.log('Sample links with counts:', graphData.links.slice(0, 5).map(l => ({
-      source: typeof l.source === 'string' ? l.source : l.source.id,
-      target: typeof l.target === 'string' ? l.target : l.target.id,
-      count: l.count
-    })));
-
     const linkWidthScale = d3.scaleLinear()
       .domain([minLinkCount, maxLinkCount])
       .range([3, 12]); // 최소 3px, 최대 12px
 
-    // Links - 실제 보이는 선
+    // Drag handlers
+    function dragstarted(event: any, d: NodeData) {
+      if (!event.active) newSimulation.alphaTarget(D3_CONFIG.DRAG.ALPHA_TARGET).restart();
+      d.fx = d.x;
+      d.fy = d.y;
+    }
+
+    function dragged(event: any, d: NodeData) {
+      d.fx = event.x;
+      d.fy = event.y;
+    }
+
+    function dragended(event: any, d: NodeData) {
+      if (!event.active) newSimulation.alphaTarget(0);
+      d.fx = null;
+      d.fy = null;
+    }
+
+    const medianCount = (minCount + maxCount) / 2;
+
+    // 1. Links - 가장 먼저 그리기 (가장 하위)
     const link = g.append("g")
       .selectAll("line")
       .data(graphData.links)
@@ -94,7 +104,7 @@ export const useGraphVisualization = ({
       })
       .style("pointer-events", "none");
 
-    // Links - 투명한 클릭 영역 (두꺼운 선)
+    // Links - 투명한 클릭 영역
     const linkHitArea = g.append("g")
       .selectAll("line")
       .data(graphData.links)
@@ -118,40 +128,7 @@ export const useGraphVisualization = ({
           .style("opacity", null);
       });
 
-    // Link labels
-    const linkLabel = g.append("g")
-      .selectAll("text")
-      .data(graphData.links)
-      .enter().append("text")
-      .attr("class", styles.linkLabel)
-      .text((d: LinkData) => d.count > 1 ? `${d.count} relations` : d.predicates[0])
-      .style("opacity", showLabels ? 1 : 0)
-      .style("cursor", "pointer")
-      .on("click", function(_, d) {
-        onLinkClick(d);
-      });
-
-    // Drag handlers
-    function dragstarted(event: any, d: NodeData) {
-      if (!event.active) newSimulation.alphaTarget(D3_CONFIG.DRAG.ALPHA_TARGET).restart();
-      d.fx = d.x;
-      d.fy = d.y;
-    }
-
-    function dragged(event: any, d: NodeData) {
-      d.fx = event.x;
-      d.fy = event.y;
-    }
-
-    function dragended(event: any, d: NodeData) {
-      if (!event.active) newSimulation.alphaTarget(0);
-      d.fx = null;
-      d.fy = null;
-    }
-
-    // Nodes
-    const medianCount = (minCount + maxCount) / 2;
-
+    // 2. 노드 그룹 - 모든 노드
     const node = g.append("g")
       .selectAll("g")
       .data(nodeArray)
@@ -176,16 +153,30 @@ export const useGraphVisualization = ({
       .attr("dy", (d: NodeData) => {
         const isLarge = d.count >= medianCount;
         if (isLarge) {
-          return ".35em"; // 큰 노드: 중앙
+          return ".35em";
         } else {
-          return `${radiusScale(d.count) + 12}px`; // 작은 노드: 아래
+          return `${radiusScale(d.count) + 12}px`;
         }
       })
       .text((d: NodeData) => d.name)
       .style("opacity", showLabels ? 1 : 0)
+      .style("pointer-events", "none");
+
+    // 3. Link labels
+    const linkLabel = g.append("g")
+      .selectAll("text")
+      .data(graphData.links)
+      .enter().append("text")
+      .attr("class", styles.linkLabel)
+      .text((d: LinkData) => d.count > 1 ? `${d.count} relations` : d.predicates[0])
+      .style("opacity", showLabels ? 1 : 0)
+      .style("cursor", "pointer")
       .on("click", function(_, d) {
-        onNodeClick(d.name);
+        onLinkClick(d);
       });
+
+    // 4. Large 노드를 맨 위로
+    node.filter((d: NodeData) => d.count >= medianCount).raise();
 
     // Tick handler
     newSimulation.on("tick", () => {

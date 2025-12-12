@@ -105,6 +105,9 @@
     pointer-events: none;
     cursor: pointer;
     transition: fill 0.2s ease;
+    stroke: rgba(10, 10, 10, 0.3);
+    stroke-width: 1px;
+    paint-order: stroke fill;
 }
 
 .linkLabel:hover {
