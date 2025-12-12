@@ -33,7 +33,7 @@ interface MemoryTagListProps {
 export const MemoryTagList: React.FC<MemoryTagListProps> = ({
   tags,
   className,
-  showTooltip = false,
+  showTooltip = true,
   tagPrefix = ''
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -130,44 +130,25 @@ export const MemoryTagList: React.FC<MemoryTagListProps> = ({
   const hiddenTags = tags.slice(visibleCount);
 
   return (
-    <div ref={containerRef} className={className} style={{ position: 'relative' }}>
+    <div ref={containerRef} className={className} style={{ position: 'relative', display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
       {visibleTags.map((tag, index) => (
         <MemoryTag key={index} tag={tagPrefix + tag} />
       ))}
-      {remainingCount > 0 && showTooltip && (
+      {remainingCount > 0 && (
         <span
-          style={{ position: 'relative', display: 'inline-block' }}
-          onMouseEnter={() => setShowMoreTags(true)}
-          onMouseLeave={() => setShowMoreTags(false)}
+          className={styles.tooltipWrapper}
+          onMouseEnter={() => showTooltip && setShowMoreTags(true)}
+          onMouseLeave={() => showTooltip && setShowMoreTags(false)}
         >
           <MemoryTag tag={`+${remainingCount}`} variant="more" />
-          {showMoreTags && (
-            <div style={{
-              position: 'absolute',
-              top: '100%',
-              left: 0,
-              marginTop: '4px',
-              padding: '8px',
-              background: '#1a1a1a',
-              border: '1px solid #2a2a2a',
-              borderRadius: '6px',
-              display: 'flex',
-              flexWrap: 'wrap',
-              gap: '6px',
-              zIndex: 1000,
-              minWidth: '120px',
-              maxWidth: '250px',
-              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)'
-            }}>
+          {showTooltip && showMoreTags && (
+            <div className={styles.tooltip}>
               {hiddenTags.map((tag, idx) => (
                 <MemoryTag key={idx} tag={tagPrefix + tag} />
               ))}
             </div>
           )}
         </span>
-      )}
-      {remainingCount > 0 && !showTooltip && (
-        <MemoryTag tag={`+${remainingCount}`} variant="more" />
       )}
     </div>
   );
