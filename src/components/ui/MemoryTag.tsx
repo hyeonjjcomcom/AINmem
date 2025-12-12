@@ -3,6 +3,8 @@
 import React, { useRef, useEffect, useState } from 'react';
 import styles from './MemoryTag.module.css';
 
+const TAG_GAP = 8;
+
 interface MemoryTagProps {
   tag: string;
   variant?: 'default' | 'filter' | 'more';
@@ -46,28 +48,25 @@ export const MemoryTagList: React.FC<MemoryTagListProps> = ({
 
       const container = containerRef.current;
       const containerWidth = container.offsetWidth;
-      const gap = 8; // gap between tags (from CSS)
 
-      // Create temporary elements to measure tag widths
       const tempContainer = document.createElement('div');
       tempContainer.style.visibility = 'hidden';
       tempContainer.style.position = 'absolute';
       tempContainer.style.display = 'flex';
-      tempContainer.style.gap = `${gap}px`;
+      tempContainer.style.gap = `${TAG_GAP}px`;
       document.body.appendChild(tempContainer);
 
       let totalWidth = 0;
       let count = 0;
 
       for (let i = 0; i < tags.length; i++) {
-        // Create temporary tag element with actual CSS class
         const tempTag = document.createElement('span');
         tempTag.className = styles.memoryTag;
         tempTag.textContent = tagPrefix + tags[i];
         tempContainer.appendChild(tempTag);
 
         const tagWidth = tempTag.offsetWidth;
-        const currentWidth = totalWidth + tagWidth + (i > 0 ? gap : 0);
+        const currentWidth = totalWidth + tagWidth + (i > 0 ? TAG_GAP : 0);
 
         // Check if current tag fits
         if (currentWidth > containerWidth) {
@@ -83,14 +82,12 @@ export const MemoryTagList: React.FC<MemoryTagListProps> = ({
           const nextTagWidth = nextTag.offsetWidth;
           tempContainer.removeChild(nextTag);
 
-          const widthWithNextTag = currentWidth + gap + nextTagWidth;
+          const widthWithNextTag = currentWidth + TAG_GAP + nextTagWidth;
 
-          // If next tag fits, just add current tag and continue
           if (widthWithNextTag <= containerWidth) {
             totalWidth = currentWidth;
             count = i + 1;
           } else {
-            // Next tag doesn't fit, check if we can fit current tag + +N badge
             const remainingCount = tags.length - (i + 1);
             const tempMoreTag = document.createElement('span');
             tempMoreTag.className = styles.memoryTagMore;
@@ -99,7 +96,7 @@ export const MemoryTagList: React.FC<MemoryTagListProps> = ({
             const moreTagWidth = tempMoreTag.offsetWidth;
             tempContainer.removeChild(tempMoreTag);
 
-            const widthWithMore = currentWidth + gap + moreTagWidth;
+            const widthWithMore = currentWidth + TAG_GAP + moreTagWidth;
 
             if (widthWithMore <= containerWidth) {
               totalWidth = currentWidth;
@@ -130,7 +127,7 @@ export const MemoryTagList: React.FC<MemoryTagListProps> = ({
   const hiddenTags = tags.slice(visibleCount);
 
   return (
-    <div ref={containerRef} className={className} style={{ position: 'relative', display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+    <div ref={containerRef} className={className} style={{ position: 'relative', display: 'flex', flexWrap: 'wrap', gap: `${TAG_GAP}px` }}>
       {visibleTags.map((tag, index) => (
         <MemoryTag key={index} tag={tagPrefix + tag} />
       ))}
