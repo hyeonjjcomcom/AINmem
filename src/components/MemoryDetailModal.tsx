@@ -1,6 +1,7 @@
 // components/MemoryDetailModal.jsx
 import React, { useState } from 'react';
 import { toast } from 'sonner';
+import { MemoryTagList } from './ui/MemoryTag';
 import styles from './MemoryDetailModal.module.css';
 import ConfirmModal from './ConfirmModal';
 
@@ -28,7 +29,6 @@ type MemoryDetailModalProps = {
 
 const MemoryDetailModal = ({ isOpen, memory, onClose, onDelete }: MemoryDetailModalProps) => {
   const [showConfirm, setShowConfirm] = useState(false);
-  const [showMoreTags, setShowMoreTags] = useState(false);
 
   // 삭제 버튼 클릭 시 확인 모달 열기
   const handleDeleteClick = () => {
@@ -98,12 +98,6 @@ const MemoryDetailModal = ({ isOpen, memory, onClose, onDelete }: MemoryDetailMo
 
   const displayText = getDisplayText(memory);
 
-  // 태그 오버플로우 처리
-  const MAX_VISIBLE_TAGS = 3;
-  const visibleTags = memory.tags?.slice(0, MAX_VISIBLE_TAGS) || [];
-  const hiddenTags = memory.tags?.slice(MAX_VISIBLE_TAGS) || [];
-  const hasMoreTags = hiddenTags.length > 0;
-
   return (
     <div className={`${styles.modal} ${styles.show}`} onClick={onClose}>
       <div
@@ -115,27 +109,12 @@ const MemoryDetailModal = ({ isOpen, memory, onClose, onDelete }: MemoryDetailMo
             {getDisplayTitle(memory)}
           </h2>
           {memory.tags && memory.tags.length > 0 && (
-            <div className={styles.headerTags}>
-              <div className={styles.tagsWrapper}>
-                {visibleTags.map((tag, idx) => (
-                  <span key={idx} className={styles.tagBadge}>#{tag}</span>
-                ))}
-              </div>
-              {hasMoreTags && (
-                <div className={styles.moreTagsBtn}
-                     onMouseEnter={() => setShowMoreTags(true)}
-                     onMouseLeave={() => setShowMoreTags(false)}>
-                  +{hiddenTags.length}
-                  {showMoreTags && (
-                    <div className={styles.moreTagsTooltip}>
-                      {hiddenTags.map((tag, idx) => (
-                        <span key={idx} className={styles.tagBadge}>#{tag}</span>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
+            <MemoryTagList
+              tags={memory.tags}
+              className={styles.headerTags}
+              showTooltip={true}
+              tagPrefix="#"
+            />
           )}
           <div className={styles.headerButtons}>
             <button className={styles.deleteBtn} onClick={handleDeleteClick} title="Delete memory">
