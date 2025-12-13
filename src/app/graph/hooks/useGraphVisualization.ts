@@ -31,9 +31,6 @@ export const useGraphVisualization = ({
 
     const nodeArray = Array.from(graphData.nodes.values());
 
-    console.log('노드 배열:', nodeArray);
-    console.log('링크 배열:', graphData.links);
-
     const maxCount = Math.max(...nodeArray.map(n => n.count));
     const minCount = Math.min(...nodeArray.map(n => n.count));
 
@@ -67,29 +64,13 @@ export const useGraphVisualization = ({
     svg.call(zoom);
     zoomRef.current = zoom;
 
-    // Links
-    const link = g.append("g")
-      .selectAll("line")
-      .data(graphData.links)
-      .enter().append("line")
-      .attr("class", styles.link)
-      .style("cursor", "pointer")
-      .on("click", function(_, d) {
-        onLinkClick(d);
-      });
+    // 링크 두께 스케일 (count 기반)
+    const maxLinkCount = Math.max(...graphData.links.map(l => l.count), 1);
+    const minLinkCount = Math.min(...graphData.links.map(l => l.count), 1);
 
-    // Link labels
-    const linkLabel = g.append("g")
-      .selectAll("text")
-      .data(graphData.links)
-      .enter().append("text")
-      .attr("class", styles.linkLabel)
-      .text((d: LinkData) => d.count > 1 ? `${d.count} relations` : d.predicates[0])
-      .style("opacity", showLabels ? 1 : 0)
-      .style("cursor", "pointer")
-      .on("click", function(_, d) {
-        onLinkClick(d);
-      });
+    const linkWidthScale = d3.scaleLinear()
+      .domain([minLinkCount, maxLinkCount])
+      .range([3, 12]); // 최소 3px, 최대 12px
 
     // Drag handlers
     function dragstarted(event: any, d: NodeData) {
@@ -109,9 +90,45 @@ export const useGraphVisualization = ({
       d.fy = null;
     }
 
-    // Nodes
     const medianCount = (minCount + maxCount) / 2;
 
+    // 1. Links - 가장 먼저 그리기 (가장 하위)
+    const link = g.append("g")
+      .selectAll("line")
+      .data(graphData.links)
+      .enter().append("line")
+      .attr("class", styles.link)
+      .style("stroke-width", (d: LinkData) => {
+        const width = linkWidthScale(d.count);
+        return `${width}px`;
+      })
+      .style("pointer-events", "none");
+
+    // Links - 투명한 클릭 영역
+    const linkHitArea = g.append("g")
+      .selectAll("line")
+      .data(graphData.links)
+      .enter().append("line")
+      .attr("stroke", "transparent")
+      .attr("stroke-width", 14)
+      .style("cursor", "pointer")
+      .on("click", function(_, d) {
+        onLinkClick(d);
+      })
+      .on("mouseenter", function(_, d) {
+        const index = graphData.links.indexOf(d);
+        d3.select(link.nodes()[index])
+          .style("stroke", "#6366f1")
+          .style("opacity", "0.8");
+      })
+      .on("mouseleave", function(_, d) {
+        const index = graphData.links.indexOf(d);
+        d3.select(link.nodes()[index])
+          .style("stroke", null)
+          .style("opacity", null);
+      });
+
+    // 2. 노드 그룹 - 모든 노드
     const node = g.append("g")
       .selectAll("g")
       .data(nodeArray)
@@ -136,19 +153,39 @@ export const useGraphVisualization = ({
       .attr("dy", (d: NodeData) => {
         const isLarge = d.count >= medianCount;
         if (isLarge) {
-          return ".35em"; // 큰 노드: 중앙
+          return ".35em";
         } else {
-          return `${radiusScale(d.count) + 12}px`; // 작은 노드: 아래
+          return `${radiusScale(d.count) + 12}px`;
         }
       })
       .text((d: NodeData) => d.name)
       .style("opacity", showLabels ? 1 : 0)
+      .style("pointer-events", "none");
+
+    // 3. Link labels
+    const linkLabel = g.append("g")
+      .selectAll("text")
+      .data(graphData.links)
+      .enter().append("text")
+      .attr("class", styles.linkLabel)
+      .text((d: LinkData) => d.count > 1 ? `${d.count} relations` : d.predicates[0])
+      .style("opacity", showLabels ? 1 : 0)
+      .style("cursor", "pointer")
       .on("click", function(_, d) {
-        onNodeClick(d.name);
+        onLinkClick(d);
       });
+
+    // 4. Large 노드를 맨 위로
+    node.filter((d: NodeData) => d.count >= medianCount).raise();
 
     // Tick handler
     newSimulation.on("tick", () => {
+      linkHitArea
+        .attr("x1", (d: any) => d.source.x)
+        .attr("y1", (d: any) => d.source.y)
+        .attr("x2", (d: any) => d.target.x)
+        .attr("y2", (d: any) => d.target.y);
+
       link
         .attr("x1", (d: any) => d.source.x)
         .attr("y1", (d: any) => d.source.y)
