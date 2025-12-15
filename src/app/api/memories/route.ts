@@ -41,6 +41,10 @@ async function getMemoriesData(
         ? new Date(doc.createdAt).toISOString().split("T")[0]
         : new Date().toISOString().split("T")[0],
       createdAt: doc.createdAt || new Date(),
+      session_id: doc.session_id,
+      model_version: doc.model_version,
+      tokens_input: doc.tokens_input,
+      user_id: doc.user_id,
     };
   });
 

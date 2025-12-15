@@ -40,7 +40,11 @@ export const useMemoriesData = (userName: string | null, isLoggedIn: boolean) =>
           content: parsedContent,
           createdAt: item.createdAt,
           tags: item.tags || [],
-          category: item.category || 'notes'
+          category: item.category || 'notes',
+          session_id: item.session_id,
+          model_version: item.model_version,
+          tokens_input: item.tokens_input,
+          user_id: item.user_id
         };
       });
 

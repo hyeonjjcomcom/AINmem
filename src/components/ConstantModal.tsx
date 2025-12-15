@@ -51,30 +51,39 @@ const ConstantModal = ({
     <div
       ref={modalRef}
       id="constant-modal"
-      className={styles.modal}
-      style={{ display: 'block' }}
+      className={`${styles.modal} ${styles.show}`}
       onClick={handleBackdropClick}
     >
-      <div className={styles.modalContent}>
-        <span
-          className={styles.close}
-          onClick={onClose}
-          role="button"
-          tabIndex={0}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-              onClose();
-            }
-          }}
-        >
-          &times;
-        </span>
-        <h3 ref={valueRef} id="constant-value">
-          {selectedConstantInfo?.name}
-        </h3>
-        <p ref={descriptionRef} id="constant-description">
-          {selectedConstantInfo?.description}
-        </p>
+      <div
+        className={styles.modalContent}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className={styles.modalHeader}>
+          <h2 className={styles.modalTitle} ref={valueRef} id="constant-value">
+            {selectedConstantInfo?.name || 'Constant'}
+          </h2>
+          <div className={styles.headerButtons}>
+            <button
+              className={styles.closeBtn}
+              onClick={onClose}
+              aria-label="Close"
+            >
+              &times;
+            </button>
+          </div>
+        </div>
+
+        <div className={styles.modalBody}>
+          <div className={styles.contentSection}>
+            <div className={styles.sectionHeader}>
+              <span className={styles.sectionTitle}>Description</span>
+            </div>
+
+            <div className={styles.contentCard} ref={descriptionRef} id="constant-description">
+              {selectedConstantInfo?.description || 'No description available'}
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -1,4 +1,3 @@
-/* Modal */
 .modal {
     display: none;
     position: fixed;
@@ -6,7 +5,8 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.8);
+    background-color: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
     z-index: 1000;
     align-items: center;
     justify-content: center;
@@ -17,101 +17,246 @@
 }
 
 .modalContent {
-    background: #111111;
+    background: #1a1a1a;
     border: 1px solid #2a2a2a;
     border-radius: 12px;
-    width: 90%;
-    max-width: 600px;
+    margin: 5% auto;
+    width: 80%;
+    max-width: 700px;
     max-height: 80vh;
-    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
 }
 
 .modalHeader {
-    padding: 20px;
+    padding: 15px 25px 10px 25px;
     border-bottom: 1px solid #2a2a2a;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.modalTitle {
-    font-size: 18px;
-    font-weight: 600;
-}
-
-.headerButtons {
     display: flex;
     align-items: center;
     gap: 12px;
 }
 
-.deleteBtn {
+.modalTitle {
+    font-size: 20px;
+    font-weight: 600;
+    color: #fff;
+    margin: 0;
+    flex-shrink: 0;
+}
+
+.headerTags {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex: 1;
+    min-width: 0;
+    overflow: visible;
+}
+
+.tagsWrapper {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 6px;
+    overflow: hidden;
+}
+
+.moreTagsBtn {
+    background: rgba(99, 102, 241, 0.15);
+    color: #818cf8;
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.moreTagsBtn:hover {
+    background: rgba(99, 102, 241, 0.25);
+    border-color: rgba(99, 102, 241, 0.5);
+}
+
+.moreTagsTooltip {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    border-radius: 8px;
+    padding: 8px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    z-index: 1001;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    min-width: 150px;
+    max-width: 300px;
+}
+
+.headerButtons {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+    margin-left: auto;
+}
+
+.deleteBtn, .closeBtn {
     background: none;
     border: none;
     color: #888;
     cursor: pointer;
-    padding: 0;
-    width: 30px;
-    height: 30px;
+    padding: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: color 0.2s ease;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    width: 36px;
+    height: 36px;
+}
+
+.closeBtn {
+    font-size: 24px;
+    font-weight: bold;
+    line-height: 1;
 }
 
 .deleteBtn:hover {
     color: #ef4444;
+    background: rgba(239, 68, 68, 0.1);
 }
 
-.deleteBtn svg {
-    width: 20px;
-    height: 20px;
-}
-
-.closeBtn {
-    background: none;
-    border: none;
-    color: #888;
-    cursor: pointer;
-    font-size: 24px;
-    padding: 0;
-    width: 30px;
-    height: 30px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.closeBtn:hover {
+    color: #6366f1;
+    background: rgba(99, 102, 241, 0.1);
 }
 
 .modalBody {
-    padding: 20px;
-    max-height: 60vh;
-    overflow-y: auto;
-        /* 스크롤바 스타일링 */
-    scrollbar-width: thin;
-    scrollbar-color: #444 #1a1a1a;
+    padding: 25px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    min-height: 0;
 }
 
-.detailSection {
-    margin-bottom: 20px;
+.metaSummary {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 12px 16px;
+    background: #111;
+    border: 1px solid #2a2a2a;
+    border-radius: 8px;
+    margin-bottom: 0;
+    font-size: 13px;
 }
 
-.detailLabel {
-    font-size: 12px;
+.metaItem {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.metaLabel {
     color: #888;
-    text-transform: uppercase;
-    margin-bottom: 8px;
+    font-weight: 500;
 }
 
-.detailContent {
+.metaValue {
     color: #ccc;
-    line-height: 1.6;
+}
+
+.tagsWrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.tagBadge {
+    background: rgba(99, 102, 241, 0.1);
+    color: #818cf8;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    border: 1px solid rgba(99, 102, 241, 0.2);
+}
+
+.contentSection {
+    margin-top: 24px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+}
+
+.contentWrapper {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    flex: 1;
+    min-height: 0;
+}
+
+.sectionHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.firstSection {
+    margin-top: 0;
+}
+
+.sectionTitle {
+    font-size: 14px;
+    font-weight: 500;
+    color: #999;
+    letter-spacing: 0.5px;
+}
+
+/* 메인 콘텐츠 카드 */
+.contentCard {
+    background: #111;
+    border: 1px solid #2a2a2a;
+    border-radius: 8px;
+    padding: 20px;
+    color: #d4d4d4;
+    line-height: 1.7;
     white-space: pre-wrap;
     word-wrap: break-word;
-    word-break: break-word;
-    overflow-wrap: break-word;
+    font-size: 14px;
+    flex: 1;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #2a2a2a #0a0a0a;
+    min-height: 0;
 }
 
-/* Mobile Responsive */
+.contentCard::-webkit-scrollbar {
+    width: 6px;
+}
+
+.contentCard::-webkit-scrollbar-track {
+    background: #0a0a0a;
+    border-radius: 0 0 8px 0;
+}
+
+.contentCard::-webkit-scrollbar-thumb {
+    background: #2a2a2a;
+    border-radius: 3px;
+}
+
+.contentCard::-webkit-scrollbar-thumb:hover {
+    background: #6366f1;
+}
+
+
 @media (max-width: 768px) {
     .sidebar {
         position: fixed;
@@ -142,5 +287,12 @@
 
     .searchBox {
         width: 200px;
+    }
+
+    .modalContent {
+        width: 95%;
+        max-width: 95%;
+        max-height: 90vh;
+        margin: 3% auto;
     }
 }
