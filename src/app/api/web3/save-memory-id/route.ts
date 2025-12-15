@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { saveMemoryId, getMemoryIds } from '@/lib/web3';
+import { saveMemoryId, getMemoryIds, getAllWeb3Data } from '@/lib/web3';
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -130,6 +130,21 @@ export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
     const user_address = searchParams.get('user_address');
+    const debug = searchParams.get('debug'); // 🔍 디버그 모드
+
+    // 🔍 디버그 모드: 전체 ain_mem_1 데이터 조회
+    if (debug === 'true') {
+      console.log(`🔍 Web3 API: Debug mode - fetching ALL data`);
+      const allData = await getAllWeb3Data();
+      return NextResponse.json(
+        {
+          success: true,
+          debug: true,
+          data: allData
+        },
+        { status: 200, headers: corsHeaders }
+      );
+    }
 
     // Validate required parameter
     if (!user_address) {

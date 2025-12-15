@@ -127,7 +127,17 @@ export const MemoryTagList: React.FC<MemoryTagListProps> = ({
   const hiddenTags = tags.slice(visibleCount);
 
   return (
-    <div ref={containerRef} className={className} style={{ position: 'relative', display: 'flex', flexWrap: 'wrap', gap: `${TAG_GAP}px` }}>
+    <div
+      ref={containerRef}
+      className={className}
+      style={{
+        position: 'relative',
+        display: 'flex',
+        flexWrap: 'nowrap',  // 절대 두 줄로 안됨
+        gap: `${TAG_GAP}px`,
+        overflow: 'hidden'   // 넘치는 부분 숨김
+      }}
+    >
       {visibleTags.map((tag, index) => (
         <MemoryTag key={index} tag={tagPrefix + tag} />
       ))}
