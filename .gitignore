@@ -43,4 +43,6 @@ next-env.d.ts
 # db api test code
 src/app/dbtest
 
-/scripts
+#staking script
+scripts
+scripts/stake-ain.js
