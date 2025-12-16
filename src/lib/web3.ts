@@ -106,27 +106,67 @@ export async function saveMemoryId(
     const appName = 'ain_mem_1';
     const path = `/apps/${appName}/messages/${userAddress}/${key}`;
 
-    // Store only the MongoDB _id (timestamp available in MongoDB's createdAt)
-    const value = memoryId;
+    console.log(`📝 Saving memory to Web3: ${path} = ${memoryId}`);
 
-    console.log(`📝 Saving memory to Web3: ${path} = ${value}`);
+    // Retry configuration
+    const retries = 3;
 
-    // Write to AIN Network
-    const result = await ain.db.ref(path).setValue({
-      value,
-      nonce: -1 // Let AIN handle nonce
-    });
+    // Timeout helper function
+    const withTimeout = <T>(promise: Promise<T>, ms: number): Promise<T> => {
+      return Promise.race([
+        promise,
+        new Promise<T>((_, reject) =>
+          setTimeout(() => reject(new Error('Operation timed out')), ms)
+        )
+      ]);
+    };
 
-    if (result && result.tx_hash) {
-      console.log(`✅ Memory saved to Web3: txHash=${result.tx_hash}`);
-      return {
-        success: true,
-        txHash: result.tx_hash,
-        key
-      };
-    } else {
-      throw new Error('Transaction failed or no tx_hash returned');
+    // Retry loop with exponential backoff
+    for (let attempt = 0; attempt <= retries; attempt++) {
+      try {
+        console.log(`🔄 Attempt ${attempt + 1}/${retries + 1} to save to AIN Network`);
+
+        // Write to AIN Network with 60 second timeout
+        // setValue expects: setValue({ value, nonce })
+        const result: any = await withTimeout(
+          ain.db.ref(path).setValue({
+            value: memoryId,
+            nonce: -1,
+          }),
+          60000 // 60 second timeout (blockchain transactions can be slow)
+        );
+
+        // Check if transaction was successful (code: 0 means success)
+        if (result && result.tx_hash && result.result && result.result.code === 0) {
+          console.log(`✅ Memory saved to Web3: txHash=${result.tx_hash} (attempt ${attempt + 1})`);
+          return {
+            success: true,
+            txHash: result.tx_hash,
+            key
+          };
+        } else {
+          const errorMsg = result?.result?.message || 'Transaction failed';
+          const code = result?.result?.code;
+          console.error(`❌ Transaction failed: code=${code}, message=${errorMsg}`);
+          throw new Error(`Transaction failed: ${errorMsg} (code: ${code})`);
+        }
+      } catch (attemptError: any) {
+        console.error(`❌ Attempt ${attempt + 1} failed:`, attemptError.message);
+
+        // If this was the last retry, throw the error
+        if (attempt === retries) {
+          throw attemptError;
+        }
+
+        // Exponential backoff: wait 1s, 2s, 4s, etc.
+        const backoffMs = Math.pow(2, attempt) * 1000;
+        console.log(`⏳ Waiting ${backoffMs}ms before retry...`);
+        await new Promise(resolve => setTimeout(resolve, backoffMs));
+      }
     }
+
+    // This should never be reached due to throw in last retry, but TypeScript needs it
+    throw new Error('All retry attempts failed');
   } catch (error: any) {
     console.error('❌ Web3 save failed:', error);
     return {
