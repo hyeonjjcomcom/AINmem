@@ -82,7 +82,6 @@ export async function POST(request: NextRequest) {
         {
           success: true,
           txHash: result.txHash,
-          key: result.key,
           message: 'Memory ID saved to Web3 successfully'
         },
         { status: 200, headers: corsHeaders }
