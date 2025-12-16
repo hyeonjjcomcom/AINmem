@@ -4,9 +4,13 @@ import { NextRequest, NextResponse } from 'next/server';
 import mongoose from 'mongoose';
 import connectDB from '@/lib/mongodb';
 
-// ✅ /api/memories/[memoryId] 경로의 DELETE 요청 처리
+/**
+ * DELETE /api/memories/[memoryId]
+ *
+ * Delete memory from MongoDB and trigger Web3 deletion
+ */
 export async function DELETE(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ memoryId: string }> }
 ) {
   try {
@@ -22,7 +26,21 @@ export async function DELETE(
       );
     }
 
-    // 메모리 삭제
+    // 삭제 전에 문서를 조회하여 user_id 가져오기 (Web3 삭제에 필요)
+    const document = await mongoose.connection
+      .collection('chatlogs')
+      .findOne({
+        _id: new mongoose.Types.ObjectId(memoryId)
+      });
+
+    if (!document) {
+      return NextResponse.json(
+        { error: 'Memory not found' },
+        { status: 404 }
+      );
+    }
+
+    // MongoDB에서 메모리 삭제
     const result = await mongoose.connection
       .collection('chatlogs')
       .deleteOne({
@@ -31,15 +49,22 @@ export async function DELETE(
 
     if (result.deletedCount === 0) {
       return NextResponse.json(
-        { error: 'Memory not found or unauthorized' },
-        { status: 404 }
+        { error: 'Failed to delete memory from MongoDB' },
+        { status: 500 }
       );
     }
 
-    console.log(`✅ Successfully deleted memory with id: ${memoryId}`);
+    console.log(`✅ Successfully deleted memory from MongoDB: ${memoryId}`);
+
+    // Trigger Web3 deletion (fire-and-forget via separate API call)
+    if (document.user_id) {
+      triggerWeb3Deletion(document.user_id, memoryId);
+    }
+
     return NextResponse.json({
-      message: 'Memory deleted successfully',
-      deletedCount: result.deletedCount
+      message: 'Memory deleted successfully from MongoDB',
+      deletedCount: result.deletedCount,
+      web3DeletionTriggered: !!document.user_id
     });
   } catch (error) {
     console.error('❌ DELETE API Error:', error);
@@ -48,4 +73,34 @@ export async function DELETE(
       { status: 500 }
     );
   }
+}
+
+/**
+ * Trigger Web3 deletion via internal API call (fire-and-forget)
+ */
+function triggerWeb3Deletion(
+  userAddress: string,
+  memoryId: string
+): void {
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+
+  const body = { userAddress, memoryId };
+
+  console.log(`🔗 Triggering Web3 deletion API:`, body);
+
+  fetch(`${apiUrl}/api/web3/delete-memory`, {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  })
+    .then((res) => {
+      if (res.ok) {
+        console.log(`✅ Web3 deletion API called successfully`);
+      } else {
+        console.error(`❌ Web3 deletion API returned status: ${res.status}`);
+      }
+    })
+    .catch((error) => {
+      console.error(`❌ Failed to call Web3 deletion API:`, error);
+    });
 }
