@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { saveMemoryId, getMemoryIds, getAllWeb3Data, deleteBatchMemoryIds } from '@/lib/web3';
+import { saveMemoryId, getMemoryIds, deleteBatchMemoryIds } from '@/lib/web3';
 import {
   Web3ValidationError,
   Web3TransactionError,
@@ -138,9 +138,6 @@ export async function POST(
  *
  * Fetch all memory ObjectIds for a user from blockchain
  *
- * Query params:
- *   debug: 'true'         // Optional: fetch all data for debugging
- *
  * Response:
  * {
  *   success: true,
@@ -149,27 +146,11 @@ export async function POST(
  * }
  */
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ userId: string }> }
 ) {
   try {
     const { userId: user_address } = await params;
-    const searchParams = request.nextUrl.searchParams;
-    const debug = searchParams.get('debug');
-
-    // Debug mode: fetch all data
-    if (debug === 'true') {
-      console.log(`🔍 Blockchain API: Debug mode - fetching ALL data`);
-      const allData = await getAllWeb3Data();
-      return NextResponse.json(
-        {
-          success: true,
-          debug: true,
-          data: allData
-        },
-        { status: 200, headers: corsHeaders }
-      );
-    }
 
     // Validate Ethereum address format
     if (!/^0x[a-fA-F0-9]{40}$/.test(user_address)) {
