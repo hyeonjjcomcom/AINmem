@@ -1,5 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { saveMemoryId, getMemoryIds, getAllWeb3Data } from '@/lib/web3';
+import {
+  Web3ValidationError,
+  Web3TransactionError,
+  Web3NetworkError
+} from '@/errors/web3Errors';
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -74,40 +79,61 @@ export async function POST(request: NextRequest) {
 
     console.log(`📝 Web3 API: Saving memory for user=${user_address}, id=${memory_id}`);
 
-    // Save to Web3
-    const result = await saveMemoryId(user_address, memory_id);
+    try {
+      // Save to Web3
+      const txHash = await saveMemoryId(user_address, memory_id);
 
-    if (result.success) {
       return NextResponse.json(
         {
           success: true,
-          txHash: result.txHash,
+          txHash,
           message: 'Memory ID saved to Web3 successfully'
         },
         { status: 200, headers: corsHeaders }
       );
-    } else {
-      // Web3 save failed but don't fail the request
-      // This is logged for monitoring/reconciliation
-      console.error(`❌ Web3 API: Save failed for user=${user_address}, id=${memory_id}:`, result.error);
+    } catch (error) {
+      if (error instanceof Web3ValidationError) {
+        return NextResponse.json(
+          { error: error.message },
+          { status: 400, headers: corsHeaders }
+        );
+      }
 
+      if (error instanceof Web3TransactionError) {
+        console.error(`❌ Web3 transaction failed: code=${error.code}, message=${error.message}`);
+        return NextResponse.json(
+          {
+            error: error.message,
+            code: error.code,
+            txHash: error.txHash
+          },
+          { status: 500, headers: corsHeaders }
+        );
+      }
+
+      if (error instanceof Web3NetworkError) {
+        console.error(`❌ Web3 network error: ${error.message}`);
+        return NextResponse.json(
+          { error: `Network error: ${error.message}` },
+          { status: 503, headers: corsHeaders }
+        );
+      }
+
+      // Unexpected error
+      console.error('❌ Web3 API: Unexpected error:', error);
       return NextResponse.json(
-        {
-          success: false,
-          error: result.error || 'Failed to save to Web3',
-          memory_id // Return the memory_id so caller knows which memory failed
-        },
+        { error: 'Internal server error' },
         { status: 500, headers: corsHeaders }
       );
     }
   } catch (err: any) {
-    console.error('❌ Web3 API: Unexpected error:', err);
+    console.error('❌ Web3 API: Parsing error:', err);
     return NextResponse.json(
       {
         success: false,
-        error: err.message || 'Internal server error'
+        error: err.message || 'Invalid request format'
       },
-      { status: 500, headers: corsHeaders }
+      { status: 400, headers: corsHeaders }
     );
   }
 }

@@ -3,6 +3,11 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { deleteAllMemoryIds } from '@/lib/web3';
+import {
+  Web3ValidationError,
+  Web3TransactionError,
+  Web3NetworkError
+} from '@/errors/web3Errors';
 
 /**
  * DELETE /api/web3/delete-all-memories
@@ -38,28 +43,56 @@ export async function DELETE(request: NextRequest) {
 
     console.log(`⚠️ [API] Deleting ALL memories from Web3: user=${userAddress}`);
 
-    // Execute delete all
-    const result = await deleteAllMemoryIds(userAddress);
+    try {
+      // Execute delete all
+      const txHash = await deleteAllMemoryIds(userAddress);
 
-    if (result.success) {
       return NextResponse.json({
         success: true,
         message: 'All memories deleted successfully',
         userAddress,
-        txHash: result.txHash
+        txHash
       });
-    } else {
-      return NextResponse.json({
-        success: false,
-        error: result.error,
-        userAddress
-      }, { status: 500 });
+    } catch (error) {
+      if (error instanceof Web3ValidationError) {
+        return NextResponse.json(
+          { error: error.message },
+          { status: 400 }
+        );
+      }
+
+      if (error instanceof Web3TransactionError) {
+        console.error(`❌ Web3 transaction failed: code=${error.code}, message=${error.message}`);
+        return NextResponse.json(
+          {
+            error: error.message,
+            code: error.code,
+            txHash: error.txHash
+          },
+          { status: 500 }
+        );
+      }
+
+      if (error instanceof Web3NetworkError) {
+        console.error(`❌ Web3 network error: ${error.message}`);
+        return NextResponse.json(
+          { error: `Network error: ${error.message}` },
+          { status: 503 }
+        );
+      }
+
+      // Unexpected error
+      console.error('❌ Delete all API: Unexpected error:', error);
+      return NextResponse.json(
+        { error: 'Internal server error' },
+        { status: 500 }
+      );
     }
-  } catch (error: any) {
-    console.error('❌ [API] Delete all API error:', error);
+  } catch (err: any) {
+    console.error('❌ [API] Request parsing error:', err);
     return NextResponse.json(
-      { error: 'Internal Server Error', details: error.message },
-      { status: 500 }
+      { error: 'Invalid request format' },
+      { status: 400 }
     );
   }
 }
