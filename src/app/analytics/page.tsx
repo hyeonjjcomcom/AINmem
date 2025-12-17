@@ -38,20 +38,20 @@ export default function AnalyticsPage() {
     try {
       console.log('📊 Fetching memories for user:', userName);
 
-      // 1단계: Web3에서 memory_ids 가져오기
+      // 1단계: 블록체인에서 memory_ids 가져오기
       const web3Response = await fetch(
-        `/api/web3/save-memory-id?user_address=${userName}`
+        `/api/users/${userName}/blockchain-memories`
       );
       const web3Data = await web3Response.json();
 
       if (!web3Data.success) {
-        throw new Error(`Web3 fetch failed: ${web3Data.error}`);
+        throw new Error(`Blockchain fetch failed: ${web3Data.error}`);
       }
 
       const memoryIds = web3Data.memory_ids || [];
       setWeb3Count(memoryIds.length);
 
-      console.log(`✅ Found ${memoryIds.length} memory IDs on Web3`);
+      console.log(`✅ Found ${memoryIds.length} memory IDs on blockchain`);
 
       if (memoryIds.length === 0) {
         setMemories([]);
