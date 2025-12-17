@@ -60,7 +60,7 @@ export default function AnalyticsPage() {
 
       // 2단계: MongoDB에서 해당 IDs의 실제 메모리 데이터 가져오기
       const memoriesResponse = await fetch(
-        `/api/memories?userName=${userName}&ids=${memoryIds.join(',')}`
+        `/api/users/${userName}/memories?ids=${memoryIds.join(',')}`
       );
 
       if (!memoriesResponse.ok) {

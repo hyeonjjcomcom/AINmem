@@ -45,15 +45,19 @@ npm start            # Start production server
 
 ### API Structure
 Main API routes follow the pattern `/api?endpoint=<name>`:
-- `memories` / `memoriesDocument` - User chat logs
+- `memories` / `memoriesDocument` - User chat logs (legacy)
 - `constants` / `facts` / `predicates` - FOL data (via FOL-SDK MongoDbFolStore)
 - `buildFols` - Trigger FOL extraction from documents
 - `nonce` / `login` - Wallet authentication
 
-Dedicated routes:
-- `/api/memories` - GET memories by userName
+Dedicated routes (RESTful):
+- `/api/users/[userId]/memories` - GET user memories, DELETE specific memory
+- `/api/users/[userId]/blockchain-memories` - Web3/blockchain memory operations
 - `/api/users/[userId]/graph/build` - POST incremental FOL build (chunked, 10 messages/10K tokens)
 - `/api/users/[userId]/graph/full-build` - POST full FOL rebuild (deletes all FOL data first)
+- `/api/users/[userId]/constants` - GET user FOL constants
+- `/api/users/[userId]/facts` - GET user FOL facts
+- `/api/users/[userId]/predicates` - GET user FOL predicates
 
 ### Important Patterns
 - MongoDB connections are cached globally for reuse in development

@@ -1,22 +1,22 @@
-// app/api/memories/[memoryId]/route.ts
+// app/api/users/[userId]/memories/[memoryId]/route.ts
 
 import { NextRequest, NextResponse } from 'next/server';
 import mongoose from 'mongoose';
 import connectDB from '@/lib/mongodb';
 
 /**
- * DELETE /api/memories/[memoryId]
+ * DELETE /api/users/[userId]/memories/[memoryId]
  *
  * Delete memory from MongoDB and trigger Web3 deletion
  */
 export async function DELETE(
   _request: NextRequest,
-  { params }: { params: Promise<{ memoryId: string }> }
+  { params }: { params: Promise<{ userId: string; memoryId: string }> }
 ) {
   try {
     await connectDB();
 
-    const { memoryId } = await params;
+    const { userId, memoryId } = await params;
 
     // ID 유효성 검증
     if (!memoryId || !mongoose.Types.ObjectId.isValid(memoryId)) {
@@ -26,11 +26,12 @@ export async function DELETE(
       );
     }
 
-    // 삭제 전에 문서를 조회하여 user_id 가져오기 (Web3 삭제에 필요)
+    // 삭제 전에 문서를 조회하여 user_id 확인
     const document = await mongoose.connection
       .collection('chatlogs')
       .findOne({
-        _id: new mongoose.Types.ObjectId(memoryId)
+        _id: new mongoose.Types.ObjectId(memoryId),
+        user_id: userId
       });
 
     if (!document) {
@@ -44,7 +45,8 @@ export async function DELETE(
     const result = await mongoose.connection
       .collection('chatlogs')
       .deleteOne({
-        _id: new mongoose.Types.ObjectId(memoryId)
+        _id: new mongoose.Types.ObjectId(memoryId),
+        user_id: userId
       });
 
     if (result.deletedCount === 0) {
@@ -57,14 +59,12 @@ export async function DELETE(
     console.log(`✅ Successfully deleted memory from MongoDB: ${memoryId}`);
 
     // Trigger Web3 deletion (fire-and-forget via separate API call)
-    if (document.user_id) {
-      triggerWeb3Deletion(document.user_id, memoryId);
-    }
+    triggerWeb3Deletion(userId, memoryId);
 
     return NextResponse.json({
       message: 'Memory deleted successfully from MongoDB',
       deletedCount: result.deletedCount,
-      web3DeletionTriggered: !!document.user_id
+      web3DeletionTriggered: true
     });
   } catch (error) {
     console.error('❌ DELETE API Error:', error);

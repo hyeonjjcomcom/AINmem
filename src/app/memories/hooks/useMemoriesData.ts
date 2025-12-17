@@ -15,7 +15,7 @@ export const useMemoriesData = (userName: string | null, isLoggedIn: boolean) =>
 
     setIsLoading(true);
     try {
-      const response = await fetch(`/api/memories?userName=${encodeURIComponent(userName)}`);
+      const response = await fetch(`/api/users/${encodeURIComponent(userName)}/memories`);
       if (!response.ok) throw new Error('Failed to fetch memories');
 
       const data = await response.json();
@@ -58,8 +58,12 @@ export const useMemoriesData = (userName: string | null, isLoggedIn: boolean) =>
   }, [userName, isLoggedIn]);
 
   const deleteMemory = useCallback(async (memoryId: string) => {
+    if (!userName) {
+      throw new Error('User not logged in');
+    }
+
     try {
-      const response = await fetch(`/api/memories/${encodeURIComponent(memoryId)}`, {
+      const response = await fetch(`/api/users/${encodeURIComponent(userName)}/memories/${encodeURIComponent(memoryId)}`, {
         method: 'DELETE',
       });
 
@@ -74,7 +78,7 @@ export const useMemoriesData = (userName: string | null, isLoggedIn: boolean) =>
       console.error('Error deleting memory:', error);
       throw error;
     }
-  }, [fetchMemories]);
+  }, [userName, fetchMemories]);
 
   return {
     memories,
