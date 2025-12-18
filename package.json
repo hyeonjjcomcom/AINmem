@@ -18,7 +18,7 @@
     "d3": "^7.9.0",
     "elliptic": "^6.6.1",
     "ethers": "^6.15.0",
-    "fol-sdk": "git+https://github.com/ainetwork-ai/fol-sdk.git#develop",
+    "fol-sdk": "github:ainetwork-ai/fol-sdk#develop",
     "gpt-tokenizer": "^3.0.1",
     "lucide-react": "^0.554.0",
     "mongoose": "^8.18.0",

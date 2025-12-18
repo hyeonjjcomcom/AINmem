@@ -91,7 +91,7 @@ export async function POST(
       );
     }
 
-    const llmAdapter = new GeminiAdapter(geminiApiKey);
+    const llmAdapter = new GeminiAdapter(geminiApiKey, 'gemini-2.5-pro');
     const store = getFolStore();
     const builder = new FolBuilder({ llm: llmAdapter });
     const client = createFolClient(builder, store);

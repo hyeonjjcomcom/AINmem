@@ -207,11 +207,30 @@ export async function POST(
 
     console.log('🔧 Starting incremental build for user:', userId);
 
+    // 디버깅: 전체 메모리 개수 확인
+    const totalMemories = await ChatLog.countDocuments({ user_id: userId });
+    console.log(`📊 Total memories for user ${userId}:`, totalMemories);
+
     // Step 1: build_at이 없는 메모리 가져오기
     const unbuildMemories = await ChatLog.find({
       user_id: userId,
       build_at: { $exists: false }
     }).sort({ createdAt: 1 }); // 시간순 정렬
+
+    console.log(`🔍 Query: { user_id: "${userId}", build_at: { $exists: false } }`);
+    console.log(`📦 Found ${unbuildMemories.length} unbuilt memories`);
+
+    // 디버깅: 샘플 메모리 정보 출력
+    if (unbuildMemories.length > 0) {
+      const sample = unbuildMemories[0];
+      console.log('📝 Sample memory:', {
+        _id: sample._id,
+        user_id: sample.user_id,
+        input_text: sample.input_text?.substring(0, 50),
+        build_at: sample.build_at,
+        createdAt: sample.createdAt
+      });
+    }
 
     // 빌드할 새로운 메모리가 없으면 스킵
     if (unbuildMemories.length === 0) {
@@ -219,11 +238,10 @@ export async function POST(
       return NextResponse.json({
         success: true,
         message: 'No new memories to build',
-        builtMemories: 0
+        builtMemories: 0,
+        totalMemories
       });
     }
-
-    console.log(`📦 Found ${unbuildMemories.length} unbuilt memories`);
 
     // Step 2: FOL 빌드 설정
     const geminiApiKey = process.env.GEMINI_API_KEY;
@@ -234,7 +252,7 @@ export async function POST(
       );
     }
 
-    const llmAdapter = new GeminiAdapter(geminiApiKey);
+    const llmAdapter = new GeminiAdapter(geminiApiKey, 'gemini-2.5-pro');
     const store = getFolStore();
     const builder = new FolBuilder({ llm: llmAdapter });
     const client = createFolClient(builder, store);
